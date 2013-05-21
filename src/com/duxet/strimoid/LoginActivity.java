@@ -1,11 +1,5 @@
 package com.duxet.strimoid;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import com.actionbarsherlock.app.SherlockActivity;
 import com.duxet.strimoid.utils.HTTPClient;
 import com.duxet.strimoid.utils.Parser;
@@ -13,6 +7,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -79,24 +74,35 @@ public class LoginActivity extends SherlockActivity {
 		toast.show();
     }
     
-    public void signIn(final String username, final String password, final String token){
-    	List<NameValuePair> post_data = new ArrayList<NameValuePair>(2);
-    	post_data.add(new BasicNameValuePair("token", token));
-    	post_data.add(new BasicNameValuePair("name", username));
-    	post_data.add(new BasicNameValuePair("password", password));
-    	post_data.add(new BasicNameValuePair("_external[remember]", "0"));  
+    public SherlockActivity getInstance(){
+    	return this;
+    }
+    
+    public void signIn(final String username, final String password, final String token){		
+		RequestParams params = new RequestParams();
+		params.put("token", token);
+		params.put("name", username);
+		params.put("password", password);
+		params.put("_external[remember]", "0");
 
-        HTTPClient.post("zaloguj", (RequestParams) post_data, new AsyncHttpResponseHandler() {
+        HTTPClient.post("zaloguj", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
             	login_status.setVisibility(LinearLayout.GONE);
             	login_form.setVisibility(ScrollView.GONE);
             	
-            	/* Redirect to main activity */
-            	//TODO
+            	//TODO: Wykrywanie zalogowany czy nie
+            	boolean isLoggedIn = true;
+            	//////////////////////////////////////
             	
-				Toast toast = Toast.makeText(getApplicationContext(), "Niezalogowany", Toast.LENGTH_SHORT);
-				toast.show();
+            	if (isLoggedIn){
+                    Intent mainIntent = new Intent(getInstance(), MainActivity.class);
+                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(mainIntent);
+            	}else{
+					Toast toast = Toast.makeText(getApplicationContext(), "Niezalogowano, błędny login lub hasło", Toast.LENGTH_SHORT);
+					toast.show();
+            	}
             }
             
             @Override
