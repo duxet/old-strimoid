@@ -18,4 +18,8 @@ public class HTTPClient {
     private static String getAbsoluteUrl(String relativeUrl) {
         return BASE_URL + relativeUrl;
     }
+    
+    public static AsyncHttpClient getInstance(){
+    	return client;
+    }
 }
