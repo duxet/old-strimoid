@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.androidquery.AQuery;
 import com.duxet.strimoid.R;
-import com.duxet.strimoid.ViewContentActivity;
+import com.duxet.strimoid.ContentActivity;
 import com.duxet.strimoid.models.Content;
 
 import android.app.Activity;
@@ -77,8 +77,9 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
     public void onClick(View view) {
         int position = (Integer) view.getTag();
 
-        Intent myIntent = new Intent(activity, ViewContentActivity.class);
+        Intent myIntent = new Intent(activity, ContentActivity.class);
         myIntent.putExtra("url", data.get(position).getUrl());
+        myIntent.putExtra("commentsUrl", data.get(position).getCommentsUrl());
         myIntent.putExtra("title", data.get(position).getTitle());
         activity.startActivity(myIntent);
     }

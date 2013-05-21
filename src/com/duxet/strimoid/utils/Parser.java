@@ -8,15 +8,39 @@ import org.jsoup.select.Elements;
 import android.util.Log;
 
 import com.duxet.strimoid.models.*;
+import com.duxet.strimoid.models.Comment;
 
 public class Parser {
-	
-	public static String getToken(String response){
-		ArrayList<Content> contents = new ArrayList<Content>();
+    public static String getToken(String response){
         Document doc = Jsoup.parse(response);
         return doc.getElementsByAttributeValue("name", "token").first().attr("value").toString();
-	}
-	
+    }
+    
+    public static ArrayList<Comment> getComments(String response) {
+        ArrayList<Comment> comments = new ArrayList<Comment>();
+
+        Document doc = Jsoup.parse(response);
+        Elements elements = doc.getElementsByClass("content_comment");
+
+        for (Element el : elements) {
+            String author = el.getElementsByClass("user_name").first().text().trim();
+            String avatar = el.getElementsByClass("content_comment_image").first().getElementsByTag("img").first().attr("src").trim();
+            String text = el.getElementsByClass("content_comment_text").first().text().trim();
+            String time = el.getElementsByClass("content_comment_info").first().getElementsByAttribute("title").first().text().trim();
+
+            Boolean isReply = el.hasClass("reply");
+            Log.i("reply", isReply.toString());
+
+            int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_comment_vote_count").text());
+            int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_comment_vote_count").text());
+
+            Comment comment = new Comment(author, avatar, text, time, up, down, isReply);
+            comments.add(comment);
+        }
+
+        return comments;
+    }
+    
     public static ArrayList<Content> getContents(String response) {
         ArrayList<Content> contents = new ArrayList<Content>();
 
@@ -28,6 +52,7 @@ public class Parser {
             String author = el.getElementsByClass("user_name").first().getElementsByTag("span").first().text().trim();
             String desc = el.getElementsByClass("content_info").text().trim();
             String url = el.getElementsByClass("content_title").first().attr("href").trim();
+            String commentsUrl = el.getElementsByClass("content_info_actions").first().getElementsByTag("a").first().attr("href").trim();
 
             String imageUrl = "";
 
@@ -37,7 +62,7 @@ public class Parser {
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_vote_count").text());
 
-            Content content = new Content(title, author, desc, url, imageUrl, up, down);
+            Content content = new Content(title, author, desc, url, imageUrl, commentsUrl, up, down);
             contents.add(content);
         }
 

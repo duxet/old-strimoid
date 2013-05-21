@@ -2,16 +2,18 @@ package com.duxet.strimoid.models;
 
 public class Content {
 
-    private String title, author, desc, url, imageUrl;
+    private String title, author, desc, url, imageUrl, commentsUrl;
     private int upvotes, downvotes;
 
-    public Content(String title, String author, String desc, String url, String imageUrl, int upvotes, int downvotes) {
+    public Content(String title, String author, String desc, String url,
+            String imageUrl, String commentsUrl, int upvotes, int downvotes) {
         super();
         this.title = title;
         this.author = author;
         this.setDesc(desc);
         this.url = url;
         this.imageUrl = imageUrl;
+        this.commentsUrl = commentsUrl;
         this.upvotes = upvotes;
         this.downvotes = downvotes;
     }
@@ -54,6 +56,14 @@ public class Content {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getCommentsUrl() {
+        return commentsUrl;
+    }
+
+    public void setCommentsUrl(String commentsUrl) {
+        this.commentsUrl = commentsUrl;
     }
 
     public int getUpvotes() {
