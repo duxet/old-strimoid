@@ -1,86 +1,86 @@
 package com.duxet.strimoid.models;
 
 public class Entry {
-	
-	String author, avatar, message, time, strim;
-	int upvotes, downvotes;
-	Boolean isReply;
-	
-	public Entry(String author, String avatar, String message, String time, String strim,
-			Boolean isReply, int upvotes, int downvotes) {
-		super();
-		this.author = author;
-		this.avatar = avatar;
-		this.message = message;
-		this.time = time;
-		this.strim = strim;
-		this.isReply = isReply;
-		this.upvotes = upvotes;
-		this.downvotes = downvotes;
-	}
 
-	public String getAuthor() {
-		return author;
-	}
+    String author, avatar, message, time, strim;
+    int upvotes, downvotes;
+    Boolean isReply;
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+    public Entry(String author, String avatar, String message, String time, String strim,
+            Boolean isReply, int upvotes, int downvotes) {
+        super();
+        this.author = author;
+        this.avatar = avatar;
+        this.message = message;
+        this.time = time;
+        this.strim = strim;
+        this.isReply = isReply;
+        this.upvotes = upvotes;
+        this.downvotes = downvotes;
+    }
 
-	public String getAvatar() {
-		return avatar;
-	}
+    public String getAuthor() {
+        return author;
+    }
 
-	public void setAvatar(String avatar) {
-		this.avatar = avatar;
-	}
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getAvatar() {
+        return avatar;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
 
-	public String getTime() {
-		return time;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setTime(String time) {
-		this.time = time;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	public String getStrim() {
-		return strim;
-	}
+    public String getTime() {
+        return time;
+    }
 
-	public void setStrim(String strim) {
-		this.strim = strim;
-	}
+    public void setTime(String time) {
+        this.time = time;
+    }
 
-	public int getUpvotes() {
-		return upvotes;
-	}
+    public String getStrim() {
+        return strim;
+    }
 
-	public void setUpvotes(int upvotes) {
-		this.upvotes = upvotes;
-	}
+    public void setStrim(String strim) {
+        this.strim = strim;
+    }
 
-	public int getDownvotes() {
-		return downvotes;
-	}
+    public int getUpvotes() {
+        return upvotes;
+    }
 
-	public void setDownvotes(int downvotes) {
-		this.downvotes = downvotes;
-	}
+    public void setUpvotes(int upvotes) {
+        this.upvotes = upvotes;
+    }
 
-	public Boolean isReply() {
-		return isReply;
-	}
+    public int getDownvotes() {
+        return downvotes;
+    }
 
-	public void setReply(boolean isReply) {
-		this.isReply = isReply;
-	}
+    public void setDownvotes(int downvotes) {
+        this.downvotes = downvotes;
+    }
+
+    public Boolean isReply() {
+        return isReply;
+    }
+
+    public void setReply(boolean isReply) {
+        this.isReply = isReply;
+    }
 
 }

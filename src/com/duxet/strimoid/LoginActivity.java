@@ -5,17 +5,17 @@ import android.os.Bundle;
 
 public class LoginActivity extends SherlockActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-		setContentView(R.layout.activity_login);
-		
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	}
+        setContentView(R.layout.activity_login);
 
-	public void attemptLogin() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-	}
+    public void attemptLogin() {
+
+    }
 
 }

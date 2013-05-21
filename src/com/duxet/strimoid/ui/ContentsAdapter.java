@@ -6,7 +6,7 @@ import com.androidquery.AQuery;
 import com.duxet.strimoid.R;
 import com.duxet.strimoid.ViewContentActivity;
 import com.duxet.strimoid.models.Content;
- 
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -21,10 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ContentsAdapter extends BaseAdapter implements OnClickListener {
-	private Activity activity;
+    private Activity activity;
     private ArrayList<Content> data;
     private static LayoutInflater inflater = null;
- 
+
     public ContentsAdapter(Activity a, ArrayList<Content> d) {
         activity = a;
         data = d;
@@ -34,52 +34,52 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
     public int getCount() {
         return data.size();
     }
- 
+
     public Object getItem(int position) {
         return position;
     }
- 
+
     public long getItemId(int position) {
         return position;
     }
- 
+
     public View getView(int position, View convertView, ViewGroup parent) {
         View vi = convertView;
         AQuery aq = new AQuery(vi);
-        
+
         if(convertView==null)
             vi = inflater.inflate(R.layout.activity_main_content, null);
-        
+
         Content content = data.get(position);
-        
+
         TextView title = (TextView)vi.findViewById(R.id.title);
         TextView desc = (TextView)vi.findViewById(R.id.desc);
         Button up = (Button)vi.findViewById(R.id.upvote);
         Button down = (Button)vi.findViewById(R.id.downvote);
         ImageView thumb_image = (ImageView)vi.findViewById(R.id.list_image);
-        
+
         if (!content.getImageUrl().equals("") && PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true))
-        	aq.id(R.id.list_image).image(content.getImageUrl(), false, true);
+            aq.id(R.id.list_image).image(content.getImageUrl(), false, true);
         else
-        	thumb_image.setVisibility(View.GONE);
+            thumb_image.setVisibility(View.GONE);
 
         title.setText(content.getTitle());
         desc.setText(content.getDesc());
         up.setText("▲ " + Integer.toString(content.getUpvotes()));
         down.setText("▼ " + Integer.toString(content.getDownvotes()));
-        
+
         vi.setOnClickListener(this);
         vi.setTag(position);
         return vi;
     }
 
-	@Override
-	public void onClick(View view) {
-		int position = (Integer) view.getTag();
-		
-		Intent myIntent = new Intent(activity, ViewContentActivity.class);
-		myIntent.putExtra("url", data.get(position).getUrl());
-		myIntent.putExtra("title", data.get(position).getTitle());
-		activity.startActivity(myIntent);
-	}
+    @Override
+    public void onClick(View view) {
+        int position = (Integer) view.getTag();
+
+        Intent myIntent = new Intent(activity, ViewContentActivity.class);
+        myIntent.putExtra("url", data.get(position).getUrl());
+        myIntent.putExtra("title", data.get(position).getTitle());
+        activity.startActivity(myIntent);
+    }
 }

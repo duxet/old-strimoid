@@ -6,7 +6,7 @@ public class HTTPClient {
     private static final String BASE_URL = "http://strims.pl/";
 
     private static AsyncHttpClient client = new AsyncHttpClient();
-   
+
     public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.get(getAbsoluteUrl(url), params, responseHandler);
     }

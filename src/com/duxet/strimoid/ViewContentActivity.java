@@ -12,54 +12,54 @@ import android.webkit.WebViewClient;
 @SuppressLint("SetJavaScriptEnabled")
 public class ViewContentActivity extends SherlockActivity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_view_content);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_content);
 
-		Intent intent = getIntent();
-		String url = intent.getStringExtra("url");
-		String title = intent.getStringExtra("title");
+        Intent intent = getIntent();
+        String url = intent.getStringExtra("url");
+        String title = intent.getStringExtra("title");
 
-		if (url.startsWith("/"))
-			url = "http://strims.pl" + url;
-		
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setTitle(title);
-		
-		WebView webView = (WebView) findViewById(R.id.webView);
-		StrimsWebViewClient webClient = new StrimsWebViewClient();
-		
-		webView.setWebViewClient(webClient);
-		webView.getSettings().setJavaScriptEnabled(true);
-		webView.loadUrl(url);	
-	}
+        if (url.startsWith("/"))
+            url = "http://strims.pl" + url;
 
-	@Override
-	public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.view_content, menu);
-		return true;
-	}
-	
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(title);
 
-	    int itemId = item.getItemId();
-	    switch (itemId) {
-	    	case android.R.id.home:
-	    		finish();
-	    		break;
+        WebView webView = (WebView) findViewById(R.id.webView);
+        StrimsWebViewClient webClient = new StrimsWebViewClient();
 
-	    }
+        webView.setWebViewClient(webClient);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.loadUrl(url);	
+    }
 
-	    return true;
-	}
-	
-	private class StrimsWebViewClient extends WebViewClient {
-	    @Override
-	    public boolean shouldOverrideUrlLoading(WebView view, String url) {
-	        view.loadUrl(url);
-	        return true;
-	    }
-	}
+    @Override
+    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.view_content, menu);
+        return true;
+    }
+
+    public boolean onMenuItemSelected(int featureId, MenuItem item) {
+
+        int itemId = item.getItemId();
+        switch (itemId) {
+        case android.R.id.home:
+            finish();
+            break;
+
+        }
+
+        return true;
+    }
+
+    private class StrimsWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+    }
 
 }
