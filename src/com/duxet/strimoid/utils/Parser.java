@@ -10,6 +10,13 @@ import android.util.Log;
 import com.duxet.strimoid.models.*;
 
 public class Parser {
+	
+	public static String getToken(String response){
+		ArrayList<Content> contents = new ArrayList<Content>();
+        Document doc = Jsoup.parse(response);
+        return doc.getElementsByAttributeValue("name", "token").first().attr("value").toString();
+	}
+	
     public static ArrayList<Content> getContents(String response) {
         ArrayList<Content> contents = new ArrayList<Content>();
 
