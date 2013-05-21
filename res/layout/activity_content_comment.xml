@@ -69,8 +69,8 @@
         android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/message"
-        android:layout_below="@id/message"
+        android:layout_alignRight="@+id/text"
+        android:layout_below="@+id/text"
         android:text="Time"
         android:textColor="#4d4d4d"
         android:textSize="10sp" />

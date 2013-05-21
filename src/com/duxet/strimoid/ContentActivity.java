@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -75,8 +76,8 @@ public class ContentActivity extends SherlockActivity {
         webView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
         listView.setVisibility(View.VISIBLE);
-        
-        HTTPClient.get("http://strims.pl" + commentsUrl, null, new AsyncHttpResponseHandler() {
+
+        HTTPClient.get(commentsUrl, null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
                 new drawComments().execute(response);
