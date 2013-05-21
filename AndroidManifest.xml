@@ -26,7 +26,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.duxet.strimoid.ViewContentActivity"
+            android:name="com.duxet.strimoid.ContentActivity"
             android:label="@string/title_activity_view_content" android:theme="@style/AppTheme">
         </activity>
         <activity
