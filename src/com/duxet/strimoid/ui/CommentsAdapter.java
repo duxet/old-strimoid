@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import com.androidquery.AQuery;
 import com.duxet.strimoid.R;
 import com.duxet.strimoid.models.Comment;
-import com.duxet.strimoid.models.Entry;
-
 import android.app.Activity;
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -59,10 +57,16 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         Button down = (Button) vi.findViewById(R.id.downvote);
         ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
 
-        if (!comment.getAvatar().equals("") && PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true))
+        boolean thumbnailsEnabled = PreferenceManager.
+                getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true);
+        
+        if (!comment.getAvatar().equals("") && thumbnailsEnabled)
+        {
+            thumb_image.setVisibility(View.VISIBLE);
             aq.id(R.id.list_image).image(comment.getAvatar(), false, true);
-        else
+        } else {
             thumb_image.setVisibility(View.GONE);
+        }
 
         if (!comment.isReply())
             layout.setPadding(30, 5, 5, 5);
@@ -78,6 +82,7 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
 
         vi.setOnClickListener(this);
         vi.setTag(position);
+        
         return vi;
     }
 

@@ -56,11 +56,16 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
         Button down = (Button) vi.findViewById(R.id.downvote);
         ImageView reply = (ImageView) vi.findViewById(R.id.reply);
         ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
+        
+        boolean thumbnailsEnabled = PreferenceManager.
+                getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true);
 
-        if (!entry.getAvatar().equals("") && PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true))
+        if (!entry.getAvatar().equals("") && thumbnailsEnabled) {
+            thumb_image.setVisibility(View.VISIBLE);
             aq.id(R.id.list_image).image(entry.getAvatar(), false, true);
-        else
+        } else {
             thumb_image.setVisibility(View.GONE);
+        }
 
         if (!entry.isReply()) {
             reply.setVisibility(View.GONE);
@@ -78,6 +83,7 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
 
         vi.setOnClickListener(this);
         vi.setTag(position);
+        
         return vi;
     }
 

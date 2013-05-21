@@ -28,7 +28,8 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
     public ContentsAdapter(Activity a, ArrayList<Content> d) {
         activity = a;
         data = d;
-        inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater = (LayoutInflater) activity
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     public int getCount() {
@@ -52,16 +53,21 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
 
         Content content = data.get(position);
 
-        TextView title = (TextView)vi.findViewById(R.id.title);
-        TextView desc = (TextView)vi.findViewById(R.id.desc);
-        Button up = (Button)vi.findViewById(R.id.upvote);
-        Button down = (Button)vi.findViewById(R.id.downvote);
-        ImageView thumb_image = (ImageView)vi.findViewById(R.id.list_image);
-
-        if (!content.getImageUrl().equals("") && PreferenceManager.getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true))
+        TextView title = (TextView) vi.findViewById(R.id.title);
+        TextView desc = (TextView) vi.findViewById(R.id.desc);
+        Button up = (Button) vi.findViewById(R.id.upvote);
+        Button down = (Button) vi.findViewById(R.id.downvote);
+        ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
+        
+        boolean thumbnailsEnabled = PreferenceManager.
+                getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true);
+        
+        if (!content.getImageUrl().equals("") && thumbnailsEnabled) {
+            thumb_image.setVisibility(View.VISIBLE);
             aq.id(R.id.list_image).image(content.getImageUrl(), false, true);
-        else
+        } else {
             thumb_image.setVisibility(View.GONE);
+        }
 
         title.setText(content.getTitle());
         desc.setText(content.getDesc());
@@ -70,6 +76,7 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
 
         vi.setOnClickListener(this);
         vi.setTag(position);
+        
         return vi;
     }
 
