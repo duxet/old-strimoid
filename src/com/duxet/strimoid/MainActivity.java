@@ -17,6 +17,8 @@ import android.widget.SpinnerAdapter;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.ui.ContentsAdapter;
 import com.duxet.strimoid.ui.EntriesAdapter;
@@ -88,8 +90,23 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
     }
 
     @Override
-    public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.main, menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+    	/*
+    	 * Dynamiczne menu
+    	 * potrzebne na potrzeby logowania
+    	 */
+    	
+        menu.add(1, R.id.action_login, 0, "Zaloguj się")
+        .setIcon(R.drawable.ic_action_accounts)
+        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+	    menu.add(2, R.id.action_settings, 0, "Ustawienia")
+	    .setIcon(R.drawable.ic_action_settings)
+	    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+	
+	    menu.add("Odśwież")
+	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+
         return true;
     }
 
