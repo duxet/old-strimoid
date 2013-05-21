@@ -55,6 +55,7 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         TextView time = (TextView) vi.findViewById(R.id.time);
         Button up = (Button) vi.findViewById(R.id.upvote);
         Button down = (Button) vi.findViewById(R.id.downvote);
+        ImageView reply = (ImageView) vi.findViewById(R.id.reply);
         ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
 
         boolean thumbnailsEnabled = PreferenceManager.
@@ -69,9 +70,9 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         }
 
         if (!comment.isReply())
-            layout.setPadding(30, 5, 5, 5);
+            reply.setVisibility(View.GONE);
         else
-            layout.setPadding(5, 5, 5, 5);
+            reply.setVisibility(View.VISIBLE);
 
         author.setText(comment.getAuthor());
         text.setText(comment.getText());
