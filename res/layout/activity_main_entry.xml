@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/entry"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp" >
+    
+    <LinearLayout
+        android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:padding="3dp" >
+
+        <ImageView
+            android:id="@+id/reply"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" >
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/list_image"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/author"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/thumbnail"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Author"
+        android:textColor="#040404"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:typeface="sans" />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/author"
+        android:layout_below="@+id/author"
+        android:layout_toLeftOf="@+id/upvote"
+        android:text="Message"
+        android:textColor="#343434"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/upvote"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:padding="1dp"
+        android:textSize="11sp" />
+
+    <Button
+        android:id="@+id/downvote"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_alignLeft="@+id/upvote"
+        android:layout_below="@+id/upvote"
+        android:padding="1dp"
+        android:textSize="11sp" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/message"
+        android:layout_below="@id/message"
+        android:text="Time"
+        android:textColor="#4d4d4d"
+        android:textSize="10sp" />
+
+</RelativeLayout>

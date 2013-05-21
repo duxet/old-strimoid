@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Strimoid</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_view_content">ViewContent</string>
+    <string-array name="ic_modes">
+        <item >Ważne</item>
+        <item >Najnowsze</item>
+        <item >Wschodzące</item>
+        <item >Najlepsze</item>
+        <item >Wpisy</item>
+    </string-array>
+
+</resources>
