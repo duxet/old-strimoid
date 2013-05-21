@@ -5,8 +5,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 
-import android.util.Log;
-
 import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.models.Comment;
 
@@ -29,7 +27,6 @@ public class Parser {
             String time = el.getElementsByClass("content_comment_info").first().getElementsByAttribute("title").first().text().trim();
 
             Boolean isReply = el.hasClass("reply");
-            Log.i("reply", isReply.toString());
 
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_comment_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_comment_vote_count").text());
@@ -83,7 +80,6 @@ public class Parser {
             String strim = el.getElementsByClass("entry_info").first().getElementsByTag("a").first().text().trim();
 
             Boolean isReply = el.hasClass("reply");
-            Log.i("reply", isReply.toString());
 
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("entry_vote_count").text());

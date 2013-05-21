@@ -91,13 +91,16 @@ public class LoginActivity extends SherlockActivity {
             	login_status.setVisibility(LinearLayout.GONE);
             	login_form.setVisibility(ScrollView.GONE);
             	
-            	//TODO: Wykrywanie zalogowany czy nie
-            	boolean isLoggedIn = true;
-            	//////////////////////////////////////
+            	// TODO: Moze jakas lepsza metoda sprawdzania wyniku logowania?
+            	boolean isLoggedIn = false;
             	
+            	if (response.contains("page_template.logged_in = true"))
+            	        isLoggedIn = true;
+
             	if (isLoggedIn){
                     Intent mainIntent = new Intent(getInstance(), MainActivity.class);
                     mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    mainIntent.putExtra("isLoggedIn", true);
                     startActivity(mainIntent);
             	}else{
 					Toast toast = Toast.makeText(getApplicationContext(), "Niezalogowano, błędny login lub hasło", Toast.LENGTH_SHORT);
