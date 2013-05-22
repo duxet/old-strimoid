@@ -88,11 +88,29 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
         listStrims.setAdapter(strimsAdapter);
 
         loadContents(currentStrim, currentContentType, 1, true);
+        
+        
+        loadStrimsList();
     }
     
+
     protected void loadStrimsList() {
-    	strims.clear();
-    	
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.bringToFront();
+        
+        String url;
+        if (!Session.getUser().isLogged()){
+        	url = "ajax/utility/submenu?section_type=s&section_name=Subskrybowane";
+        }else{
+        	url = "ajax/utility/submenu?section_type=s&section_name=Glowny";
+        }
+        
+        HTTPClient.get(url, null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(String response) {
+            	new drawStrims().execute(response);
+            }
+        });
     }
 
     protected void loadContents(String strim, final String type, int page, boolean clear) {
@@ -117,10 +135,11 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
                 else
                     new drawContents().execute(response);
                 
-                new drawStrims().execute(response);
             }
         });
 
+
+        //new drawStrims().execute(response);
         if (clear) {
             EndlessScrollListener scrollListener = new EndlessScrollListener();
             list.setOnScrollListener(scrollListener);
@@ -243,14 +262,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
         ArrayList<Strim> newStrims;
 
         protected Void doInBackground(String... params) {
-        	//newStrims = Parser.getStrims(params[0]);
-        	newStrims = new ArrayList<Strim>();
-        	newStrims.add(new Strim("test","test","test"));
-        	newStrims.add(new Strim("test","test","test"));
-        	newStrims.add(new Strim("test","test","test"));
-        	newStrims.add(new Strim("test","test","test"));
-        	newStrims.add(new Strim("test","test","test"));
-        	newStrims.add(new Strim("test","test","test"));
+        	newStrims = Parser.getStrims(params[0]);
             return null;
         }
 
