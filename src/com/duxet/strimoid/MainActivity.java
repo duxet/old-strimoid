@@ -25,6 +25,7 @@ import com.actionbarsherlock.widget.SearchView;
 import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.ui.ContentsAdapter;
 import com.duxet.strimoid.ui.EntriesAdapter;
+import com.duxet.strimoid.ui.StrimsAdapter;
 import com.duxet.strimoid.utils.*;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.loopj.android.http.*;
@@ -32,12 +33,14 @@ import com.loopj.android.http.*;
 public class MainActivity extends SherlockActivity implements OnNavigationListener, SearchView.OnQueryTextListener,
 	SearchView.OnSuggestionListener  {
 
-    ListView list;
+    ListView list, listStrims;
     ArrayList<Content> contents = new ArrayList<Content>();
     ArrayList<Entry> entries = new ArrayList<Entry>();
+    ArrayList<Strim> strims = new ArrayList<Strim>();
 
     ContentsAdapter contentsAdapter;
     EntriesAdapter entriesAdapter;
+    StrimsAdapter strimsAdapter;
 
     ProgressBar progressBar, progressBarBottom;
     
@@ -57,8 +60,6 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
 
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
-        list = (ListView)findViewById(R.id.contentsList);
-
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -76,12 +77,22 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu_strimslist);
 
+        list = (ListView)findViewById(R.id.contentsList);
+        listStrims = (ListView)findViewById(R.id.strimsList);
+        
+        strimsAdapter = new StrimsAdapter(this, strims);
         contentsAdapter = new ContentsAdapter(this, contents);
         entriesAdapter = new EntriesAdapter(this, entries);
 
         list.setAdapter(contentsAdapter);
+        listStrims.setAdapter(strimsAdapter);
 
         loadContents(currentStrim, currentContentType, 1, true);
+    }
+    
+    protected void loadStrimsList() {
+    	strims.clear();
+    	
     }
 
     protected void loadContents(String strim, final String type, int page, boolean clear) {
@@ -105,6 +116,8 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
                     new drawEntries().execute(response);
                 else
                     new drawContents().execute(response);
+                
+                new drawStrims().execute(response);
             }
         });
 
@@ -200,7 +213,8 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
             list.setAdapter(contentsAdapter);
 
         loadContents(currentStrim, currentContentType, 1, true);
-
+        
+        
         return true;
     }
 
@@ -219,6 +233,31 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
             contents.addAll(newContents);
             progressBar.setVisibility(View.GONE);
             contentsAdapter.notifyDataSetChanged();
+        }
+
+    }
+    
+    // Method used to parse contents
+    private class drawStrims extends AsyncTask<String, Void, Void>{
+
+        ArrayList<Strim> newStrims;
+
+        protected Void doInBackground(String... params) {
+        	//newStrims = Parser.getStrims(params[0]);
+        	newStrims = new ArrayList<Strim>();
+        	newStrims.add(new Strim("test","test","test"));
+        	newStrims.add(new Strim("test","test","test"));
+        	newStrims.add(new Strim("test","test","test"));
+        	newStrims.add(new Strim("test","test","test"));
+        	newStrims.add(new Strim("test","test","test"));
+        	newStrims.add(new Strim("test","test","test"));
+            return null;
+        }
+
+        protected void onPostExecute(Void arg) {
+            strims.addAll(newStrims);
+            //progressBar.setVisibility(View.GONE);
+            strimsAdapter.notifyDataSetChanged();
         }
 
     }
