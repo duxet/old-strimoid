@@ -101,7 +101,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
     	 * potrzebne na potrzeby logowania
     	 */
     	
-        menu.add(1, R.id.action_login, 0, "Zaloguj się")
+        menu.add(1, 1, 0, "Zaloguj się")
         	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         	//.setIcon(R.drawable.ic_action_accounts)
         
@@ -119,7 +119,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
 		    .setIcon(R.drawable.ic_action_settings)
 		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 	
-	    menu.add("Odśwież")
+	    menu.add(3, 2, 0, "Odśwież")
 	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return true;
@@ -133,11 +133,14 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
             settingsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(settingsIntent);
             break;
-        case R.id.action_login:
+        case 1:
             Intent loginIntent = new Intent(this, LoginActivity.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(loginIntent);
             break;
+        case 2:
+        	loadContents(currentContentType, 1, true);
+        	break;
         default:
             return super.onOptionsItemSelected(item);
         }

@@ -89,7 +89,7 @@ public class LoginActivity extends SherlockActivity {
             @Override
             public void onSuccess(String response) {
             	login_status.setVisibility(LinearLayout.GONE);
-            	login_form.setVisibility(ScrollView.GONE);
+            	login_form.setVisibility(ScrollView.VISIBLE);
             	
             	// TODO: Moze jakas lepsza metoda sprawdzania wyniku logowania?
             	boolean isLoggedIn = false;
