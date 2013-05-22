@@ -2,7 +2,6 @@ package com.duxet.strimoid.utils;
 
 import java.util.ArrayList;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -111,8 +110,8 @@ public class Parser {
         Elements elements = doc.getElementsByTag("li");
         
         for (Element el : elements) {
-            String name = el.getElementsByClass("name").first().text().trim();
-            String title = el.getElementsByTag("a").first().attr("href").trim();
+            String name = el.getElementsByTag("a").first().attr("href").trim();
+            String title = el.getElementsByClass("name").first().text().trim();
             String desc = "";
             
             Strim strim = new Strim(name, title, desc);
