@@ -24,6 +24,7 @@ public class Parser {
         Elements elements = doc.getElementsByClass("content_comment");
 
         for (Element el : elements) {
+            String id = el.getElementsByTag("a").first().attr("id").trim();
             String author = el.getElementsByClass("user_name").first().text().trim();
             String avatar = el.getElementsByClass("content_comment_image").first().getElementsByTag("img").first().attr("src").trim();
             String text = el.getElementsByClass("content_comment_text").first().text().trim();
@@ -34,7 +35,7 @@ public class Parser {
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_comment_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_comment_vote_count").text());
 
-            Comment comment = new Comment(author, avatar, text, time, up, down, isReply);
+            Comment comment = new Comment(id, author, avatar, text, time, up, down, isReply);
             comments.add(comment);
         }
 
@@ -48,6 +49,7 @@ public class Parser {
         Elements elements = doc.getElementsByClass("content");
 
         for (Element el : elements) {
+            String id = el.getElementsByTag("a").first().attr("id").trim();
             String title = el.getElementsByClass("content_title").first().text().trim();
             String author = el.getElementsByClass("user_name").first().getElementsByTag("span").first().text().trim();
             String desc = el.getElementsByClass("content_info").text().trim();
@@ -62,7 +64,7 @@ public class Parser {
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_vote_count").text());
 
-            Content content = new Content(title, author, desc, url, imageUrl, commentsUrl, up, down);
+            Content content = new Content(id, title, author, desc, url, imageUrl, commentsUrl, up, down);
             contents.add(content);
         }
 
@@ -76,6 +78,7 @@ public class Parser {
         Elements elements = doc.getElementsByClass("entry");
 
         for (Element el : elements) {
+            String id = el.getElementsByTag("a").first().attr("id").trim();
             String author = el.getElementsByClass("entry_user").first().text().trim();
             String avatar = el.getElementsByClass("entry_image").first().getElementsByTag("img").first().attr("src").trim();
             String message = el.getElementsByClass("entry_text").first().text().trim();
@@ -87,7 +90,7 @@ public class Parser {
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("entry_vote_count").text());
 
-            Entry entry = new Entry(author, avatar, message, time, strim, isReply, up, down);
+            Entry entry = new Entry(id, author, avatar, message, time, strim, isReply, up, down);
             entries.add(entry);
         }
 

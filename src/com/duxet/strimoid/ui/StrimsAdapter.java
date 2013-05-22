@@ -2,23 +2,16 @@ package com.duxet.strimoid.ui;
 
 import java.util.ArrayList;
 
-import com.androidquery.AQuery;
 import com.duxet.strimoid.R;
-import com.duxet.strimoid.ContentActivity;
-import com.duxet.strimoid.models.Content;
 import com.duxet.strimoid.models.Strim;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class StrimsAdapter extends BaseAdapter implements OnClickListener {
@@ -47,7 +40,6 @@ public class StrimsAdapter extends BaseAdapter implements OnClickListener {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         View vi = convertView;
-        AQuery aq = new AQuery(vi);
 
         if(convertView==null)
             vi = inflater.inflate(R.layout.activity_main_strims, null);
