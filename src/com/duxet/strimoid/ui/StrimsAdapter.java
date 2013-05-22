@@ -56,7 +56,7 @@ public class StrimsAdapter extends BaseAdapter implements OnClickListener {
     }
 
     @Override
-    public void onClick(View view) {
-    	
+    public void onClick(View v) {
+        
     }
 }

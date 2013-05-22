@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,8 +17,12 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.graphics.PorterDuff;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
@@ -69,8 +72,8 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         
-        //TODO:
-        //Zmniejszyc wysokosc tab
+        // TODO:
+        // Zmniejszyc wysokosc tab
    
         PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.pref_general, false);
         HTTPClient.setupCookieStore(getApplicationContext());
@@ -92,8 +95,8 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu_strimslist);
 
-        list = (ListView)findViewById(R.id.contentsList);
-        listStrims = (ListView)findViewById(R.id.strimsList);
+        list = (ListView) findViewById(R.id.contentsList);
+        listStrims = (ListView) findViewById(R.id.strimsList);
         
         strimsAdapter = new StrimsAdapter(this, strims);
         contentsAdapter = new ContentsAdapter(this, contents);
@@ -101,6 +104,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
         list.setAdapter(contentsAdapter);
         listStrims.setAdapter(strimsAdapter);
+        listStrims.setOnItemClickListener(onStrimChoosed);
         
         for(String t: TABS){
         	Tab tab = getSupportActionBar()
@@ -135,7 +139,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         });
     }
 
-    protected void loadContents(String strim, final String type, int page, boolean clear) {
+    public void loadContents(String strim, final String type, int page, boolean clear) {
         progressBar.setVisibility(View.VISIBLE);
         progressBar.bringToFront();
 
@@ -145,7 +149,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         String url = "";
         
         if(strim.length() > 0)
-            url = "s/" + strim + "/";
+            url = strim + "/";
         
         url = url + type + "?strona=" + page;
 
@@ -167,20 +171,32 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         }
     }
 
-    public void vote(View v, String action) {
-        HTTPClient.get(v.getTag().toString(), null, new JsonHttpResponseHandler() {
+    public void vote(View v) {
+        final Button button = (Button) v;
+        
+        HTTPClient.get(v.getTag().toString() + "&akcja=dodaj", null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
-                    if (response.getString("status").equals("OK"))
-                        return;
-                 // TODO: zmiana koloru buttona
+                    if (response.getString("status").equals("OK")) {
+                        if (button.getId() == R.id.upvote)
+                            button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
+                        else
+                            button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                    }
                 } catch (JSONException e) {
                     return;
                 }
             }
         });
     }
+    
+    OnItemClickListener onStrimChoosed = new OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
+            loadContents(strims.get(pos).getName(), currentContentType, 1, true);
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -240,12 +256,10 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     
     // Method used to parse contents
     private class drawContents extends AsyncTask<String, Void, Void>{
-
         ArrayList<Content> newContents;
 
         protected Void doInBackground(String... params) {
             newContents = Parser.getContents(params[0]);
-
             return null;
         }
 
@@ -254,12 +268,10 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             progressBar.setVisibility(View.GONE);
             contentsAdapter.notifyDataSetChanged();
         }
-
     }
     
     // Method used to parse contents
     private class drawStrims extends AsyncTask<String, Void, Void>{
-
         ArrayList<Strim> newStrims;
 
         protected Void doInBackground(String... params) {
@@ -272,12 +284,10 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             //progressBar.setVisibility(View.GONE);
             strimsAdapter.notifyDataSetChanged();
         }
-
     }
 
     // Method used to parse entries
-    public class drawEntries extends AsyncTask<String, Void, Void>{
-
+    private class drawEntries extends AsyncTask<String, Void, Void>{
         ArrayList<Entry> newEntries;
 
         protected Void doInBackground(String... params) {
@@ -291,7 +301,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             progressBar.setVisibility(View.GONE);
             entriesAdapter.notifyDataSetChanged();
         }
-
     }
 
     // Class used for endless loading

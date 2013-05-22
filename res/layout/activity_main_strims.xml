@@ -6,11 +6,11 @@
     android:padding="5dp" >
     
      <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="#4d4d4d"
-        android:textSize="12sp" />
- 
+         android:id="@+id/title"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="StrimTitle"
+         android:textColor="#4d4d4d"
+         android:textSize="13sp" />
  
 </RelativeLayout>
