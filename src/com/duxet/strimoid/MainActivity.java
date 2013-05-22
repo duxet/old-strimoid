@@ -1,10 +1,13 @@
 package com.duxet.strimoid;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -18,6 +21,8 @@ import android.widget.SpinnerAdapter;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
+import com.actionbarsherlock.app.ActionBar.Tab;
+import com.actionbarsherlock.app.ActionBar.TabListener;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -30,8 +35,8 @@ import com.duxet.strimoid.utils.*;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.loopj.android.http.*;
 
-public class MainActivity extends SherlockActivity implements OnNavigationListener, SearchView.OnQueryTextListener,
-	SearchView.OnSuggestionListener  {
+public class MainActivity extends SherlockActivity implements SearchView.OnQueryTextListener,
+	SearchView.OnSuggestionListener, TabListener  {
 
     ListView list, listStrims;
     ArrayList<Content> contents = new ArrayList<Content>();
@@ -46,18 +51,26 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
     
     String currentContentType = "";
     String currentStrim = "";
+    
+    public static final List<String> TABS = Arrays.asList(
+    		new String[] {"Ważne", "Najnowsze", "Wschodzące", "Najlepsze", "Wpisy"}
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
                 
-        SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ic_modes,
-                android.R.layout.simple_spinner_dropdown_item);
-        getSupportActionBar().setListNavigationCallbacks(mSpinnerAdapter, this);
+        //SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ic_modes,
+        //        android.R.layout.simple_spinner_dropdown_item);
+        //getSupportActionBar().setListNavigationCallbacks(mSpinnerAdapter, this);
         getSupportActionBar().setTitle("");
-        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+        getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+        
+        //TODO:
+        //Zmniejszyc wysokosc tab
+   
         PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -73,7 +86,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
 		menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		menu.setFadeDegree(0.35f);
 		
-        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu_strimslist);
 
@@ -86,9 +99,17 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
 
         list.setAdapter(contentsAdapter);
         listStrims.setAdapter(strimsAdapter);
+        
+        for(String t: TABS){
+        	Tab tab = getSupportActionBar()
+                      .newTab()
+                      .setText(t)
+                      .setTabListener(this);
+
+        	getSupportActionBar().addTab(tab);
+        }
 
         loadContents(currentStrim, currentContentType, 1, true);
-        
         
         loadStrimsList();
     }
@@ -201,42 +222,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
 
         return true;
     }
-
-    @Override
-    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
-        switch (itemPosition) {
-        case 0:
-            currentContentType = "";
-            break;
-        case 1:
-            currentContentType = "najnowsze";
-            break;
-        case 2:
-            currentContentType = "wschodzace";
-            break;
-        case 3:
-            currentContentType = "najlepsze";
-            break;
-        case 4:
-            currentContentType = "wpisy";
-            break;
-        case 5:
-            currentContentType = "komentarze";
-            break;
-        }
-
-        // We may need to change adapter
-        if (itemPosition == 4)
-            list.setAdapter(entriesAdapter);
-        else
-            list.setAdapter(contentsAdapter);
-
-        loadContents(currentStrim, currentContentType, 1, true);
-        
-        
-        return true;
-    }
-
+    
     // Method used to parse contents
     private class drawContents extends AsyncTask<String, Void, Void>{
 
@@ -348,6 +334,51 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
 	public boolean onQueryTextChange(String newText) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+
+	@Override
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		int itemPosition = tab.getPosition();
+		switch (itemPosition) {
+	        case 0:
+	            currentContentType = "";
+	            break;
+	        case 1:
+	            currentContentType = "najnowsze";
+	            break;
+	        case 2:
+	            currentContentType = "wschodzace";
+	            break;
+	        case 3:
+	            currentContentType = "najlepsze";
+	            break;
+	        case 4:
+	            currentContentType = "wpisy";
+	            break;
+	        case 5:
+	            currentContentType = "komentarze";
+	            break;
+	     }
+
+		 if (itemPosition == 4)
+		     list.setAdapter(entriesAdapter);
+		 else
+		     list.setAdapter(contentsAdapter);
+	
+		 loadContents(currentStrim, currentContentType, 1, true);
+	}
+
+
+	@Override
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+	
+	}
+
+
+	@Override
+	public void onTabReselected(Tab tab, FragmentTransaction ft) {
+	
 	}
 
 }
