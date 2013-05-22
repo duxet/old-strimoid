@@ -99,10 +99,10 @@ public class LoginActivity extends SherlockActivity {
             	        isLoggedIn = true;
 
             	if (isLoggedIn){
+            	    // TODO: Mozna by uzyc account managera, ew. zapisac haslo w SharedPref
             		Session.getUser().setUser(username, password);
                     Intent mainIntent = new Intent(getInstance(), MainActivity.class);
                     mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    mainIntent.putExtra("isLoggedIn", true);
                     startActivity(mainIntent);
             	}else{
 					Toast toast = Toast.makeText(getApplicationContext(), "Niezalogowano, błędny login lub hasło", Toast.LENGTH_SHORT);

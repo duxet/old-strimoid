@@ -81,6 +81,10 @@ public class ContentActivity extends SherlockActivity {
             }
         });
     }
+    
+    public void vote(View v) {
+        
+    }
 
     @Override
     public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {

@@ -59,6 +59,10 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     public static final List<String> TABS = Arrays.asList(
     		new String[] {"Ważne", "Najnowsze", "Wschodzące", "Najlepsze", "Wpisy"}
     );
+    
+    public static final List<String> TABS_VALUES = Arrays.asList(
+            new String[] {"", "najnowsze", "wschodzące", "najlepsze", "wpisy"}
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +207,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     	/*
     	 * Dynamiczne menu
     	 * potrzebne na potrzeby logowania
+    	 * 
     	 */
     	
     	if (!Session.getUser().isLogged()){
@@ -253,8 +258,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
         return true;
     }
-    
-    // Method used to parse contents
+
     private class drawContents extends AsyncTask<String, Void, Void>{
         ArrayList<Content> newContents;
 
@@ -269,8 +273,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             contentsAdapter.notifyDataSetChanged();
         }
     }
-    
-    // Method used to parse contents
+
     private class drawStrims extends AsyncTask<String, Void, Void>{
         ArrayList<Strim> newStrims;
 
@@ -281,12 +284,10 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
         protected void onPostExecute(Void arg) {
             strims.addAll(newStrims);
-            //progressBar.setVisibility(View.GONE);
             strimsAdapter.notifyDataSetChanged();
         }
     }
 
-    // Method used to parse entries
     private class drawEntries extends AsyncTask<String, Void, Void>{
         ArrayList<Entry> newEntries;
 
@@ -303,7 +304,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         }
     }
 
-    // Class used for endless loading
     private class EndlessScrollListener implements OnScrollListener {
 
         private int visibleThreshold = 5;
@@ -335,15 +335,36 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         }
     }
 
+    @Override
+    public void onTabSelected(Tab tab, FragmentTransaction ft) {
+        int itemPosition = tab.getPosition();
+        currentContentType = TABS_VALUES.get(itemPosition);
+
+         if (itemPosition == 4)
+             list.setAdapter(entriesAdapter);
+         else
+             list.setAdapter(contentsAdapter);
+    
+         loadContents(currentStrim, currentContentType, 1, true);
+    }
+
+
+    @Override
+    public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+    }
+
+
+    @Override
+    public void onTabReselected(Tab tab, FragmentTransaction ft) {
+    }
+
 	@Override
 	public boolean onSuggestionSelect(int position) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean onSuggestionClick(int position) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
@@ -356,53 +377,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
 	@Override
 	public boolean onQueryTextChange(String newText) {
-		// TODO Auto-generated method stub
 		return false;
-	}
-
-
-	@Override
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		int itemPosition = tab.getPosition();
-		switch (itemPosition) {
-	        case 0:
-	            currentContentType = "";
-	            break;
-	        case 1:
-	            currentContentType = "najnowsze";
-	            break;
-	        case 2:
-	            currentContentType = "wschodzace";
-	            break;
-	        case 3:
-	            currentContentType = "najlepsze";
-	            break;
-	        case 4:
-	            currentContentType = "wpisy";
-	            break;
-	        case 5:
-	            currentContentType = "komentarze";
-	            break;
-	     }
-
-		 if (itemPosition == 4)
-		     list.setAdapter(entriesAdapter);
-		 else
-		     list.setAdapter(contentsAdapter);
-	
-		 loadContents(currentStrim, currentContentType, 1, true);
-	}
-
-
-	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
-	
-	}
-
-
-	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {
-	
 	}
 
 }
