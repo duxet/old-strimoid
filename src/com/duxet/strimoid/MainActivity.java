@@ -5,27 +5,32 @@ import java.util.ArrayList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
 import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.ui.ContentsAdapter;
 import com.duxet.strimoid.ui.EntriesAdapter;
 import com.duxet.strimoid.utils.*;
 import com.loopj.android.http.*;
 
-public class MainActivity extends SherlockActivity implements OnNavigationListener  {
+public class MainActivity extends SherlockActivity implements OnNavigationListener, SearchView.OnQueryTextListener,
+	SearchView.OnSuggestionListener  {
 
     ListView list;
     ArrayList<Content> contents = new ArrayList<Content>();
@@ -35,14 +40,14 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
     EntriesAdapter entriesAdapter;
 
     ProgressBar progressBar, progressBarBottom;
-
+    
     String currentContentType = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+                
         SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ic_modes,
                 android.R.layout.simple_spinner_dropdown_item);
         getSupportActionBar().setListNavigationCallbacks(mSpinnerAdapter, this);
@@ -97,12 +102,22 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
     	 */
     	
         menu.add(1, R.id.action_login, 0, "Zaloguj się")
-        .setIcon(R.drawable.ic_action_accounts)
-        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
+        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        	//.setIcon(R.drawable.ic_action_accounts)
+        
+        SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
+        searchView.setQueryHint("Szukaj…");
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnSuggestionListener(this);
+        
+        menu.add("Szukaj")
+        	.setIcon(R.drawable.ic_search_inverse)
+        	.setActionView(searchView)
+        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        
 	    menu.add(2, R.id.action_settings, 0, "Ustawienia")
-	    .setIcon(R.drawable.ic_action_settings)
-	    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+		    .setIcon(R.drawable.ic_action_settings)
+		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 	
 	    menu.add("Odśwież")
 	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
@@ -233,5 +248,30 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
         public void onScrollStateChanged(AbsListView view, int scrollState) {
         }
     }
+
+	@Override
+	public boolean onSuggestionSelect(int position) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onSuggestionClick(int position) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextSubmit(String query) {
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(list.getWindowToken(), 0);
+		return false;
+	}
+
+	@Override
+	public boolean onQueryTextChange(String newText) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }
