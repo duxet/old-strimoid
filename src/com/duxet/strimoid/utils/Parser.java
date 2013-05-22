@@ -30,15 +30,18 @@ public class Parser {
             String text = el.getElementsByClass("content_comment_text").first().text().trim();
             String time = el.getElementsByClass("content_comment_info").first().getElementsByAttribute("title").first().text().trim();
 
-            Boolean isReply = el.hasClass("reply");
-
+            boolean isReply = el.hasClass("reply");
+            boolean isUpvoted = el.getElementsByClass("like").first().hasClass("selected");
+            boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
+            
             String likeUrl = el.getElementsByClass("like").first().attr("href");
             String dislikeUrl = el.getElementsByClass("like").first().attr("href");
             
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_comment_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_comment_vote_count").text());
 
-            Comment comment = new Comment(id, author, avatar, text, time, likeUrl, dislikeUrl, up, down, isReply);
+            Comment comment = new Comment(id, author, avatar, text, time, likeUrl, dislikeUrl,
+                    up, down, isUpvoted, isDownvoted, isReply);
             comments.add(comment);
         }
 
@@ -64,13 +67,17 @@ public class Parser {
             if (el.getElementsByClass("content_image").first() != null)
                 imageUrl = el.getElementsByClass("content_image").first().getElementsByTag("img").first().attr("src").trim();
             
+            boolean isUpvoted = el.getElementsByClass("like").first().hasClass("selected");
+            boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
+            
             String likeUrl = el.getElementsByClass("like").first().attr("href");
             String dislikeUrl = el.getElementsByClass("like").first().attr("href");
-            
+
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_vote_count").text());
 
-            Content content = new Content(id, title, author, desc, url, imageUrl, commentsUrl, likeUrl, dislikeUrl, up, down);
+            Content content = new Content(id, title, author, desc, url, imageUrl, commentsUrl,
+                    likeUrl, dislikeUrl, up, down, isUpvoted, isDownvoted);
             contents.add(content);
         }
 
@@ -91,15 +98,18 @@ public class Parser {
             String time = el.getElementsByClass("entry_info").first().getElementsByAttribute("title").first().text().trim();
             String strim = el.getElementsByClass("entry_info").first().getElementsByTag("a").first().text().trim();
 
-            Boolean isReply = el.hasClass("reply");
-
+            boolean isReply = el.hasClass("reply");
+            boolean isUpvoted = el.getElementsByClass("like").first().hasClass("selected");
+            boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
+            
             String likeUrl = el.getElementsByClass("like").first().attr("href");
             String dislikeUrl = el.getElementsByClass("like").first().attr("href");
             
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("entry_vote_count").text());
 
-            Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl, up, down, isReply);
+            Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl,
+                    up, down, isUpvoted, isDownvoted, isReply);
             entries.add(entry);
         }
 

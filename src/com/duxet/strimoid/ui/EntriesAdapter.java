@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.androidquery.AQuery;
 import com.duxet.strimoid.R;
 import com.duxet.strimoid.models.Entry;
+import com.duxet.strimoid.utils.UIHelper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -77,11 +78,14 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
 
         author.setText(entry.getAuthor());
         message.setText(entry.getMessage());
-
+        
         up.setText("▲ " + Integer.toString(entry.getUpvotes()));
         up.setTag(entry.getLikeUrl());
         down.setText("▼ " + Integer.toString(entry.getDownvotes()));
         down.setTag(entry.getDislikeUrl());
+        
+        UIHelper.colorVoteButton(up, entry.isUpvoted());
+        UIHelper.colorVoteButton(down, entry.isDownvoted());
         
         vi.setOnClickListener(this);
         vi.setTag(position);

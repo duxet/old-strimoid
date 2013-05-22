@@ -5,11 +5,12 @@ public class Entry {
     String id, author, avatar, message, time, strim;
     String likeUrl, dislikeUrl;
     int upvotes, downvotes;
-    boolean isReply;
+    boolean isUpvoted, isDownvoted, isReply;
     
     public Entry(String id, String author, String avatar, String message,
             String time, String strim, String likeUrl, String dislikeUrl,
-            int upvotes, int downvotes, boolean isReply) {
+            int upvotes, int downvotes, boolean isUpvoted, boolean isDownvoted,
+            boolean isReply) {
         super();
         this.id = id;
         this.author = author;
@@ -21,6 +22,8 @@ public class Entry {
         this.dislikeUrl = dislikeUrl;
         this.upvotes = upvotes;
         this.downvotes = downvotes;
+        this.isUpvoted = isUpvoted;
+        this.isDownvoted = isDownvoted;
         this.isReply = isReply;
     }
 
@@ -64,8 +67,24 @@ public class Entry {
         return downvotes;
     }
 
+    public boolean isUpvoted() {
+        return isUpvoted;
+    }
+
+    public boolean isDownvoted() {
+        return isDownvoted;
+    }
+
     public boolean isReply() {
         return isReply;
     }
+    
+    public void setUpvoted(boolean isUpvoted) {
+        this.isUpvoted = isUpvoted;
+    }
 
+    public void setDownvoted(boolean isDownvoted) {
+        this.isDownvoted = isDownvoted;
+    }
+    
 }

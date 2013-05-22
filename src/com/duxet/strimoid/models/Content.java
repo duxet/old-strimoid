@@ -5,10 +5,12 @@ public class Content {
     String id, title, author, desc, url, imageUrl, commentsUrl;
     String likeUrl, dislikeUrl;
     int upvotes, downvotes;
+    boolean isUpvoted, isDownvoted;
     
     public Content(String id, String title, String author, String desc,
             String url, String imageUrl, String commentsUrl, String likeUrl,
-            String dislikeUrl, int upvotes, int downvotes) {
+            String dislikeUrl, int upvotes, int downvotes, boolean isUpvoted,
+            boolean isDownvoted) {
         super();
         this.id = id;
         this.title = title;
@@ -21,6 +23,8 @@ public class Content {
         this.dislikeUrl = dislikeUrl;
         this.upvotes = upvotes;
         this.downvotes = downvotes;
+        this.isUpvoted = isUpvoted;
+        this.isDownvoted = isDownvoted;
     }
 
     public String getId() {
@@ -67,4 +71,20 @@ public class Content {
         return downvotes;
     }
 
+    public boolean isUpvoted() {
+        return isUpvoted;
+    }
+
+    public boolean isDownvoted() {
+        return isDownvoted;
+    }
+
+    public void setUpvoted(boolean isUpvoted) {
+        this.isUpvoted = isUpvoted;
+    }
+
+    public void setDownvoted(boolean isDownvoted) {
+        this.isDownvoted = isDownvoted;
+    }
+    
 }

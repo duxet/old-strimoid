@@ -6,6 +6,7 @@ import com.androidquery.AQuery;
 import com.duxet.strimoid.R;
 import com.duxet.strimoid.ContentActivity;
 import com.duxet.strimoid.models.Content;
+import com.duxet.strimoid.utils.UIHelper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -71,11 +72,15 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
 
         title.setText(content.getTitle());
         desc.setText(content.getDesc());
+        
         up.setText("▲ " + Integer.toString(content.getUpvotes()));
         up.setTag(content.getLikeUrl());
         down.setText("▼ " + Integer.toString(content.getDownvotes()));
         down.setTag(content.getDislikeUrl());
-
+        
+        UIHelper.colorVoteButton(up, content.isUpvoted());
+        UIHelper.colorVoteButton(down, content.isDownvoted());
+        
         vi.setOnClickListener(this);
         vi.setTag(position);
         

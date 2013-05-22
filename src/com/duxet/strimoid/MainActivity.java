@@ -183,10 +183,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             public void onSuccess(JSONObject response) {
                 try {
                     if (response.getString("status").equals("OK")) {
-                        if (button.getId() == R.id.upvote)
-                            button.getBackground().setColorFilter(0xFF00FF00, PorterDuff.Mode.MULTIPLY);
-                        else
-                            button.getBackground().setColorFilter(0xFFFF0000, PorterDuff.Mode.MULTIPLY);
+                        UIHelper.colorVoteButton(button, true);
                     }
                 } catch (JSONException e) {
                     return;

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.androidquery.AQuery;
 import com.duxet.strimoid.R;
 import com.duxet.strimoid.models.Comment;
+import com.duxet.strimoid.utils.UIHelper;
+
 import android.app.Activity;
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -80,6 +82,9 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         up.setTag(comment.getLikeUrl());
         down.setText("▼ " + Integer.toString(comment.getDownvotes()));
         down.setTag(comment.getDislikeUrl());
+
+        UIHelper.colorVoteButton(up, comment.isUpvoted());
+        UIHelper.colorVoteButton(down, comment.isDownvoted());
         
         vi.setOnClickListener(this);
         vi.setTag(position);
