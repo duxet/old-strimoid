@@ -1,6 +1,10 @@
 package com.duxet.strimoid.utils;
 
 import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
@@ -89,5 +93,32 @@ public class Parser {
         }
 
         return entries;
+    }
+    
+    public static ArrayList<Strim> getStrims(String response) {
+        ArrayList<Strim> strims = new ArrayList<Strim>();
+        
+        String content = "";
+        
+        try {
+            JSONObject json = new JSONObject(response);
+            content = json.getString("content");
+        } catch (JSONException e) {
+            return null;
+        }
+        
+        Document doc = Jsoup.parse(content);
+        Elements elements = doc.getElementsByTag("li");
+        
+        for (Element el : elements) {
+            String name = el.getElementsByClass("name").first().text().trim();
+            String title = el.getElementsByTag("a").first().attr("href").trim();
+            String desc = "";
+            
+            Strim strim = new Strim(name, title, desc);
+            strims.add(strim);
+        }
+
+        return strims;
     }
 }

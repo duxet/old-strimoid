@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SpinnerAdapter;
-import android.widget.TextView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.OnNavigationListener;
@@ -27,6 +26,7 @@ import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.ui.ContentsAdapter;
 import com.duxet.strimoid.ui.EntriesAdapter;
 import com.duxet.strimoid.utils.*;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.loopj.android.http.*;
 
 public class MainActivity extends SherlockActivity implements OnNavigationListener, SearchView.OnQueryTextListener,
@@ -42,6 +42,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
     ProgressBar progressBar, progressBarBottom;
     
     String currentContentType = "";
+    String currentStrim = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,23 +63,36 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
         progressBar.setVisibility(View.VISIBLE);
 
         progressBarBottom = (ProgressBar) findViewById(R.id.progressBarBottom);
+        
+        SlidingMenu menu = new SlidingMenu(this);
+        menu.setMode(SlidingMenu.LEFT);
+        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
+        menu.setMenu(R.layout.menu_strimslist);
 
         contentsAdapter = new ContentsAdapter(this, contents);
         entriesAdapter = new EntriesAdapter(this, entries);
 
         list.setAdapter(contentsAdapter);
 
-        loadContents(currentContentType, 1, true);
+        loadContents(currentStrim, currentContentType, 1, true);
     }
 
-    protected void loadContents(final String type, int page, boolean clear) {
+    protected void loadContents(String strim, final String type, int page, boolean clear) {
         progressBar.setVisibility(View.VISIBLE);
         progressBar.bringToFront();
 
         if (clear)
             contents.clear();
+        
+        String url = "";
+        
+        if(strim.length() > 0)
+            url = "s/" + strim + "/";
+        
+        url = url + type + "?strona=" + page;
 
-        HTTPClient.get(type + "?strona=" + page, null, new AsyncHttpResponseHandler() {
+        HTTPClient.get(url, null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
                 if (type.equals("wpisy"))
@@ -139,7 +153,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
             startActivity(loginIntent);
             break;
         case 2:
-        	loadContents(currentContentType, 1, true);
+        	loadContents(currentStrim, currentContentType, 1, true);
         	break;
         default:
             return super.onOptionsItemSelected(item);
@@ -177,7 +191,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
         else
             list.setAdapter(contentsAdapter);
 
-        loadContents(currentContentType, 1, true);
+        loadContents(currentStrim, currentContentType, 1, true);
 
         return true;
     }
@@ -242,7 +256,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
                 }
             }
             if (!loading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + visibleThreshold)) {
-                loadContents(currentContentType, currentPage + 1, false);
+                loadContents(currentStrim, currentContentType, currentPage + 1, false);
                 loading = true;
             }
         }
