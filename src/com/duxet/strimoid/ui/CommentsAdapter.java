@@ -77,8 +77,10 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         time.setText(comment.getTime());
 
         up.setText("▲ " + Integer.toString(comment.getUpvotes()));
+        up.setTag(comment.getId());
         down.setText("▼ " + Integer.toString(comment.getDownvotes()));
-
+        down.setTag(comment.getId());
+        
         vi.setOnClickListener(this);
         vi.setTag(position);
         

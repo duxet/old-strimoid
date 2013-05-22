@@ -72,8 +72,9 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         title.setText(content.getTitle());
         desc.setText(content.getDesc());
         up.setText("▲ " + Integer.toString(content.getUpvotes()));
+        up.setTag(content.getId());
         down.setText("▼ " + Integer.toString(content.getDownvotes()));
-        
+        down.setTag(content.getId());
 
         vi.setOnClickListener(this);
         vi.setTag(position);

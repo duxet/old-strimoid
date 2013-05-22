@@ -20,6 +20,7 @@
                 android:id="@+id/upvote"
                 android:layout_width="40dp"
                 android:layout_height="24dp"
+                android:onClick="voteUp"
                 android:padding="1dp"
                 android:textSize="11sp" />
 
@@ -27,8 +28,9 @@
                 android:id="@+id/downvote"
                 android:layout_width="40dp"
                 android:layout_height="24dp"
-                android:padding="1dp"
                 android:layout_below="@id/upvote"
+                android:onClick="voteDown"
+                android:padding="1dp"
                 android:textSize="11sp" />
 
         </RelativeLayout>

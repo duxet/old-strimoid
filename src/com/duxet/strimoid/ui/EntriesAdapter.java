@@ -79,8 +79,10 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
         message.setText(entry.getMessage());
 
         up.setText("▲ " + Integer.toString(entry.getUpvotes()));
+        up.setTag(entry.getId());
         down.setText("▼ " + Integer.toString(entry.getDownvotes()));
-
+        down.setTag(entry.getId());
+        
         vi.setOnClickListener(this);
         vi.setTag(position);
         

@@ -163,6 +163,31 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             list.setOnScrollListener(scrollListener);
         }
     }
+    
+    public void voteUp(View v) {
+        vote(v, "lubie");
+    }
+    
+    public void voteDown(View v) {
+        vote(v, "nielubie");
+    }
+    
+    public void vote(View v, String action) {
+        char type;
+        
+        if (currentContentType.equals("wpisy"))
+            type = 'w';
+        else
+            type = 't';
+        
+        HTTPClient.get("ajax/" + type + "/" + v.getId() + "/" + action + "/?token=" + Session.getToken(), null, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(String response) {
+                // TODO: uaktualnianie/pobieranie tokena
+                // TODO: zmiana koloru buttona
+            }
+        });
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
