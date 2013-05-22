@@ -60,6 +60,7 @@
         android:layout_height="24dp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:onClick="vote"
         android:padding="1dp"
         android:textSize="11sp" />
 
@@ -69,6 +70,7 @@
         android:layout_height="24dp"
         android:layout_alignLeft="@+id/upvote"
         android:layout_below="@+id/upvote"
+        android:onClick="vote"
         android:padding="1dp"
         android:textSize="11sp" />
 

@@ -3,11 +3,13 @@ package com.duxet.strimoid.models;
 public class Entry {
 
     String id, author, avatar, message, time, strim;
+    String likeUrl, dislikeUrl;
     int upvotes, downvotes;
     boolean isReply;
-
-    public Entry(String id, String author, String avatar, String message, String time, String strim,
-            boolean isReply, int upvotes, int downvotes) {
+    
+    public Entry(String id, String author, String avatar, String message,
+            String time, String strim, String likeUrl, String dislikeUrl,
+            int upvotes, int downvotes, boolean isReply) {
         super();
         this.id = id;
         this.author = author;
@@ -15,9 +17,11 @@ public class Entry {
         this.message = message;
         this.time = time;
         this.strim = strim;
-        this.isReply = isReply;
+        this.likeUrl = likeUrl;
+        this.dislikeUrl = dislikeUrl;
         this.upvotes = upvotes;
         this.downvotes = downvotes;
+        this.isReply = isReply;
     }
 
     public String getId() {
@@ -42,6 +46,14 @@ public class Entry {
 
     public String getStrim() {
         return strim;
+    }
+
+    public String getLikeUrl() {
+        return likeUrl;
+    }
+
+    public String getDislikeUrl() {
+        return dislikeUrl;
     }
 
     public int getUpvotes() {

@@ -1,7 +1,6 @@
 package com.duxet.strimoid;
 
 import java.util.ArrayList;
-import java.util.Currency;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;

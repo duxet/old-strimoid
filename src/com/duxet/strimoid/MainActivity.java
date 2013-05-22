@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -68,7 +72,8 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         //TODO:
         //Zmniejszyc wysokosc tab
    
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.pref_general, false);
+        HTTPClient.setupCookieStore(getApplicationContext());
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
@@ -110,7 +115,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         
         loadStrimsList();
     }
-    
 
     protected void loadStrimsList() {
         progressBar.setVisibility(View.VISIBLE);
@@ -156,35 +160,24 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             }
         });
 
-
         //new drawStrims().execute(response);
         if (clear) {
             EndlessScrollListener scrollListener = new EndlessScrollListener();
             list.setOnScrollListener(scrollListener);
         }
     }
-    
-    public void voteUp(View v) {
-        vote(v, "lubie");
-    }
-    
-    public void voteDown(View v) {
-        vote(v, "nielubie");
-    }
-    
+
     public void vote(View v, String action) {
-        char type;
-        
-        if (currentContentType.equals("wpisy"))
-            type = 'w';
-        else
-            type = 't';
-        
-        HTTPClient.get("ajax/" + type + "/" + v.getId() + "/" + action + "/?token=" + Session.getToken(), null, new AsyncHttpResponseHandler() {
+        HTTPClient.get(v.getTag().toString(), null, new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(String response) {
-                // TODO: uaktualnianie/pobieranie tokena
-                // TODO: zmiana koloru buttona
+            public void onSuccess(JSONObject response) {
+                try {
+                    if (response.getString("status").equals("OK"))
+                        return;
+                 // TODO: zmiana koloru buttona
+                } catch (JSONException e) {
+                    return;
+                }
             }
         });
     }

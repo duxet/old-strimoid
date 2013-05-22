@@ -32,10 +32,13 @@ public class Parser {
 
             Boolean isReply = el.hasClass("reply");
 
+            String likeUrl = el.getElementsByClass("like").first().attr("href");
+            String dislikeUrl = el.getElementsByClass("like").first().attr("href");
+            
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_comment_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_comment_vote_count").text());
 
-            Comment comment = new Comment(id, author, avatar, text, time, up, down, isReply);
+            Comment comment = new Comment(id, author, avatar, text, time, likeUrl, dislikeUrl, up, down, isReply);
             comments.add(comment);
         }
 
@@ -60,11 +63,14 @@ public class Parser {
 
             if (el.getElementsByClass("content_image").first() != null)
                 imageUrl = el.getElementsByClass("content_image").first().getElementsByTag("img").first().attr("src").trim();
-
+            
+            String likeUrl = el.getElementsByClass("like").first().attr("href");
+            String dislikeUrl = el.getElementsByClass("like").first().attr("href");
+            
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_vote_count").text());
 
-            Content content = new Content(id, title, author, desc, url, imageUrl, commentsUrl, up, down);
+            Content content = new Content(id, title, author, desc, url, imageUrl, commentsUrl, likeUrl, dislikeUrl, up, down);
             contents.add(content);
         }
 
@@ -87,10 +93,13 @@ public class Parser {
 
             Boolean isReply = el.hasClass("reply");
 
+            String likeUrl = el.getElementsByClass("like").first().attr("href");
+            String dislikeUrl = el.getElementsByClass("like").first().attr("href");
+            
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("entry_vote_count").text());
 
-            Entry entry = new Entry(id, author, avatar, message, time, strim, isReply, up, down);
+            Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl, up, down, isReply);
             entries.add(entry);
         }
 

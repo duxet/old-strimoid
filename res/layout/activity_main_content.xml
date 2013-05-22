@@ -20,7 +20,7 @@
                 android:id="@+id/upvote"
                 android:layout_width="40dp"
                 android:layout_height="24dp"
-                android:onClick="voteUp"
+                android:onClick="vote"
                 android:padding="1dp"
                 android:textSize="11sp" />
 
@@ -29,7 +29,7 @@
                 android:layout_width="40dp"
                 android:layout_height="24dp"
                 android:layout_below="@id/upvote"
-                android:onClick="voteDown"
+                android:onClick="vote"
                 android:padding="1dp"
                 android:textSize="11sp" />
 
