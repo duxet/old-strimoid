@@ -8,9 +8,16 @@ package com.duxet.strimoid.models;
 public class Account {
 
     private String username, password;
+    
+    public Account(){
+    	setUser("","");
+    }
 
     public Account(String username, String password) {
-        super();
+        setUser(username, password);
+    }
+    
+    public void setUser(String username, String password){
         this.username = username;
         this.password = password;
     }
@@ -24,7 +31,7 @@ public class Account {
     }
     
     public boolean isLogged(){
-		return (this.username!=null)?true:false;
+		return (this.username!="")?true:false;
     }
     
 }

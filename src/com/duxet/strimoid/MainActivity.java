@@ -115,9 +115,11 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
     	 * potrzebne na potrzeby logowania
     	 */
     	
-        menu.add(1, 1, 0, "Zaloguj się")
-        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-        	//.setIcon(R.drawable.ic_action_accounts)
+    	if (!Session.getUser().isLogged()){
+	        menu.add(1, 1, 0, "Zaloguj się")
+	        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+	        	//.setIcon(R.drawable.ic_action_accounts)
+    	}
         
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
         searchView.setQueryHint("Szukaj…");

@@ -3,6 +3,7 @@ package com.duxet.strimoid;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.duxet.strimoid.utils.HTTPClient;
 import com.duxet.strimoid.utils.Parser;
+import com.duxet.strimoid.utils.Session;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
@@ -98,6 +99,7 @@ public class LoginActivity extends SherlockActivity {
             	        isLoggedIn = true;
 
             	if (isLoggedIn){
+            		Session.getUser().setUser(username, password);
                     Intent mainIntent = new Intent(getInstance(), MainActivity.class);
                     mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     mainIntent.putExtra("isLoggedIn", true);
