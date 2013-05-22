@@ -99,7 +99,7 @@ public class MainActivity extends SherlockActivity implements OnNavigationListen
         progressBar.bringToFront();
         
         String url;
-        if (!Session.getUser().isLogged()){
+        if (Session.getUser().isLogged()){
         	url = "ajax/utility/submenu?section_type=s&section_name=Subskrybowane";
         }else{
         	url = "ajax/utility/submenu?section_type=s&section_name=Glowny";
