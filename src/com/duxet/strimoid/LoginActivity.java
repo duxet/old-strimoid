@@ -1,12 +1,5 @@
 package com.duxet.strimoid;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.duxet.strimoid.utils.HTTPClient;
-import com.duxet.strimoid.utils.Parser;
-import com.duxet.strimoid.utils.Session;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,6 +11,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.MenuItem;
+import com.duxet.strimoid.utils.HTTPClient;
+import com.duxet.strimoid.utils.Parser;
+import com.duxet.strimoid.utils.Session;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 public class LoginActivity extends SherlockActivity {
 	Button sign_in;
@@ -118,6 +119,18 @@ public class LoginActivity extends SherlockActivity {
     } 
     
     public void attemptLogin() {
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	switch (item.getItemId()) {
+	case android.R.id.home:
+	    onBackPressed();
+	    return true;
+	default:
+	    return super.onOptionsItemSelected(item);
+	}
 
     }
 
