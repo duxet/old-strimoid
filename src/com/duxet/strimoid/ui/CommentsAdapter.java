@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class CommentsAdapter extends BaseAdapter implements OnClickListener {
@@ -49,7 +48,6 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         if(convertView==null)
             vi = inflater.inflate(R.layout.activity_content_comment, null);
         
-        RelativeLayout layout = (RelativeLayout) vi.findViewById(R.id.comment);
         TextView author = (TextView) vi.findViewById(R.id.author);
         TextView text = (TextView) vi.findViewById(R.id.text);
         TextView time = (TextView) vi.findViewById(R.id.time);
@@ -58,10 +56,10 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         ImageView reply = (ImageView) vi.findViewById(R.id.reply);
         ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
 
-        boolean thumbnailsEnabled = PreferenceManager.
-                getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true);
+        boolean avatarsEnabled = PreferenceManager.
+                getDefaultSharedPreferences(activity).getBoolean("show_avatar", true);
         
-        if (!comment.getAvatar().equals("") && thumbnailsEnabled)
+        if (!comment.getAvatar().equals("") && avatarsEnabled)
         {
             thumb_image.setVisibility(View.VISIBLE);
             aq.id(R.id.list_image).image(comment.getAvatar(), false, true);

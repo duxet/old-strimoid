@@ -5,6 +5,12 @@
         android:key="show_thumbnails"
         android:summary="Wyświetla miniaturki przy nazwie treści"
         android:title="Pokazuj miniaturki" />
+    
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="show_avatars"
+        android:summary="Wyświetla avatary przy nazwie użytkownika"
+        android:title="Pokazuj avatary" />
 
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->

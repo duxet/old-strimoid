@@ -57,10 +57,10 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
         ImageView reply = (ImageView) vi.findViewById(R.id.reply);
         ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
         
-        boolean thumbnailsEnabled = PreferenceManager.
-                getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true);
+        boolean avatarsEnabled = PreferenceManager.
+                getDefaultSharedPreferences(activity).getBoolean("show_avatars", true);
 
-        if (!entry.getAvatar().equals("") && thumbnailsEnabled) {
+        if (!entry.getAvatar().equals("") && avatarsEnabled) {
             thumb_image.setVisibility(View.VISIBLE);
             aq.id(R.id.list_image).image(entry.getAvatar(), false, true);
         } else {
