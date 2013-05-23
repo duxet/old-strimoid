@@ -33,6 +33,9 @@ public class Parser {
         Elements elements = doc.getElementsByClass("content_comment");
 
         for (Element el : elements) {
+            if (el.hasClass("hidden"))
+                continue;
+            
             String id = el.getElementsByTag("a").first().attr("id").trim();
             String author = el.getElementsByClass("user_name").first().text().trim();
             String avatar = el.getElementsByClass("content_comment_image").first().getElementsByTag("img").first().attr("src").trim();
