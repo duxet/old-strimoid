@@ -12,9 +12,9 @@ public class UIHelper {
     
     public static void updateVoteButton(Button button, Voting vote) {
         // Update color
-        if (vote.isUpvoted())
+        if (button.getId() == R.id.upvote && vote.isUpvoted())
             button.getBackground().setColorFilter(COLOR_GREEN, PorterDuff.Mode.MULTIPLY);
-        else if(vote.isDownvoted())
+        else if(button.getId() == R.id.downvote && vote.isDownvoted())
             button.getBackground().setColorFilter(COLOR_RED, PorterDuff.Mode.MULTIPLY);
         else
             button.getBackground().setColorFilter(null);
