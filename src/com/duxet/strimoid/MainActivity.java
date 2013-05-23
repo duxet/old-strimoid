@@ -22,6 +22,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 import android.graphics.PorterDuff;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -179,19 +180,98 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         }
     }
 
-    public void vote(View v) {
+    public void vote(final View v) {
+        final Voting vote;
         final Button button = (Button) v;
+        final String action;
+        String url;
         
-        HTTPClient.get(v.getTag().toString() + "&akcja=dodaj", null, new JsonHttpResponseHandler() {
+        if (!Session.getUser().isLogged()) {
+            Toast.makeText(this, "Zaloguj się aby móc głosować.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (currentContentType.equals("wpisy"))
+            vote = entries.get((Integer) v.getTag());
+        else
+            vote = contents.get((Integer) v.getTag());
+
+        if (v.getId() == R.id.upvote) {
+            url = vote.getLikeUrl();
+            
+            if (vote.isDownvoted()) {
+                HTTPClient.get(vote.getDislikeUrl() + "&akcja=usun", null, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(JSONObject response) {
+                        try {
+                            if (response.getString("status").equals("OK")) {
+                                View row = list.getChildAt((Integer) v.getTag());
+                                Button downBtn = (Button) row.findViewById(R.id.downvote);
+                                vote.setDownvoted(false);
+                                vote.setDownvotes(response.getJSONObject("content").getInt("dislikes"));
+                                UIHelper.updateVoteButton(downBtn, vote);
+                                vote(v);
+                            }
+                        } catch (JSONException e) { return; }
+                    }
+                });
+                return;
+            } else if(vote.isUpvoted()) {
+                action = "usun";
+            } else {
+                action = "dodaj";
+            }
+        } else {
+            url = vote.getDislikeUrl();
+            
+            if (vote.isUpvoted()) {
+                HTTPClient.get(vote.getLikeUrl() + "&akcja=usun", null, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(JSONObject response) {
+                        try {
+                            if (response.getString("status").equals("OK")) {
+                                View row = list.getChildAt((Integer) v.getTag());
+                                Button upBtn = (Button) row.findViewById(R.id.upvote);
+                                vote.setUpvoted(false);
+                                vote.setUpvotes(response.getJSONObject("content").getInt("likes"));
+                                UIHelper.updateVoteButton(upBtn, vote);
+                                
+                                vote(v);
+                            }
+                        } catch (JSONException e) { return; }
+                    }
+                });
+                return;
+            } else if (vote.isDownvoted()) {
+                action = "usun";
+            } else {
+                action = "dodaj";
+            }
+        }
+        
+        HTTPClient.get(url + "&akcja=" + action, null, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
                 try {
                     if (response.getString("status").equals("OK")) {
-                        UIHelper.colorVoteButton(button, true);
+                        vote.setUpvotes(response.getJSONObject("content").getInt("likes"));
+                        vote.setDownvotes(response.getJSONObject("content").getInt("dislikes"));
+                        
+                        if (action.equals("dodaj")) {
+                            if (v.getId() == R.id.upvote) 
+                                vote.setUpvoted(true);
+                            else
+                                vote.setDownvoted(true);
+                        } else {
+                            if (v.getId() == R.id.upvote) 
+                                vote.setUpvoted(false);
+                            else
+                                vote.setDownvoted(false);
+                        }
+                        
+                        UIHelper.updateVoteButton(button, vote);
                     }
-                } catch (JSONException e) {
-                    return;
-                }
+                } catch (JSONException e) { return; }
             }
         });
     }

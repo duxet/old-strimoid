@@ -78,14 +78,12 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
 
         author.setText(entry.getAuthor());
         message.setText(entry.getMessage());
+
+        up.setTag(position);
+        down.setTag(position);
         
-        up.setText("▲ " + Integer.toString(entry.getUpvotes()));
-        up.setTag(entry.getLikeUrl());
-        down.setText("▼ " + Integer.toString(entry.getDownvotes()));
-        down.setTag(entry.getDislikeUrl());
-        
-        UIHelper.colorVoteButton(up, entry.isUpvoted());
-        UIHelper.colorVoteButton(down, entry.isDownvoted());
+        UIHelper.updateVoteButton(up, entry);
+        UIHelper.updateVoteButton(down, entry);
         
         vi.setOnClickListener(this);
         vi.setTag(position);

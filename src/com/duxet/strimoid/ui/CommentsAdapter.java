@@ -78,13 +78,11 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         text.setText(comment.getText());
         time.setText(comment.getTime());
 
-        up.setText("▲ " + Integer.toString(comment.getUpvotes()));
-        up.setTag(comment.getLikeUrl());
-        down.setText("▼ " + Integer.toString(comment.getDownvotes()));
-        down.setTag(comment.getDislikeUrl());
+        up.setTag(position);
+        down.setTag(position);
 
-        UIHelper.colorVoteButton(up, comment.isUpvoted());
-        UIHelper.colorVoteButton(down, comment.isDownvoted());
+        UIHelper.updateVoteButton(up, comment);
+        UIHelper.updateVoteButton(down, comment);
         
         vi.setOnClickListener(this);
         vi.setTag(position);

@@ -39,7 +39,7 @@ public class Parser {
             boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
             
             String likeUrl = el.getElementsByClass("like").first().attr("href");
-            String dislikeUrl = el.getElementsByClass("like").first().attr("href");
+            String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
             
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_comment_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_comment_vote_count").text());
@@ -75,7 +75,7 @@ public class Parser {
             boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
             
             String likeUrl = el.getElementsByClass("like").first().attr("href");
-            String dislikeUrl = el.getElementsByClass("like").first().attr("href");
+            String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
 
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_vote_count").text());
@@ -107,7 +107,7 @@ public class Parser {
             boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
             
             String likeUrl = el.getElementsByClass("like").first().attr("href");
-            String dislikeUrl = el.getElementsByClass("like").first().attr("href");
+            String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
             
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("entry_vote_count").text());

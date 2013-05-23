@@ -73,13 +73,11 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         title.setText(content.getTitle());
         desc.setText(content.getDesc());
         
-        up.setText("▲ " + Integer.toString(content.getUpvotes()));
-        up.setTag(content.getLikeUrl());
-        down.setText("▼ " + Integer.toString(content.getDownvotes()));
-        down.setTag(content.getDislikeUrl());
+        up.setTag(position);
+        down.setTag(position);
         
-        UIHelper.colorVoteButton(up, content.isUpvoted());
-        UIHelper.colorVoteButton(down, content.isDownvoted());
+        UIHelper.updateVoteButton(up, content);
+        UIHelper.updateVoteButton(down, content);
         
         vi.setOnClickListener(this);
         vi.setTag(position);

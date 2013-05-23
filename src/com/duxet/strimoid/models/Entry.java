@@ -1,6 +1,6 @@
 package com.duxet.strimoid.models;
 
-public class Entry {
+public class Entry implements Voting {
 
     String id, author, avatar, message, time, strim;
     String likeUrl, dislikeUrl;
@@ -86,5 +86,13 @@ public class Entry {
     public void setDownvoted(boolean isDownvoted) {
         this.isDownvoted = isDownvoted;
     }
-    
+
+    public void setUpvotes(int upvotes) {
+        this.upvotes = upvotes;
+    }
+
+    public void setDownvotes(int downvotes) {
+        this.downvotes = downvotes;
+    }
+
 }
