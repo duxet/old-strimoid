@@ -9,11 +9,41 @@
 
     <style name="AppTheme" parent="Theme.Sherlock.Light">
     	<item name="actionButtonStyle">@style/MyActionButtonStyle</item>
+    	
+    	<!--  action bar & tab -->
+    	<item name="actionBarStyle">@style/Widget.AppTheme.ActionBar</item>
+    	<item name="android:actionBarStyle">@style/Widget.AppTheme.ActionBar</item>
+    	
+    	<item name="actionBarTabStyle">@style/Widget.AppTheme.TabView</item>
+    	<item name="android:actionBarTabStyle">@style/Widget.AppTheme.TabView</item>
+    	
+    	<item name="actionBarTabBarStyle">@style/Widget.AppTheme.TabBar</item>
+    	<item name="android:actionBarTabBarStyle">@style/Widget.AppTheme.TabBar</item>
 	</style>
-
+	
 	<style name="MyActionButtonStyle" parent="Widget.Sherlock.ActionButton">
     	<item name="android:minWidth">28dp</item>
     	<item name="android:padding">0dp</item>
+	</style>
+	
+	<style name="Widget.AppTheme.ActionBar" parent="Widget.Sherlock.ActionBar">
+	    <item name="android:background">@drawable/action_bar_background</item>
+	    <item name="background">@drawable/action_bar_background</item>
+	    <item name="android:height">42dip</item>
+	</style>
+	
+	<style name="Widget.AppTheme.TabBar" parent="Widget.Sherlock.Light.ActionBar.TabBar">
+   		<item name="android:height">26dip</item>
+  	</style>
+  
+	<style name="Widget.AppTheme.TabView" parent="Widget.Sherlock.ActionBar.TabView">
+	    <!-- Tab text -->
+	    <item name="android:height">26dip</item>
+	    <item name="android:textSize">15sp</item>
+	         
+	    <!--  Lines under tabs -->
+	    <item name="background">#ffffff</item>
+   		<item name="android:background">#ffffff</item>
 	</style>
 
 </resources>
