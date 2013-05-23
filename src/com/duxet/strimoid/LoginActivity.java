@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -37,34 +38,35 @@ public class LoginActivity extends SherlockActivity {
 		}
 
         setContentView(R.layout.activity_login);
-        login_status = (LinearLayout)findViewById(R.id.login_status);
-        login_form =  (ScrollView)findViewById(R.id.login_form);
-        sign_in = (Button)findViewById(R.id.sign_in_button);
+        login_status = (LinearLayout) findViewById(R.id.login_status);
+        login_form =  (ScrollView) findViewById(R.id.login_form);
+        sign_in = (Button) findViewById(R.id.sign_in_button);
         
         sign_in.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {				
-				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(login_status.getWindowToken(), 0);
 				
 				login_status.setVisibility(LinearLayout.VISIBLE);
 				login_form.setVisibility(ScrollView.GONE);
 				
-				EditText username = (EditText)findViewById(R.id.email);
-				EditText password = (EditText)findViewById(R.id.password);
+				EditText username = (EditText) findViewById(R.id.email);
+				EditText password = (EditText )findViewById(R.id.password);
+				CheckBox remember = (CheckBox) findViewById(R.id.remember);
 				
-				signIn(username.getText().toString(),password.getText().toString());
+				signIn(username.getText().toString(), password.getText().toString(), remember.isChecked());
 			}
         });
         
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
     
-    public boolean signIn(final String username, final String password){
+    public boolean signIn(final String username, final String password, final boolean remember){
         HTTPClient.get("zaloguj", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-            	signIn(username, password, Parser.getToken(response));
+            	signIn(username, password, remember, Parser.getToken(response));
             }
             
             @Override
@@ -87,12 +89,12 @@ public class LoginActivity extends SherlockActivity {
     	return this;
     }
     
-    public void signIn(final String username, final String password, final String token){		
+    public void signIn(final String username, final String password, final boolean remember, final String token){		
 		RequestParams params = new RequestParams();
 		params.put("token", token);
 		params.put("name", username);
 		params.put("password", password);
-		params.put("_external[remember]", "0");
+		params.put("_external[remember]", remember?"1":"0");
 
         HTTPClient.post("zaloguj", params, new AsyncHttpResponseHandler() {
             @Override
