@@ -69,15 +69,8 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
                 
-        //SpinnerAdapter mSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ic_modes,
-        //        android.R.layout.simple_spinner_dropdown_item);
-        //getSupportActionBar().setListNavigationCallbacks(mSpinnerAdapter, this);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        
-        // TODO:
-        // Zmniejszyc wysokosc tab
    
         PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.pref_general, false);
         HTTPClient.setupCookieStore(getApplicationContext());
@@ -148,6 +141,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     }
 
     public void loadContents(String strim, final String type, int page, boolean clear) {
+        currentStrim = strim;
+        currentContentType = type;
+        
         progressBar.setVisibility(View.VISIBLE);
         progressBar.bringToFront();
 
@@ -343,14 +339,14 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     @Override
     public void onTabSelected(Tab tab, FragmentTransaction ft) {
         int itemPosition = tab.getPosition();
-        currentContentType = TABS_VALUES.get(itemPosition);
+        String newContentType = TABS_VALUES.get(itemPosition);
 
          if (itemPosition == 4)
              list.setAdapter(entriesAdapter);
          else
              list.setAdapter(contentsAdapter);
     
-         loadContents(currentStrim, currentContentType, 1, true);
+         loadContents(currentStrim, newContentType, 1, true);
     }
 
 
