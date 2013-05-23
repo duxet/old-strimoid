@@ -38,7 +38,6 @@ public class NotificationService extends Service {
           	checkNotifications();
           }
       }, 01, 1000*60*5);
-      checkNotifications();
     return(START_NOT_STICKY);
   }
   
