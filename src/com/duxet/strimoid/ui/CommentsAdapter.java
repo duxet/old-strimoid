@@ -75,6 +75,7 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
             reply.setVisibility(View.VISIBLE);
 
         author.setText(comment.getAuthor());
+        author.setTextColor(comment.getAuthorColor());
         text.setText(comment.getText());
         time.setText(comment.getTime());
 

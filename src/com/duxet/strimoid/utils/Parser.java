@@ -8,6 +8,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 
+import android.graphics.Color;
+
 import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.models.Comment;
 
@@ -52,8 +54,10 @@ public class Parser {
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_comment_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_comment_vote_count").text());
 
+            int color = getColorUserByString(el.getElementsByClass("user_name").first().attr("class"));
+            
             Comment comment = new Comment(id, author, avatar, text, time, likeUrl, dislikeUrl,
-                    up, down, isUpvoted, isDownvoted, isReply);
+                    up, down, isUpvoted, isDownvoted, isReply, color);
             comments.add(comment);
         }
 
@@ -87,13 +91,31 @@ public class Parser {
 
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_vote_count").text());
-
+            
+            int color = getColorUserByString(el.getElementsByClass("user_name").first().attr("class"));
+            
             Content content = new Content(id, title, author, desc, url, imageUrl, commentsUrl,
-                    likeUrl, dislikeUrl, up, down, isUpvoted, isDownvoted);
+                    likeUrl, dislikeUrl, up, down, isUpvoted, isDownvoted, color);
             contents.add(content);
         }
 
         return contents;
+    }
+    
+    public static int getColorUserByString(String userStatus){
+    	   int color;
+          
+           if (userStatus.contains("new")){
+           	color = Color.parseColor("#2e9b2d");
+           }else if(userStatus.contains("admin")){
+           	color = Color.parseColor("#c4181b");
+           }else if(userStatus.contains("advanced")){
+           	color = Color.parseColor("#0075dc");
+           }else{
+           	color = Color.parseColor("#3272aa");
+           }
+           
+           return color;
     }
 
     public static ArrayList<Entry> getEntries(String response) {
@@ -119,9 +141,11 @@ public class Parser {
             
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("entry_vote_count").text());
+            
+            int color = getColorUserByString(el.getElementsByClass("entry_user").first().getElementsByTag("a").first().attr("class"));
 
             Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl,
-                    up, down, isUpvoted, isDownvoted, isReply);
+                    up, down, isUpvoted, isDownvoted, isReply, color);
             entries.add(entry);
         }
 

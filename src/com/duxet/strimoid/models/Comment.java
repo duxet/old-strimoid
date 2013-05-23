@@ -4,13 +4,13 @@ public class Comment implements Voting {
     
     String id, author, avatar, text, time;
     String likeUrl, dislikeUrl;
-    int upvotes, downvotes;
+    int upvotes, downvotes, color;
     boolean isUpvoted, isDownvoted, isReply;
 
     public Comment(String id, String author, String avatar, String text,
             String time, String likeUrl, String dislikeUrl, int upvotes,
             int downvotes, boolean isUpvoted, boolean isDownvoted,
-            boolean isReply) {
+            boolean isReply, int color) {
         super();
         this.id = id;
         this.author = author;
@@ -24,6 +24,7 @@ public class Comment implements Voting {
         this.isUpvoted = isUpvoted;
         this.isDownvoted = isDownvoted;
         this.isReply = isReply;
+        this.color = color;
     }
     
     public String getId() {
@@ -32,6 +33,10 @@ public class Comment implements Voting {
     
     public String getAuthor() {
         return author;
+    }
+    
+    public int getAuthorColor() {
+        return color;
     }
     
     public String getAvatar() {

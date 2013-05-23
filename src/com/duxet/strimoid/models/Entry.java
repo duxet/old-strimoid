@@ -1,16 +1,18 @@
 package com.duxet.strimoid.models;
 
+import android.graphics.Color;
+
 public class Entry implements Voting {
 
     String id, author, avatar, message, time, strim;
     String likeUrl, dislikeUrl;
-    int upvotes, downvotes;
+    int upvotes, downvotes, color;
     boolean isUpvoted, isDownvoted, isReply;
     
     public Entry(String id, String author, String avatar, String message,
             String time, String strim, String likeUrl, String dislikeUrl,
             int upvotes, int downvotes, boolean isUpvoted, boolean isDownvoted,
-            boolean isReply) {
+            boolean isReply, int color) {
         super();
         this.id = id;
         this.author = author;
@@ -25,6 +27,7 @@ public class Entry implements Voting {
         this.isUpvoted = isUpvoted;
         this.isDownvoted = isDownvoted;
         this.isReply = isReply;
+        this.color = color;
     }
 
     public String getId() {
@@ -33,6 +36,10 @@ public class Entry implements Voting {
 
     public String getAuthor() {
         return author;
+    }
+    
+    public int getAuthorColor() {
+        return color;
     }
 
     public String getAvatar() {

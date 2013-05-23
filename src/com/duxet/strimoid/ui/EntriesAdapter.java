@@ -49,7 +49,7 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
 
         if(convertView==null)
             vi = inflater.inflate(R.layout.activity_main_entry, null);
-
+        
         TextView author = (TextView) vi.findViewById(R.id.author);
         TextView message = (TextView) vi.findViewById(R.id.message);
         TextView time = (TextView) vi.findViewById(R.id.time);
@@ -77,6 +77,7 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
         }
 
         author.setText(entry.getAuthor());
+        author.setTextColor(entry.getAuthorColor());
         message.setText(entry.getMessage());
 
         up.setTag(position);
