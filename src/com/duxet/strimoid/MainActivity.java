@@ -142,9 +142,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             }
         });
 
-        strims.add(new Strim("Glowny", "Główny", ""));
+        strims.add(new Strim("s/Glowny", "Główny", ""));
         strims.add(new Strim("", "Subskrybowane", ""));
-        strims.add(new Strim("Moderowane", "Moderowane", ""));
+        strims.add(new Strim("s/Moderowane", "Moderowane", ""));
     }
 
     public void loadContents(String strim, final String type, int page, boolean clear) {
