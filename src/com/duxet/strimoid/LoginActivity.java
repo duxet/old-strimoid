@@ -28,6 +28,13 @@ public class LoginActivity extends SherlockActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+		if (Session.getUser().isLogged()){
+	        Intent mainIntent = new Intent(getInstance(), MainActivity.class);
+	        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        startActivity(mainIntent);
+	        return;
+		}
 
         setContentView(R.layout.activity_login);
         login_status = (LinearLayout)findViewById(R.id.login_status);

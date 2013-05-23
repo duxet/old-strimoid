@@ -165,6 +165,10 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                 else
                     new drawContents().execute(response);
                 
+                if (Parser.checkIsLogged(response)){
+                	//TODO: Wczytywanie z sharedPref, ukrycie buttona zaloguj sie
+                	Session.getUser().setUser("$", "$");
+                }
             }
         });
 
