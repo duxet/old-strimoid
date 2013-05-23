@@ -3,6 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/strimsList"
     android:layout_width="match_parent"
-    android:background="#e5eff7"
+    android:background="#295d8b"
     android:layout_height="match_parent" >
 </ListView>
