@@ -21,6 +21,11 @@ public class Parser {
         return doc.getElementsByAttributeValue("name", "token").first().attr("value").toString();
     }
     
+    public static String getFirstValue(String response, String v){
+        Document doc = Jsoup.parse(response);
+        return doc.getElementsByAttributeValue("name", v).first().attr("value").toString();
+    }
+    
     public static ArrayList<Comment> getComments(String response) {
         ArrayList<Comment> comments = new ArrayList<Comment>();
 
