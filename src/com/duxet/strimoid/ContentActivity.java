@@ -2,23 +2,35 @@ package com.duxet.strimoid;
 
 import java.util.ArrayList;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.duxet.strimoid.models.Comment;
 import com.duxet.strimoid.ui.CommentsAdapter;
 import com.duxet.strimoid.utils.HTTPClient;
 import com.duxet.strimoid.utils.Parser;
+import com.duxet.strimoid.utils.Session;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.text.Editable;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class ContentActivity extends SherlockActivity {
@@ -28,7 +40,7 @@ public class ContentActivity extends SherlockActivity {
     ProgressBar progressBar;
 
     ArrayList<Comment> comments = new ArrayList<Comment>();
-    String url, commentsUrl, title;
+    String url, commentsUrl, title, addCommentsToken, externalContent;
     CommentsAdapter commentsAdapter;
     
     @Override
@@ -78,6 +90,10 @@ public class ContentActivity extends SherlockActivity {
             @Override
             public void onSuccess(String response) {
                 new drawComments().execute(response);
+                
+                /* Getting commentsAddNew token */
+                addCommentsToken = Parser.getToken(response);
+                externalContent = Parser.getFirstValue(response, "_external[content]");
             }
         });
     }
@@ -92,6 +108,34 @@ public class ContentActivity extends SherlockActivity {
         return true;
     }
 
+    public void addNewComment(String comment){
+    	RequestParams params = new RequestParams();
+		params.put("token", addCommentsToken);
+		params.put("_external[content]", externalContent);
+		params.put("_external[parent]", "");
+		params.put("text", comment + " (Dodano przez Strimoid)");
+
+        HTTPClient.post("ajax/komentarze/dodaj", params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(String response) {
+            	progressBar.setVisibility(View.GONE);
+            	//TODO: Pokazanie nowego komentarza
+            }
+            
+            @Override
+            public void onFailure(Throwable arg0) {
+            	errorLogin();
+            }
+        });
+    }
+    
+    public void errorLogin(){
+    	progressBar.setVisibility(LinearLayout.GONE);
+    	
+		Toast toast = Toast.makeText(getApplicationContext(), "Wystąpił błąd. Serwer zajęty.", Toast.LENGTH_SHORT);
+		toast.show();
+    }
+    
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
 
         int itemId = item.getItemId();
@@ -102,6 +146,25 @@ public class ContentActivity extends SherlockActivity {
         case R.id.action_comments:
             showComments();
             break;
+	    case R.id.action_new_comment:
+	    	final EditText input = new EditText(this);
+	    	new AlertDialog.Builder(ContentActivity.this)
+	        .setTitle("Dodaj komentarz")
+	        .setMessage("Wpisz treść komentarza")
+	        .setView(input)
+	        .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int whichButton) {
+	                Editable value = input.getText(); 
+	                progressBar.setVisibility(View.VISIBLE);
+	                addNewComment(value.toString());
+	            }
+	        }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+	            public void onClick(DialogInterface dialog, int whichButton) {
+	            	//Zamknięcie okienka
+	            }
+	        }).show();
+	    	
+	    	break;
         }
 
         return true;
