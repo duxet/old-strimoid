@@ -75,6 +75,10 @@ public class Parser {
             String title = el.getElementsByClass("content_title").first().text().trim();
             String author = el.getElementsByClass("user_name").first().getElementsByTag("span").first().text().trim();
             String desc = el.getElementsByClass("content_info").text().trim();
+            
+            String time = el.getElementsByClass("content_info").first().getElementsByClass("color_gray").first().getElementsByAttribute("title").first().text();
+            String strim = el.getElementsByClass("content_info").first().getElementsByClass("color_gray").first().getElementsByTag("a").last().text();
+            
             String url = el.getElementsByClass("content_title").first().attr("href").trim();
             String commentsUrl = el.getElementsByClass("content_info_actions").first().getElementsByTag("a").first().attr("href").trim();
 
@@ -94,7 +98,7 @@ public class Parser {
             
             int color = getColorUserByString(el.getElementsByClass("user_name").first().attr("class"));
             
-            Content content = new Content(id, title, author, desc, url, imageUrl, commentsUrl,
+            Content content = new Content(id, title, author, desc, time, strim, url, imageUrl, commentsUrl,
                     likeUrl, dislikeUrl, up, down, isUpvoted, isDownvoted, color);
             contents.add(content);
         }

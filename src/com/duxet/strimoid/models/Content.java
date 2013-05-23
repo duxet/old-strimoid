@@ -2,12 +2,12 @@ package com.duxet.strimoid.models;
 
 public class Content implements Voting {
 
-    String id, title, author, desc, url, imageUrl, commentsUrl;
+    String id, title, author, desc, url, imageUrl, commentsUrl, time, strim;
     String likeUrl, dislikeUrl;
     int upvotes, downvotes, color;
     boolean isUpvoted, isDownvoted;
     
-    public Content(String id, String title, String author, String desc,
+    public Content(String id, String title, String author, String desc, String time, String strim, 
             String url, String imageUrl, String commentsUrl, String likeUrl,
             String dislikeUrl, int upvotes, int downvotes, boolean isUpvoted,
             boolean isDownvoted, int color) {
@@ -26,6 +26,8 @@ public class Content implements Voting {
         this.isUpvoted = isUpvoted;
         this.isDownvoted = isDownvoted;
         this.color = color;
+        this.time = time;
+        this.strim = strim;
     }
 
     public String getId() {
@@ -46,6 +48,14 @@ public class Content implements Voting {
 
     public String getDesc() {
         return desc;
+    }
+    
+    public String getStrim() {
+    	return strim;
+    }
+    
+    public String getTime() {
+    	return time;
     }
 
     public String getUrl() {

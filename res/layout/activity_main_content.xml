@@ -55,12 +55,13 @@
  
     <TextView
         android:id="@+id/desc"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
-        android:textColor="#343434"
-        android:textSize="11sp"
         android:layout_marginTop="1dip"
-        android:layout_toRightOf="@+id/thumbnail"/>
- 
+        android:layout_toRightOf="@+id/thumbnail"
+        android:textColor="#343434"
+        android:textSize="11sp" />
+
+
 </RelativeLayout>

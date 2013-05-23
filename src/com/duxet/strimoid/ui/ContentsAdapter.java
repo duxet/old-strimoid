@@ -12,6 +12,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -71,7 +75,18 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         }
 
         title.setText(content.getTitle());
-        desc.setText(content.getDesc());
+
+        {
+        	   final SpannableStringBuilder sb = new SpannableStringBuilder("Dodane przez "+content.getAuthor()+" "+content.getTime()+" do "+content.getStrim());
+        	   final ForegroundColorSpan fcs = new ForegroundColorSpan(content.getAuthorColor()); 
+
+        	   final StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD); 
+
+        	   sb.setSpan(fcs, 13, (13+content.getAuthor().length()), Spannable.SPAN_INCLUSIVE_INCLUSIVE); 
+        	   sb.setSpan(bss, 13, (13+content.getAuthor().length()), Spannable.SPAN_INCLUSIVE_INCLUSIVE); 
+
+        	   desc.setText(sb);
+        }
         
         up.setTag(position);
         down.setTag(position);
