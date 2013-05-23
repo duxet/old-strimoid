@@ -94,12 +94,7 @@ public class LoginActivity extends SherlockActivity {
             	login_form.setVisibility(ScrollView.VISIBLE);
             	
             	// TODO: Moze jakas lepsza metoda sprawdzania wyniku logowania?
-            	boolean isLoggedIn = false;
-            	
-            	if (response.contains("page_template.logged_in = true"))
-            	        isLoggedIn = true;
-
-            	if (isLoggedIn){
+            	if (Parser.checkIsLogged(response)){
             	    // TODO: Mozna by uzyc account managera, ew. zapisac haslo w SharedPref
             		Session.getUser().setUser(username, password);
                     Intent mainIntent = new Intent(getInstance(), MainActivity.class);

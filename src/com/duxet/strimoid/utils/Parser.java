@@ -12,6 +12,10 @@ import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.models.Comment;
 
 public class Parser {
+	public static boolean checkIsLogged(String response){
+		return response.contains("page_template.logged_in = true");
+	}
+	
     public static String getToken(String response){
         Document doc = Jsoup.parse(response);
         return doc.getElementsByAttributeValue("name", "token").first().attr("value").toString();
