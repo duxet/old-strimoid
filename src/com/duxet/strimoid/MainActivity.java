@@ -2,15 +2,27 @@ package com.duxet.strimoid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
@@ -23,6 +35,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 
 import com.actionbarsherlock.app.ActionBar;
@@ -112,11 +126,16 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
         	getSupportActionBar().addTab(tab);
         }
-
+        
+        Intent i=new Intent(this, NotificationService.class);        
+        startService(i);
+        
+       
         loadContents(currentStrim, currentContentType, 1, true);
         
         loadStrimsList();
     }
+    
 
     protected void loadStrimsList() {
         progressBar.setVisibility(View.VISIBLE);

@@ -2,6 +2,7 @@ package com.duxet.strimoid.utils;
 
 import java.util.ArrayList;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -154,6 +155,20 @@ public class Parser {
         }
 
         return entries;
+    }
+    
+    public static NotificationStatus getNotifications(String response) {
+
+		try {
+	        JSONObject mainObject = new JSONObject(response);
+	        JSONObject uniObject = mainObject.getJSONObject("content");
+	        String m_c = uniObject.getJSONObject("messages_count").toString();
+	        String n_c = uniObject.getJSONObject("notifications_count").toString();
+			return new NotificationStatus(Integer.parseInt(m_c),Integer.parseInt(n_c));
+		} catch (JSONException e) {
+			return null;
+		}
+        
     }
     
     public static ArrayList<Strim> getStrims(String response) {
