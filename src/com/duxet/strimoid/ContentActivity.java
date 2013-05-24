@@ -208,7 +208,7 @@ public class ContentActivity extends SherlockActivity {
 		params.put("token", addCommentsToken);
 		params.put("_external[content]", externalContent);
 		params.put("_external[parent]", "");
-		params.put("text", comment + " (Dodano przez Strimoid)");
+		params.put("text", comment + " [(Strimoid)](http://strims.pl/s/strimoid)");
 
         HTTPClient.post("ajax/komentarze/dodaj", params, new AsyncHttpResponseHandler() {
             @Override

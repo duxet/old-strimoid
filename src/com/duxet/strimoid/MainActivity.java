@@ -25,15 +25,20 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnKeyListener;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -312,25 +317,45 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     	
     	if (!Session.getUser().isLogged()){
 	        menu.add(1, 1, 0, "Zaloguj się")
-	        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-	        	//.setIcon(R.drawable.ic_action_accounts)
+	            .setIcon(R.drawable.action_accounts)
+	        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+    	}else{
+        
+    	EditText textView = new EditText(getSupportActionBar().getThemedContext());
+        textView.setHint("Dodaj wpis...");
+        textView.setOnKeyListener(new OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&(keyCode == KeyEvent.KEYCODE_ENTER)) {
+                   //TODO: Dodawanie wpisów
+                   return true;
+                }
+                return false;
+            }
+        });
+        
+	    menu.add("Dodaj wpis")
+		    .setIcon(R.drawable.action_add)
+		    .setActionView(textView)
+		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+	    
     	}
         
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
         searchView.setQueryHint("Szukaj…");
         searchView.setOnQueryTextListener(this);
         searchView.setOnSuggestionListener(this);
-        
+    	
         menu.add("Szukaj")
-        	.setIcon(R.drawable.ic_search_inverse)
+        	.setIcon(R.drawable.search_inverse)
         	.setActionView(searchView)
-        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-        
+        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+             
 	    menu.add(2, R.id.action_settings, 0, "Ustawienia")
-		    .setIcon(R.drawable.ic_action_settings)
+		    .setIcon(R.drawable.action_settings)
 		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 	
 	    menu.add(3, 2, 0, "Odśwież")
+	    	.setIcon(R.drawable.action_refresh)
 	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 
         return true;

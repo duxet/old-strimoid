@@ -85,12 +85,12 @@ public class NotificationService extends Service {
  	 	   Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.logo_small);
 	  	   NotificationCompat.Builder mBuilder =
 	               new NotificationCompat.Builder(this)
+	  	   	       .setLargeIcon(largeIcon)
 	               .setSmallIcon(R.drawable.strims_logo)
-	               .setLargeIcon(largeIcon)
 	               .setContentTitle(notificationTitle)
 	               .setContentText(notificationMessage)
-	  	 		 .setSound(soundUri)
-	  	 		 .setVibrate(new long[]{100, 200, 100, 500});
+	  	 	       .setSound(soundUri)
+	  	 		   .setVibrate(new long[]{100, 200, 100, 500});
 	  	 
 	       Intent resultIntent = new Intent(this, MainActivity.class);
 	       TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
