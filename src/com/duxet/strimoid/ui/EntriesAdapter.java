@@ -73,7 +73,7 @@ public class EntriesAdapter extends BaseAdapter {
                     loadMore.setText("Pokaż więcej odpowiedzi.");
                     loadMore.setGravity(Gravity.CENTER);
                     loadMore.setPadding(10, 10, 10, 10);
-                    loadMore.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    loadMore.setBackgroundColor(Color.parseColor("#ffffff"));
                     vi = loadMore;
                     break;
             }
@@ -104,9 +104,11 @@ public class EntriesAdapter extends BaseAdapter {
         }
 
         if (!entry.isReply()) {
+            vi.setBackgroundColor(Color.parseColor("#f5f5f5"));
             reply.setVisibility(View.GONE);
             time.setText(entry.getTime() + " w " + entry.getStrim());
         } else {
+            vi.setBackgroundColor(Color.parseColor("#e9e9e9"));
             reply.setVisibility(View.VISIBLE);
             time.setText(entry.getTime());
         }

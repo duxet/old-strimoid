@@ -17,7 +17,7 @@
             android:layout_width="10dp"
             android:layout_height="fill_parent"
             android:paddingRight="5dp"
-            android:src="#CECECE" />
+            android:src="#3272aa" />
 
         <RelativeLayout
             android:layout_width="wrap_content"
