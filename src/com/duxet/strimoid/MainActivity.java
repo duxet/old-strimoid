@@ -174,9 +174,11 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         progressBar.setVisibility(View.VISIBLE);
         progressBar.bringToFront();
 
-        if (clear)
+        if (clear) {
             contents.clear();
-        
+            entries.clear();
+        }
+
         String url = "";
         
         if(strim.length() > 0)
@@ -199,7 +201,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             }
         });
 
-        //new drawStrims().execute(response);
         if (clear) {
             EndlessScrollListener scrollListener = new EndlessScrollListener();
             list.setOnScrollListener(scrollListener);
