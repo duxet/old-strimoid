@@ -5,14 +5,14 @@ import android.graphics.Color;
 public class Entry implements Voting {
 
     String id, author, avatar, message, time, strim;
-    String likeUrl, dislikeUrl;
+    String likeUrl, dislikeUrl, moreUrl;
     int upvotes, downvotes, color;
     boolean isUpvoted, isDownvoted, isReply;
-    
+
     public Entry(String id, String author, String avatar, String message,
             String time, String strim, String likeUrl, String dislikeUrl,
-            int upvotes, int downvotes, boolean isUpvoted, boolean isDownvoted,
-            boolean isReply, int color) {
+            String moreUrl, int upvotes, int downvotes, int color,
+            boolean isUpvoted, boolean isDownvoted, boolean isReply) {
         super();
         this.id = id;
         this.author = author;
@@ -22,12 +22,13 @@ public class Entry implements Voting {
         this.strim = strim;
         this.likeUrl = likeUrl;
         this.dislikeUrl = dislikeUrl;
+        this.moreUrl = moreUrl;
         this.upvotes = upvotes;
         this.downvotes = downvotes;
+        this.color = color;
         this.isUpvoted = isUpvoted;
         this.isDownvoted = isDownvoted;
         this.isReply = isReply;
-        this.color = color;
     }
 
     public String getId() {
@@ -100,6 +101,14 @@ public class Entry implements Voting {
 
     public void setDownvotes(int downvotes) {
         this.downvotes = downvotes;
+    }
+    
+    public boolean isLoadMore() {
+        return !moreUrl.equals("");
+    }
+
+    public String getMoreUrl() {
+        return moreUrl;
     }
 
 }

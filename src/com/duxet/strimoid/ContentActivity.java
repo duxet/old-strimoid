@@ -214,7 +214,9 @@ public class ContentActivity extends SherlockActivity {
             @Override
             public void onSuccess(String response) {
             	progressBar.setVisibility(View.GONE);
-            	//TODO: Pokazanie nowego komentarza
+            	// TODO: Pokazanie nowego komentarza
+            	// poki co mozna przeladowac komentarze
+            	showComments();
             }
             
             @Override
@@ -255,7 +257,7 @@ public class ContentActivity extends SherlockActivity {
 	            }
 	        }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
 	            public void onClick(DialogInterface dialog, int whichButton) {
-	            	//Zamknięcie okienka
+	                dialog.cancel();
 	            }
 	        }).show();
 	    	

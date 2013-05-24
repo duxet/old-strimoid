@@ -25,6 +25,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
@@ -120,6 +121,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         entriesAdapter = new EntriesAdapter(this, entries);
 
         list.setAdapter(contentsAdapter);
+        list.setOnItemClickListener(onItemClicked);
         listStrims.setAdapter(strimsAdapter);
         listStrims.setOnItemClickListener(onStrimChoosed);
         
@@ -202,6 +204,17 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             EndlessScrollListener scrollListener = new EndlessScrollListener();
             list.setOnScrollListener(scrollListener);
         }
+    }
+    
+    public void loadMoreEntries(String url, final int pos) {
+        HTTPClient.get(url, null, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    new drawMoreEntries().execute(response.getString("content"), Integer.toString(pos));
+                } catch (JSONException e) { }
+            }
+        });
     }
 
     public void vote(final View v) {
@@ -299,6 +312,17 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             }
         });
     }
+    
+    OnItemClickListener onItemClicked = new OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
+            if (currentContentType.equals("wpisy") && entries.get(pos).isLoadMore()) {
+                TextView text = (TextView) v;
+                text.setText("Ładowanie...");
+                loadMoreEntries(entries.get(pos).getMoreUrl(), pos);
+            }
+        }
+    };
     
     OnItemClickListener onStrimChoosed = new OnItemClickListener() {
         @Override
@@ -425,6 +449,26 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         protected void onPostExecute(Void arg) {
             entries.addAll(newEntries);
             progressBar.setVisibility(View.GONE);
+            entriesAdapter.notifyDataSetChanged();
+        }
+    }
+    
+    private class drawMoreEntries extends AsyncTask<String, Void, Void>{
+        ArrayList<Entry> newEntries;  
+        int position;
+
+        protected Void doInBackground(String... params) {
+            newEntries = Parser.getMoreEntries(params[0]);
+            position = Integer.parseInt(params[1]);
+            return null;
+        }
+
+        protected void onPostExecute(Void arg) {  
+            ArrayList<Entry> oldEntries = new ArrayList<Entry>(entries);
+            entries.clear();
+            entries.addAll(oldEntries.subList(0, position));
+            entries.addAll(newEntries.subList(3, newEntries.size()));
+            entries.addAll(oldEntries.subList(position + 1, oldEntries.size()));
             entriesAdapter.notifyDataSetChanged();
         }
     }

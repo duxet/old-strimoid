@@ -7,9 +7,12 @@ import com.duxet.strimoid.R;
 import com.duxet.strimoid.models.Entry;
 import com.duxet.strimoid.utils.UIHelper;
 
+import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,7 +22,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class EntriesAdapter extends BaseAdapter implements OnClickListener {
+public class EntriesAdapter extends BaseAdapter {
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_LOAD_MORE = 1;
+    private static final int TYPE_MAX_COUNT = TYPE_LOAD_MORE + 1;
+    
     private Activity activity;
     private ArrayList<Entry> data;
     private static LayoutInflater inflater = null;
@@ -41,15 +48,43 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
     public long getItemId(int position) {
         return position;
     }
+    
+    public int getItemViewType(int position) {
+        return data.get(position).isLoadMore() ? TYPE_LOAD_MORE : TYPE_ITEM;
+    }
+
+    public int getViewTypeCount() {
+        return TYPE_MAX_COUNT;
+    }
 
     public View getView(int position, View convertView, ViewGroup parent) {
         View vi = convertView;
         AQuery aq = new AQuery(vi);
         Entry entry = data.get(position);
+        int type = getItemViewType(position);
 
-        if(convertView==null)
-            vi = inflater.inflate(R.layout.activity_main_entry, null);
+        if (convertView == null) {
+            switch (type) {
+                case TYPE_ITEM:
+                    vi = inflater.inflate(R.layout.activity_main_entry, null);
+                    break;
+                case TYPE_LOAD_MORE:
+                    TextView loadMore = new TextView(activity);
+                    loadMore.setText("Pokaż więcej odpowiedzi.");
+                    loadMore.setGravity(Gravity.CENTER);
+                    loadMore.setPadding(10, 10, 10, 10);
+                    loadMore.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    vi = loadMore;
+                    break;
+            }
+        }
         
+        if (type == TYPE_LOAD_MORE) {
+            TextView loadMore = (TextView) vi;
+            loadMore.setText("Pokaż więcej odpowiedzi.");
+            return vi;
+        }
+
         TextView author = (TextView) vi.findViewById(R.id.author);
         TextView message = (TextView) vi.findViewById(R.id.message);
         TextView time = (TextView) vi.findViewById(R.id.time);
@@ -86,13 +121,9 @@ public class EntriesAdapter extends BaseAdapter implements OnClickListener {
         UIHelper.updateVoteButton(up, entry);
         UIHelper.updateVoteButton(down, entry);
         
-        vi.setOnClickListener(this);
         vi.setTag(position);
         
         return vi;
     }
-
-    @Override
-    public void onClick(View view) {
-    }
+    
 }

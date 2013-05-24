@@ -127,6 +127,57 @@ public class Parser {
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
         Document doc = Jsoup.parse(response);
+        Elements liElements = doc.getElementsByClass("entries").first().getElementsByTag("li");
+        
+        for (Element li : liElements) {
+            if(!li.parent().hasClass("entries"))
+                continue;
+            
+            String lastId = "";
+            
+            for (Element el : li.getElementsByClass("entry")) {
+                String id = el.getElementsByTag("a").first().attr("id").trim();
+                String author = el.getElementsByClass("entry_user").first().text().trim();
+                String avatar = el.getElementsByClass("entry_image").first().getElementsByTag("img").first().attr("src").trim();
+                String message = el.getElementsByClass("entry_text").first().text().trim();
+                String time = el.getElementsByClass("entry_info").first().getElementsByAttribute("title").first().text().trim();
+                String strim = el.getElementsByClass("entry_info").first().getElementsByTag("a").first().text().trim();
+
+                boolean isReply = el.hasClass("reply");
+                boolean isUpvoted = el.getElementsByClass("like").first().hasClass("selected");
+                boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
+                
+                String likeUrl = el.getElementsByClass("like").first().attr("href");
+                String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
+                String moreUrl = "";
+                
+                int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
+                int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("entry_vote_count").text());
+                
+                int color = getColorUserByString(el.getElementsByClass("entry_user").first().getElementsByTag("a").first().attr("class"));
+                
+                if (!isReply)
+                    lastId = id;
+                
+                Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl, moreUrl,
+                        up, down, color, isUpvoted, isDownvoted, isReply);
+                entries.add(entry);
+            }
+
+            for (Element el : li.getElementsByClass("entries_more")) {
+                String moreUrl = "ajax/w/" + lastId + "/odpowiedzi";
+                Entry entry = new Entry("", "", "", "", "", "", "", "", moreUrl, 0, 0, 0, false, false, false);
+                entries.add(entry);
+            }
+        }
+
+        return entries;
+    }
+    
+    public static ArrayList<Entry> getMoreEntries(String response) {
+        ArrayList<Entry> entries = new ArrayList<Entry>();
+
+        Document doc = Jsoup.parse(response);
         Elements elements = doc.getElementsByClass("entry");
 
         for (Element el : elements) {
@@ -143,16 +194,17 @@ public class Parser {
             
             String likeUrl = el.getElementsByClass("like").first().attr("href");
             String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
+            String moreUrl = "";
             
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("entry_vote_count").text());
             
             int color = getColorUserByString(el.getElementsByClass("entry_user").first().getElementsByTag("a").first().attr("class"));
 
-            Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl,
-                    up, down, isUpvoted, isDownvoted, isReply, color);
+            Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl, moreUrl,
+                    up, down, color, isUpvoted, isDownvoted, isReply);
             entries.add(entry);
-        }
+        }    
 
         return entries;
     }
