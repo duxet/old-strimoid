@@ -28,6 +28,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.Editable;
 import android.view.View;
+import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -46,7 +47,7 @@ public class ContentActivity extends SherlockActivity {
     ProgressBar progressBar;
 
     ArrayList<Comment> comments = new ArrayList<Comment>();
-    String url, commentsUrl, title, addCommentsToken, externalContent;
+    String url, commentsUrl, title, externalContent;
     CommentsAdapter commentsAdapter;
     
     @Override
@@ -98,7 +99,7 @@ public class ContentActivity extends SherlockActivity {
                 new drawComments().execute(response);
                 
                 /* Getting commentsAddNew token */
-                addCommentsToken = Parser.getToken(response);
+                Session.setToken(Parser.getToken(response));
                 externalContent = Parser.getFirstValue(response, "_external[content]");
             }
         });
@@ -205,7 +206,7 @@ public class ContentActivity extends SherlockActivity {
 
     public void addNewComment(String comment){
     	RequestParams params = new RequestParams();
-		params.put("token", addCommentsToken);
+		params.put("token", Session.getToken());
 		params.put("_external[content]", externalContent);
 		params.put("_external[parent]", "");
 		params.put("text", comment + " [(Strimoid)](http://strims.pl/s/strimoid)");

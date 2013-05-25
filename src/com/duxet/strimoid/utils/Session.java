@@ -13,4 +13,9 @@ public class Session {
 	public static String getToken() {
 	    return token;
 	}
+
+    public static void setToken(String token) {
+        Session.token = token;
+    }
+
 }

@@ -1,6 +1,8 @@
 package com.duxet.strimoid.utils;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,8 +22,12 @@ public class Parser {
 	}
 	
     public static String getToken(String response){
-        Document doc = Jsoup.parse(response);
-        return doc.getElementsByAttributeValue("name", "token").first().attr("value").toString();
+        /*Document doc = Jsoup.parse(response);
+        return doc.getElementsByAttributeValue("name", "token").first().attr("value").toString();*/
+        
+        Pattern p = Pattern.compile("page_template\\.token = '([a-z0-9]+)';");
+        Matcher m = p.matcher(response);
+        return m.group(1);
     }
     
     public static String getFirstValue(String response, String v){
