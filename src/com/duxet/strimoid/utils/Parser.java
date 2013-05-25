@@ -142,6 +142,9 @@ public class Parser {
             String lastId = "";
             
             for (Element el : li.getElementsByClass("entry")) {
+                if (el.hasClass("hidden"))
+                    continue;
+                
                 String id = el.getElementsByTag("a").first().attr("id").trim();
                 String author = el.getElementsByClass("entry_user").first().text().trim();
                 String avatar = el.getElementsByClass("entry_image").first().getElementsByTag("img").first().attr("src").trim();
@@ -187,6 +190,9 @@ public class Parser {
         Elements elements = doc.getElementsByClass("entry");
 
         for (Element el : elements) {
+            if (el.hasClass("hidden"))
+                continue;
+            
             String id = el.getElementsByTag("a").first().attr("id").trim();
             String author = el.getElementsByClass("entry_user").first().text().trim();
             String avatar = el.getElementsByClass("entry_image").first().getElementsByTag("img").first().attr("src").trim();
