@@ -226,9 +226,7 @@ public class ContentActivity extends SherlockActivity {
     
     public void errorLogin(){
     	progressBar.setVisibility(LinearLayout.GONE);
-    	
-		Toast toast = Toast.makeText(getApplicationContext(), "Wystąpił błąd. Serwer zajęty.", Toast.LENGTH_SHORT);
-		toast.show();
+    	Toast.makeText(getApplicationContext(), "Wystąpił błąd. Serwer zajęty.", Toast.LENGTH_SHORT).show();
     }
     
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
@@ -244,21 +242,20 @@ public class ContentActivity extends SherlockActivity {
 	    case R.id.action_new_comment:
 	    	final EditText input = new EditText(this);
 	    	new AlertDialog.Builder(ContentActivity.this)
-	        .setTitle("Dodaj komentarz")
-	        .setMessage("Wpisz treść komentarza")
-	        .setView(input)
-	        .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog, int whichButton) {
-	                Editable value = input.getText(); 
-	                progressBar.setVisibility(View.VISIBLE);
-	                addNewComment(value.toString());
-	            }
-	        }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
-	            public void onClick(DialogInterface dialog, int whichButton) {
-	                dialog.cancel();
-	            }
-	        }).show();
-	    	
+	            .setTitle("Dodaj komentarz")
+	            .setMessage("Wpisz treść komentarza")
+	            .setView(input)
+	            .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int whichButton) {
+	                    Editable value = input.getText(); 
+	                    progressBar.setVisibility(View.VISIBLE);
+	                    addNewComment(value.toString());
+	                }
+	            }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+	                public void onClick(DialogInterface dialog, int whichButton) {
+	                    dialog.cancel();
+	                }
+	            }).show();
 	    	break;
         }
 
@@ -269,8 +266,7 @@ public class ContentActivity extends SherlockActivity {
         ArrayList<Comment> newComments;
 
         protected Void doInBackground(String... params) {
-            Parser parser = new Parser(params[0]);
-            newComments = parser.getComments();
+            newComments = new Parser(params[0]).getComments();
             
             return null;
         }

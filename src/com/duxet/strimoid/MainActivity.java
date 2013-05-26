@@ -118,8 +118,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         
         Intent i=new Intent(this, NotificationService.class);        
         startService(i);
-        
-       
+
         loadContents(currentStrim, currentContentType, 1, true);
         
         loadStrimsList();
@@ -131,9 +130,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         progressBar.bringToFront();
         
         String url;
-        if (Session.getUser().isLogged()){
+        if (Session.getUser().isLogged()) {
         	url = "ajax/utility/submenu?section_type=s&section_name=Subskrybowane";
-        }else{
+        } else {
         	url = "ajax/utility/submenu?section_type=s&section_name=Glowny";
         }
         
@@ -161,11 +160,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             entries.clear();
         }
 
-        String url = "";
-        
-        if(strim.length() > 0)
-            url = strim + "/";
-        
+        String url = strim.length() > 0 ? strim + "/" : "";
         url = url + type + "?strona=" + page;
 
         HTTPClient.get(url, null, new AsyncHttpResponseHandler() {
@@ -178,7 +173,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                 
                 Parser parser = new Parser(response);
                 
-                if (parser.checkIsLogged()){
+                if (parser.checkIsLogged() && Session.getUser().getUsername().isEmpty()){
                     menu.clear();
                     onCreateOptionsMenu(menu);
                 	Session.getUser().setUser(parser.getUsername(), "");
@@ -206,20 +201,16 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     public void vote(final View v) {
         final int firstPos = list.getFirstVisiblePosition() - list.getHeaderViewsCount();
         final int pos = list.getPositionForView(v);
-        final Voting vote;
         final Button button = (Button) v;
         final String action;
-        String url;
+        String url ;
 
         if (!Session.getUser().isLogged()) {
             Toast.makeText(this, "Zaloguj się aby móc głosować.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (currentContentType.equals("wpisy"))
-            vote = entries.get(pos);
-        else
-            vote = contents.get(pos);
+        final Voting vote = currentContentType.equals("wpisy") ? entries.get(pos) : contents.get(pos);
 
         if (v.getId() == R.id.upvote) {
             url = vote.getLikeUrl();
