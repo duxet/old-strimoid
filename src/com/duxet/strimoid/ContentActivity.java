@@ -4,8 +4,6 @@ import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
@@ -28,7 +26,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.Editable;
 import android.view.View;
-import android.webkit.WebSettings.PluginState;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -36,7 +33,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -99,8 +95,9 @@ public class ContentActivity extends SherlockActivity {
                 new drawComments().execute(response);
                 
                 /* Getting commentsAddNew token */
-                Session.setToken(Parser.getToken(response));
-                externalContent = Parser.getFirstValue(response, "_external[content]");
+                Parser parser = new Parser(response);
+                Session.setToken(parser.getToken());
+                externalContent = parser.getFirstValue("_external[content]");
             }
         });
     }
@@ -272,7 +269,8 @@ public class ContentActivity extends SherlockActivity {
         ArrayList<Comment> newComments;
 
         protected Void doInBackground(String... params) {
-            newComments = Parser.getComments(params[0]);
+            Parser parser = new Parser(params[0]);
+            newComments = parser.getComments();
             
             return null;
         }

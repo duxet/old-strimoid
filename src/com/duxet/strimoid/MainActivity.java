@@ -2,34 +2,19 @@ package com.duxet.strimoid;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
-import android.app.AlarmManager;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -41,10 +26,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.PorterDuff;
-
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.ActionBar.TabListener;
@@ -73,6 +54,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     StrimsAdapter strimsAdapter;
 
     ProgressBar progressBar, progressBarBottom;
+    Menu menu;
     
     String currentContentType = "";
     String currentStrim = "";
@@ -194,9 +176,12 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                 else
                     new drawContents().execute(response);
                 
-                if (Parser.checkIsLogged(response)){
-                	//TODO: Wczytywanie z sharedPref, ukrycie buttona zaloguj sie
-                	Session.getUser().setUser("$", "$");
+                Parser parser = new Parser(response);
+                
+                if (parser.checkIsLogged()){
+                    menu.clear();
+                    onCreateOptionsMenu(menu);
+                	Session.getUser().setUser(parser.getUsername(), "");
                 }
             }
         });
@@ -340,31 +325,32 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     	 * potrzebne na potrzeby logowania
     	 * 
     	 */
+        
+        this.menu = menu;
     	
-    	if (!Session.getUser().isLogged()){
-	        menu.add(1, 1, 0, "Zaloguj się")
-	            .setIcon(R.drawable.action_accounts)
-	        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-    	}else{
-        
-    	EditText textView = new EditText(getSupportActionBar().getThemedContext());
-        textView.setHint("Dodaj wpis...");
-        textView.setOnKeyListener(new OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&(keyCode == KeyEvent.KEYCODE_ENTER)) {
-                   //TODO: Dodawanie wpisów
-                   return true;
+        if (!Session.getUser().isLogged()) {
+            menu.add(1, 1, 0, "Zaloguj się")
+                .setIcon(R.drawable.action_accounts)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        } else {
+            EditText textView = new EditText(getSupportActionBar().getThemedContext());
+            textView.setHint("Dodaj wpis...");
+            
+            textView.setOnKeyListener(new OnKeyListener() {
+                public boolean onKey(View v, int keyCode, KeyEvent event) {
+                    if ((event.getAction() == KeyEvent.ACTION_DOWN) &&(keyCode == KeyEvent.KEYCODE_ENTER)) {
+                        //TODO: Dodawanie wpisów
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
-        
-	    menu.add("Dodaj wpis")
-		    .setIcon(R.drawable.action_add)
-		    .setActionView(textView)
-		    .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-	    
-    	}
+            });
+
+            menu.add("Dodaj wpis")
+                .setIcon(R.drawable.action_add)
+                .setActionView(textView)
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+        }
         
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
         searchView.setQueryHint("Szukaj…");
@@ -414,7 +400,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         ArrayList<Content> newContents;
 
         protected Void doInBackground(String... params) {
-            newContents = Parser.getContents(params[0]);
+            newContents = new Parser(params[0]).getContents();
             return null;
         }
 
@@ -429,7 +415,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         ArrayList<Strim> newStrims;
 
         protected Void doInBackground(String... params) {
-        	newStrims = Parser.getStrims(params[0]);
+        	newStrims = new Parser(params[0]).getStrims();
             return null;
         }
 
@@ -443,7 +429,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         ArrayList<Entry> newEntries;
 
         protected Void doInBackground(String... params) {
-            newEntries = Parser.getEntries(params[0]);
+            newEntries = new Parser(params[0]).getEntries();
             return null;
         }
 
@@ -459,7 +445,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         int position;
 
         protected Void doInBackground(String... params) {
-            newEntries = Parser.getMoreEntries(params[0]);
+            newEntries = new Parser(params[0]).getMoreEntries();
             position = Integer.parseInt(params[1]);
             return null;
         }

@@ -7,7 +7,6 @@ import com.duxet.strimoid.R;
 import com.duxet.strimoid.models.Entry;
 import com.duxet.strimoid.utils.UIHelper;
 
-import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -15,7 +14,6 @@ import android.preference.PreferenceManager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;

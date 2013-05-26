@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -17,31 +16,40 @@ import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.models.Comment;
 
 public class Parser {
-	public static boolean checkIsLogged(String response){
-		return response.contains("page_template.logged_in = true");
+    private String html;
+    private Document doc;
+
+	public Parser(String html) {
+        super();
+        this.html = html;
+        this.doc = Jsoup.parse(html);
+    }
+
+    public boolean checkIsLogged() {
+		return html.contains("page_template.logged_in = true");
 	}
 	
-    public static String getToken(String response){
+	public String getUsername() {
+	    return doc.getElementById("top_user_menu").getElementsByClass("user_name").first().text().trim();
+	}
+	
+    public String getToken(){
         /*Document doc = Jsoup.parse(response);
         return doc.getElementsByAttributeValue("name", "token").first().attr("value").toString();*/
         
         Pattern p = Pattern.compile("page_template\\.token = '([a-z0-9]+)';");
-        Matcher m = p.matcher(response);
+        Matcher m = p.matcher(html);
         return m.group(1);
     }
     
-    public static String getFirstValue(String response, String v){
-        Document doc = Jsoup.parse(response);
+    public String getFirstValue(String v){
         return doc.getElementsByAttributeValue("name", v).first().attr("value").toString();
     }
     
-    public static ArrayList<Comment> getComments(String response) {
+    public ArrayList<Comment> getComments() {
         ArrayList<Comment> comments = new ArrayList<Comment>();
 
-        Document doc = Jsoup.parse(response);
-        Elements elements = doc.getElementsByClass("content_comment");
-
-        for (Element el : elements) {
+        for (Element el : doc.getElementsByClass("content_comment")) {
             if (el.hasClass("hidden"))
                 continue;
             
@@ -71,13 +79,10 @@ public class Parser {
         return comments;
     }
     
-    public static ArrayList<Content> getContents(String response) {
+    public ArrayList<Content> getContents() {
         ArrayList<Content> contents = new ArrayList<Content>();
 
-        Document doc = Jsoup.parse(response);
-        Elements elements = doc.getElementsByClass("content");
-
-        for (Element el : elements) {
+        for (Element el : doc.getElementsByClass("content")) {
             String id = el.getElementsByTag("a").first().attr("id").trim();
             String title = el.getElementsByClass("content_title").first().text().trim();
             String author = el.getElementsByClass("user_name").first().getElementsByTag("span").first().text().trim();
@@ -113,26 +118,10 @@ public class Parser {
         return contents;
     }
     
-    public static int getColorUserByString(String userStatus){
-    	   int color;
-          
-           if (userStatus.contains("new")){
-           	color = Color.parseColor("#2e9b2d");
-           }else if(userStatus.contains("admin")){
-           	color = Color.parseColor("#c4181b");
-           }else if(userStatus.contains("advanced")){
-           	color = Color.parseColor("#0075dc");
-           }else{
-           	color = Color.parseColor("#3272aa");
-           }
-           
-           return color;
-    }
+    
 
-    public static ArrayList<Entry> getEntries(String response) {
+    public ArrayList<Entry> getEntries() {
         ArrayList<Entry> entries = new ArrayList<Entry>();
-
-        Document doc = Jsoup.parse(response);
         Elements liElements = doc.getElementsByClass("entries").first().getElementsByTag("li");
         
         for (Element li : liElements) {
@@ -183,13 +172,10 @@ public class Parser {
         return entries;
     }
     
-    public static ArrayList<Entry> getMoreEntries(String response) {
+    public ArrayList<Entry> getMoreEntries() {
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
-        Document doc = Jsoup.parse(response);
-        Elements elements = doc.getElementsByClass("entry");
-
-        for (Element el : elements) {
+        for (Element el : doc.getElementsByClass("entry")) {
             if (el.hasClass("hidden"))
                 continue;
             
@@ -221,6 +207,48 @@ public class Parser {
         return entries;
     }
     
+    public ArrayList<Strim> getStrims() {
+        ArrayList<Strim> strims = new ArrayList<Strim>();
+        
+        String content = "";
+        
+        try {
+            JSONObject json = new JSONObject(html);
+            content = json.getString("content");
+        } catch (JSONException e) {
+            return null;
+        }
+        
+        Document doc = Jsoup.parse(content);
+
+        for (Element el : doc.getElementsByTag("li")) {
+            String name = el.getElementsByTag("a").first().attr("href").trim();
+            String title = el.getElementsByClass("name").first().text().trim();
+            String desc = "";
+            
+            Strim strim = new Strim(name, title, desc);
+            strims.add(strim);
+        }
+
+        return strims;
+    }
+    
+    public static int getColorUserByString(String userStatus){
+        int color;
+       
+        if (userStatus.contains("new")){
+         color = Color.parseColor("#2e9b2d");
+        }else if(userStatus.contains("admin")){
+         color = Color.parseColor("#c4181b");
+        }else if(userStatus.contains("advanced")){
+         color = Color.parseColor("#0075dc");
+        }else{
+         color = Color.parseColor("#3272aa");
+        }
+        
+        return color;
+    }
+    
     public static NotificationStatus getNotifications(String response) {
 
 		try {
@@ -233,32 +261,5 @@ public class Parser {
 			return null;
 		}
         
-    }
-    
-    public static ArrayList<Strim> getStrims(String response) {
-        ArrayList<Strim> strims = new ArrayList<Strim>();
-        
-        String content = "";
-        
-        try {
-            JSONObject json = new JSONObject(response);
-            content = json.getString("content");
-        } catch (JSONException e) {
-            return null;
-        }
-        
-        Document doc = Jsoup.parse(content);
-        Elements elements = doc.getElementsByTag("li");
-        
-        for (Element el : elements) {
-            String name = el.getElementsByTag("a").first().attr("href").trim();
-            String title = el.getElementsByClass("name").first().text().trim();
-            String desc = "";
-            
-            Strim strim = new Strim(name, title, desc);
-            strims.add(strim);
-        }
-
-        return strims;
     }
 }

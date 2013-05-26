@@ -66,7 +66,8 @@ public class LoginActivity extends SherlockActivity {
         HTTPClient.get("zaloguj", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-            	signIn(username, password, remember, Parser.getToken(response));
+                Parser parser = new Parser(response);
+            	signIn(username, password, remember, parser.getToken());
             }
             
             @Override
@@ -99,11 +100,13 @@ public class LoginActivity extends SherlockActivity {
         HTTPClient.post("zaloguj", params, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
+                Parser parser = new Parser(response);
+                
             	login_status.setVisibility(LinearLayout.GONE);
             	login_form.setVisibility(ScrollView.VISIBLE);
             	
             	// TODO: Moze jakas lepsza metoda sprawdzania wyniku logowania?
-            	if (Parser.checkIsLogged(response)){
+            	if (parser.checkIsLogged()){
             	    // TODO: Mozna by uzyc account managera, ew. zapisac haslo w SharedPref
             		Session.getUser().setUser(username, password);
                     Intent mainIntent = new Intent(getInstance(), MainActivity.class);

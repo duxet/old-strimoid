@@ -1,7 +1,5 @@
 package com.duxet.strimoid.models;
 
-import android.graphics.Color;
-
 public class Entry implements Voting {
 
     String id, author, avatar, message, time, strim;
