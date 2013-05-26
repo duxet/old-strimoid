@@ -10,20 +10,24 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnKeyListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
@@ -173,9 +177,11 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                 
                 Parser parser = new Parser(response);
                 
-                if (parser.checkIsLogged() && Session.getUser().getUsername().isEmpty()){
+                //if (!Session.getUser().isLogged() && parser.checkIsLogged()){
+                if (parser.checkIsLogged()){
                     menu.clear();
                     onCreateOptionsMenu(menu);
+                    Session.setToken(parser.getToken());
                 	Session.getUser().setUser(parser.getUsername(), "");
                 }
             }
@@ -314,7 +320,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     	/*
     	 * Dynamiczne menu
     	 * potrzebne na potrzeby logowania
-    	 * 
     	 */
         
         this.menu = menu;
@@ -324,23 +329,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                 .setIcon(R.drawable.action_accounts)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         } else {
-            EditText textView = new EditText(getSupportActionBar().getThemedContext());
-            textView.setHint("Dodaj wpis...");
-            
-            textView.setOnKeyListener(new OnKeyListener() {
-                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                    if ((event.getAction() == KeyEvent.ACTION_DOWN) &&(keyCode == KeyEvent.KEYCODE_ENTER)) {
-                        //TODO: Dodawanie wpisów
-                        return true;
-                    }
-                    return false;
-                }
-            });
-
-            menu.add("Dodaj wpis")
+            menu.add(Menu.NONE, 3, 0, "Dodaj wpis")
                 .setIcon(R.drawable.action_add)
-                .setActionView(textView)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
         
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
@@ -380,12 +371,76 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         case 2:
         	loadContents(currentStrim, currentContentType, 1, true);
         	break;
+        case 3:
+            showAddEntryDialog();
         default:
             return super.onOptionsItemSelected(item);
         }
 
         return true;
     }
+
+    private void showAddEntryDialog() {
+        if (!Session.getUser().isLogged()) {
+            Toast.makeText(this, "Zaloguj się aby móc głosować.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        LayoutInflater inflater = this.getLayoutInflater();
+        View layout = inflater.inflate(R.layout.dialog_add_entry,null);
+        final Spinner spinner = (Spinner) layout.findViewById(R.id.strim);
+        final EditText text = (EditText) layout.findViewById(R.id.text);
+
+        ArrayList<String> spinnerOptions = new ArrayList<String>();
+        for (Strim strim : this.strims) {
+            spinnerOptions.add(strim.getTitle());
+        }
+        
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, spinnerOptions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        new AlertDialog.Builder(this)
+            .setTitle("Dodaj wpis")
+            .setView(layout)
+            .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    String strim = strims.get(spinner.getSelectedItemPosition()).getName().replace("/s/", "");
+                    addNewEntry(text.getText().toString(), strim);
+                }
+            }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    dialog.cancel();
+                }
+            }).show();
+    }
+
+    protected void addNewEntry(String text, final String strim) {
+        RequestParams params = new RequestParams();
+        params.put("token", Session.getToken());
+        params.put("_external[parent]", "");
+        params.put("text", text + " [(Strimoid)](http://strims.pl/s/strimoid)");
+        params.put("_external[strim]", strim);
+
+        HTTPClient.post("ajax/wpisy/dodaj", params, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(String response) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(MainActivity.this, "Wpis został dodany", Toast.LENGTH_SHORT).show();
+                loadContents("s/" + strim, "wpisy", 1, true);
+            }
+            
+            @Override
+            public void onFailure(Throwable arg0) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(MainActivity.this, "Nie udało się dodać wpisu", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 
     private class drawContents extends AsyncTask<String, Void, Void>{
         ArrayList<Content> newContents;
@@ -517,7 +572,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
 	@Override
 	public boolean onQueryTextSubmit(String query) {
-		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(list.getWindowToken(), 0);
 		return false;
 	}

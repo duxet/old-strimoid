@@ -39,6 +39,7 @@ public class Parser {
         
         Pattern p = Pattern.compile("page_template\\.token = '([a-z0-9]+)';");
         Matcher m = p.matcher(html);
+        m.find();
         return m.group(1);
     }
     
@@ -161,8 +162,8 @@ public class Parser {
                         up, down, color, isUpvoted, isDownvoted, isReply);
                 entries.add(entry);
             }
-
-            for (Element el : li.getElementsByClass("entries_more")) {
+            
+            if (li.getElementsByClass("entries_more").first() != null) {
                 String moreUrl = "ajax/w/" + lastId + "/odpowiedzi";
                 Entry entry = new Entry("", "", "", "", "", "", "", "", moreUrl, 0, 0, 0, false, false, false);
                 entries.add(entry);
