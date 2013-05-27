@@ -1,11 +1,14 @@
 package com.duxet.strimoid;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.duxet.strimoid.models.Comment;
 import com.duxet.strimoid.models.Voting;
@@ -18,6 +21,7 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
@@ -25,7 +29,10 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.text.Editable;
+import android.util.Patterns;
+import android.view.ContextMenu;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -34,6 +41,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class ContentActivity extends SherlockActivity {
@@ -65,6 +73,8 @@ public class ContentActivity extends SherlockActivity {
         
         commentsAdapter = new CommentsAdapter(this, comments);
         list.setAdapter(commentsAdapter);
+        
+        registerForContextMenu(list);
 
         showPage();
     }
@@ -100,6 +110,42 @@ public class ContentActivity extends SherlockActivity {
                 externalContent = parser.getFirstValue("_external[content]");
             }
         });
+    }
+    
+    private void showAddReplyDialog(int pos) {
+        if (!Session.getUser().isLogged()) {
+            Toast.makeText(this, "Zaloguj się aby móc głosować.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        final EditText input = new EditText(this);
+        input.setHint("Treść odpowiedzi");
+        input.setText("@" + comments.get(pos).getAuthor() + ": ");
+        input.setSelection(input.getText().length());
+        
+        // Find entry parent
+        Comment currentComment = comments.get(pos);
+        
+        while(currentComment.isReply()) {
+            currentComment = comments.get(--pos);
+        }
+        
+        final String parentId = currentComment.getId();
+
+        new AlertDialog.Builder(this)
+            .setTitle("Dodaj odpowiedź")
+            .setIcon(R.drawable.ic_dialog_comment)
+            .setView(input)
+            .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    addNewComment(input.getText().toString(), parentId);
+                }
+            }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    dialog.cancel();
+                }
+            }).show();
     }
     
     public void vote(final View v) {
@@ -201,32 +247,70 @@ public class ContentActivity extends SherlockActivity {
         return true;
     }
 
-    public void addNewComment(String comment){
+    public void addNewComment(String comment, String parent){
     	RequestParams params = new RequestParams();
 		params.put("token", Session.getToken());
 		params.put("_external[content]", externalContent);
-		params.put("_external[parent]", "");
+		params.put("_external[parent]", parent);
 		params.put("text", comment + " [(Strimoid)](http://strims.pl/s/strimoid)");
 
-        HTTPClient.post("ajax/komentarze/dodaj", params, new AsyncHttpResponseHandler() {
+        HTTPClient.post("ajax/komentarze/dodaj", params, new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(String response) {
+            public void onSuccess(JSONObject response) {
             	progressBar.setVisibility(View.GONE);
-            	// TODO: Pokazanie nowego komentarza
-            	// poki co mozna przeladowac komentarze
+            	
+            	try {
+                    if (response.getString("status").equals("OK"))
+                        Toast.makeText(ContentActivity.this, "Komentarz został dodany.", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(ContentActivity.this, "Nie udało się dodać komentarza.", Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) { }
+            	
             	showComments();
             }
             
             @Override
             public void onFailure(Throwable arg0) {
-            	errorLogin();
+                progressBar.setVisibility(LinearLayout.GONE);
+                Toast.makeText(getApplicationContext(), "Wystąpił błąd: serwer nie odpowiada.", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, 
+       ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        Comment comment = comments.get(info.position);
+        
+        menu.add(Menu.NONE, 1, Menu.NONE, "Odpowiedz");
+        
+        // Find URLs in text
+        Pattern p = Patterns.WEB_URL;
+        Matcher m = p.matcher(comment.getText());
+        while(m.find()) {
+            menu.add(100, Menu.NONE, Menu.NONE, m.group());
+        }
+    }
     
-    public void errorLogin(){
-    	progressBar.setVisibility(LinearLayout.GONE);
-    	Toast.makeText(getApplicationContext(), "Wystąpił błąd. Serwer zajęty.", Toast.LENGTH_SHORT).show();
+    @Override
+    public boolean onContextItemSelected(android.view.MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        Comment comment = comments.get(info.position);
+        
+        switch (item.getItemId()) {
+            case 1:
+                showAddReplyDialog(info.position);
+                return true;
+            default:
+                if(item.getGroupId() == 100) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) item.getTitle()));
+                    startActivity(browserIntent);
+                }
+                return true;
+        }
     }
     
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
@@ -243,13 +327,14 @@ public class ContentActivity extends SherlockActivity {
 	    	final EditText input = new EditText(this);
 	    	new AlertDialog.Builder(ContentActivity.this)
 	            .setTitle("Dodaj komentarz")
+	            .setIcon(R.drawable.ic_dialog_comment)
 	            .setMessage("Wpisz treść komentarza")
 	            .setView(input)
 	            .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
 	                public void onClick(DialogInterface dialog, int whichButton) {
 	                    Editable value = input.getText(); 
 	                    progressBar.setVisibility(View.VISIBLE);
-	                    addNewComment(value.toString());
+	                    addNewComment(value.toString(), "");
 	                }
 	            }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
 	                public void onClick(DialogInterface dialog, int whichButton) {

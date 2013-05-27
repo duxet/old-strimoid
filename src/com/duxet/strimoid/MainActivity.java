@@ -18,6 +18,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Patterns;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -128,9 +129,13 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         	getSupportActionBar().addTab(tab);
         }
         
-        Intent i=new Intent(this, NotificationService.class);        
-        startService(i);
-        
+        if (PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).
+                getBoolean("enable_notifications", true))
+        {
+            Intent i=new Intent(this, NotificationService.class);        
+            startService(i);
+        }
+
         registerForContextMenu(list);
 
         loadContents(currentStrim, currentContentType, 1, true);
@@ -510,7 +515,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             @Override
             public void onFailure(Throwable arg0) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(MainActivity.this, "Nie udało się dodać wpisu", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Wystąpił błąd: serwer nie odpowiada.", Toast.LENGTH_SHORT).show();
             }
         });
     }
