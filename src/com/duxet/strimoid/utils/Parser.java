@@ -129,7 +129,7 @@ public class Parser {
             if(!li.parent().hasClass("entries"))
                 continue;
             
-            String lastId = "";
+            String firstId = "";
             
             for (Element el : li.getElementsByClass("entry")) {
                 if (el.hasClass("hidden"))
@@ -156,7 +156,7 @@ public class Parser {
                 int color = getColorUserByString(el.getElementsByClass("entry_user").first().getElementsByTag("a").first().attr("class"));
                 
                 if (!isReply)
-                    lastId = id;
+                    firstId = id;
                 
                 Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl, moreUrl,
                         up, down, color, isUpvoted, isDownvoted, isReply);
@@ -164,7 +164,7 @@ public class Parser {
             }
             
             if (li.getElementsByClass("entries_more").first() != null) {
-                String moreUrl = "ajax/w/" + lastId + "/odpowiedzi";
+                String moreUrl = "ajax/w/" + firstId + "/odpowiedzi";
                 Entry entry = new Entry("", "", "", "", "", "", "", "", moreUrl, 0, 0, 0, false, false, false);
                 entries.add(entry);
             }

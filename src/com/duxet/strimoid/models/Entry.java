@@ -7,10 +7,10 @@ public class Entry implements Voting {
     int upvotes, downvotes, color;
     boolean isUpvoted, isDownvoted, isReply;
 
-    public Entry(String id, String author, String avatar, String message,
-            String time, String strim, String likeUrl, String dislikeUrl,
-            String moreUrl, int upvotes, int downvotes, int color,
-            boolean isUpvoted, boolean isDownvoted, boolean isReply) {
+    public Entry(String id, String author, String avatar,
+            String message, String time, String strim, String likeUrl,
+            String dislikeUrl, String moreUrl, int upvotes, int downvotes,
+            int color, boolean isUpvoted, boolean isDownvoted, boolean isReply) {
         super();
         this.id = id;
         this.author = author;

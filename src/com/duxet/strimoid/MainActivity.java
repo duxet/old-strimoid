@@ -434,7 +434,42 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                     if (!strimName.getText().toString().isEmpty())
                         strim = strimName.getText().toString();
                     
-                    addNewEntry(text.getText().toString(), strim);
+                    addNewEntry(text.getText().toString(), "", strim);
+                }
+            }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    dialog.cancel();
+                }
+            }).show();
+    }
+    
+    private void showAddReplyDialog(int pos) {
+        if (!Session.getUser().isLogged()) {
+            Toast.makeText(this, "Zaloguj się aby móc głosować.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        final EditText input = new EditText(this);
+        input.setHint("Treść odpowiedzi");
+        input.setText("@" + entries.get(pos).getAuthor() + ": ");
+        
+        // Find entry parent
+        Entry currentEntry = entries.get(pos);
+        
+        while(currentEntry.isReply()) {
+            currentEntry = entries.get(--pos);
+        }
+        
+        final String parentId = currentEntry.getId();
+
+        new AlertDialog.Builder(this)
+            .setTitle("Dodaj odpowiedź")
+            .setIcon(R.drawable.ic_dialog_comment)
+            .setView(input)
+            .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    addNewEntry(input.getText().toString(), parentId, "");
                 }
             }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
@@ -443,19 +478,31 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             }).show();
     }
 
-    protected void addNewEntry(String text, final String strim) {
+    protected void addNewEntry(String text, String parent, final String strim) {
         RequestParams params = new RequestParams();
         params.put("token", Session.getToken());
-        params.put("_external[parent]", "");
+        params.put("_external[parent]", parent);
         params.put("text", text + " [(Strimoid)](http://strims.pl/s/strimoid)");
-        params.put("_external[strim]", strim);
+        
+        if(!strim.isEmpty())
+            params.put("_external[strim]", strim);
 
-        HTTPClient.post("ajax/wpisy/dodaj", params, new AsyncHttpResponseHandler() {
+        HTTPClient.post("ajax/wpisy/dodaj", params, new JsonHttpResponseHandler() {
             @Override
-            public void onSuccess(String response) {
+            public void onSuccess(JSONObject response) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(MainActivity.this, "Wpis został dodany", Toast.LENGTH_SHORT).show();
-                loadContents("s/" + strim, "wpisy", 1, true);
+                
+                try {
+                    if (response.getString("status").equals("OK"))
+                        Toast.makeText(MainActivity.this, "Wpis został dodany", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(MainActivity.this, "Nie udało się dodać wpisu", Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) { }
+                
+                if(!strim.isEmpty())
+                    loadContents("s/" + strim, "wpisy", 1, true);
+                else
+                    loadContents(currentStrim, "wpisy", 1, true);
             }
             
             @Override
@@ -581,8 +628,11 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        Entry entry = entries.get(info.position);
+        
         switch (item.getItemId()) {
             case 1:
+                showAddReplyDialog(info.position);
                 return true;
             default:
                 if(item.getGroupId() == 100) {
