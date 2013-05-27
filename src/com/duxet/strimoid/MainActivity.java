@@ -18,7 +18,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Patterns;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -484,12 +483,28 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                 }
             }).show();
     }
+    
+    private void showRemoveEntryDialog(final Entry entry) {
+        new AlertDialog.Builder(this)
+        .setTitle("Usuń odpowiedź")
+        .setMessage("Czy na pewno chcesz usunąć odpowiedź?")
+        .setPositiveButton("Usuń", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                progressBar.setVisibility(View.VISIBLE);
+                removeEntry(entry.getId());
+            }
+        }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        }).show();
+    }
 
     protected void addNewEntry(String text, String parent, final String strim) {
         RequestParams params = new RequestParams();
         params.put("token", Session.getToken());
         params.put("_external[parent]", parent);
-        params.put("text", text + " [(Strimoid)](http://strims.pl/s/strimoid)");
+        params.put("text", text);
         
         if(!strim.isEmpty())
             params.put("_external[strim]", strim);
@@ -497,8 +512,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         HTTPClient.post("ajax/wpisy/dodaj", params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(JSONObject response) {
-                progressBar.setVisibility(View.GONE);
-                
                 try {
                     if (response.getString("status").equals("OK"))
                         Toast.makeText(MainActivity.this, "Wpis został dodany", Toast.LENGTH_SHORT).show();
@@ -514,8 +527,36 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             
             @Override
             public void onFailure(Throwable arg0) {
-                progressBar.setVisibility(View.GONE);
                 Toast.makeText(MainActivity.this, "Wystąpił błąd: serwer nie odpowiada.", Toast.LENGTH_SHORT).show();
+            }
+            
+            @Override
+            public void onFinish() {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
+    
+    protected void removeEntry(String id) {
+        HTTPClient.get("ajax/w/" + id + "/usun?token=" + Session.getToken(), null, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    if (response.getString("status").equals("OK"))
+                        Toast.makeText(MainActivity.this, "Wpis został usunięty.", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(MainActivity.this, "Nie udało się usunąć wpisu.", Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) { return; }
+            }
+            
+            @Override
+            public void onFailure(Throwable arg0) {
+                Toast.makeText(MainActivity.this, "Wystąpił błąd: serwer nie odpowiada.", Toast.LENGTH_SHORT).show();
+            }
+            
+            @Override
+            public void onFinish() {
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -578,7 +619,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             ArrayList<Entry> oldEntries = new ArrayList<Entry>(entries);
             entries.clear();
             entries.addAll(oldEntries.subList(0, position));
-            entries.addAll(newEntries.subList(3, newEntries.size()));
+            entries.addAll(newEntries);
             entries.addAll(oldEntries.subList(position + 1, oldEntries.size()));
             entriesAdapter.notifyDataSetChanged();
         }
@@ -624,6 +665,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         
         menu.add(Menu.NONE, 1, Menu.NONE, "Odpowiedz");
         
+        if (entry.getAuthor().equals(Session.getUser().getUsername()))
+            menu.add(Menu.NONE, 2, Menu.NONE, "Usuń");
+        
         // Find URLs in text
         Pattern p = Patterns.WEB_URL;
         Matcher m = p.matcher(entry.getMessage());
@@ -640,6 +684,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         switch (item.getItemId()) {
             case 1:
                 showAddReplyDialog(info.position);
+                return true;
+            case 2:
+                showRemoveEntryDialog(entry);
                 return true;
             default:
                 if(item.getGroupId() == 100) {

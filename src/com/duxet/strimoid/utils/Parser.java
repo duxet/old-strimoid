@@ -89,9 +89,8 @@ public class Parser {
             String author = el.getElementsByClass("user_name").first().getElementsByTag("span").first().text().trim();
             String desc = el.getElementsByClass("content_info").text().trim();
             
-            String time = el.getElementsByClass("content_info").first().getElementsByClass("color_gray").first().getElementsByAttribute("title").first().text();
-            String strim = el.getElementsByClass("content_info").first().getElementsByClass("color_gray").first().getElementsByTag("a").last().text();
-            
+            String time = el.getElementsByClass("content_info_basic").first().getElementsContainingOwnText("temu").first().text();
+            String strim = el.getElementsByClass("content_info_basic").first().getElementsByTag("a").last().text();
             String url = el.getElementsByClass("content_title").first().attr("href").trim();
             String commentsUrl = el.getElementsByClass("content_info_actions").first().getElementsByTag("a").first().attr("href").trim();
 

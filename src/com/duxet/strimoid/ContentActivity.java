@@ -13,10 +13,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.duxet.strimoid.models.Comment;
 import com.duxet.strimoid.models.Voting;
 import com.duxet.strimoid.ui.CommentsAdapter;
-import com.duxet.strimoid.utils.HTTPClient;
-import com.duxet.strimoid.utils.Parser;
-import com.duxet.strimoid.utils.Session;
-import com.duxet.strimoid.utils.UIHelper;
+import com.duxet.strimoid.utils.*;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -246,13 +243,13 @@ public class ContentActivity extends SherlockActivity {
         getSupportMenuInflater().inflate(R.menu.view_content, menu);
         return true;
     }
-
+    
     public void addNewComment(String comment, String parent){
     	RequestParams params = new RequestParams();
 		params.put("token", Session.getToken());
 		params.put("_external[content]", externalContent);
 		params.put("_external[parent]", parent);
-		params.put("text", comment + " [(Strimoid)](http://strims.pl/s/strimoid)");
+		params.put("text", comment);
 
         HTTPClient.post("ajax/komentarze/dodaj", params, new JsonHttpResponseHandler() {
             @Override
@@ -276,6 +273,46 @@ public class ContentActivity extends SherlockActivity {
             }
         });
     }
+    
+    private void showRemoveCommentDialog(final Comment comment) {
+        new AlertDialog.Builder(this)
+        .setTitle("Usuń komentarz")
+        .setMessage("Czy na pewno chcesz usunąć komentarz?")
+        .setPositiveButton("Usuń", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                progressBar.setVisibility(View.VISIBLE);
+                removeComment(comment.getId());
+            }
+        }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                dialog.cancel();
+            }
+        }).show();
+    }
+    
+    public void removeComment(String id) {
+        HTTPClient.get("ajax/k/" + id + "/usun?token=" + Session.getToken(), null, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    if (response.getString("status").equals("OK"))
+                        Toast.makeText(ContentActivity.this, "Komentarz został usunięty.", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(ContentActivity.this, "Nie udało się usunąć komentarza.", Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) { return; }
+            }
+            
+            @Override
+            public void onFailure(Throwable arg0) {
+                Toast.makeText(ContentActivity.this, "Wystąpił błąd: serwer nie odpowiada.", Toast.LENGTH_SHORT).show();
+            }
+            
+            @Override
+            public void onFinish() {
+                progressBar.setVisibility(View.GONE);
+            }
+        });
+    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, 
@@ -286,6 +323,9 @@ public class ContentActivity extends SherlockActivity {
         Comment comment = comments.get(info.position);
         
         menu.add(Menu.NONE, 1, Menu.NONE, "Odpowiedz");
+        
+        if (comment.getAuthor().equals(Session.getUser().getUsername()))
+            menu.add(Menu.NONE, 2, Menu.NONE, "Usuń");
         
         // Find URLs in text
         Pattern p = Patterns.WEB_URL;
@@ -303,6 +343,9 @@ public class ContentActivity extends SherlockActivity {
         switch (item.getItemId()) {
             case 1:
                 showAddReplyDialog(info.position);
+                return true;
+            case 2:
+                showRemoveCommentDialog(comment);
                 return true;
             default:
                 if(item.getGroupId() == 100) {
