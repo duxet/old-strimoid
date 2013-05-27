@@ -134,8 +134,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         registerForContextMenu(list);
 
         loadContents(currentStrim, currentContentType, 1, true);
-        
-        loadStrimsList();
     }
     
 
@@ -165,7 +163,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     public void loadContents(String strim, final String type, int page, boolean clear) {
         currentStrim = strim;
         currentContentType = type;
-        
+
         progressBar.setVisibility(View.VISIBLE);
         progressBar.bringToFront();
 
@@ -194,6 +192,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                     Session.setToken(parser.getToken());
                 	Session.getUser().setUser(parser.getUsername(), "");
                 }
+                
+                if(strims.isEmpty())
+                    loadStrimsList();
             }
         });
 
@@ -404,7 +405,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         final ImageButton button = (ImageButton) layout.findViewById(R.id.edit);
 
         ArrayList<String> spinnerOptions = new ArrayList<String>();
-        for (Strim strim : this.strims) {
+        for (Strim strim : strims.subList(3, strims.size())) {
             spinnerOptions.add(strim.getTitle());
         }
         
@@ -428,7 +429,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             .setView(layout)
             .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    String strim = strims.get(spinner.getSelectedItemPosition()).getName().replace("/s/", "");
+                    String strim = strims.get(spinner.getSelectedItemPosition() + 3).getName().replace("/s/", "");
                     progressBar.setVisibility(View.VISIBLE);
                     
                     if (!strimName.getText().toString().isEmpty())
