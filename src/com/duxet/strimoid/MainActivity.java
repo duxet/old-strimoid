@@ -3,9 +3,13 @@ package com.duxet.strimoid;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,12 +18,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Patterns;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -122,6 +130,8 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         
         Intent i=new Intent(this, NotificationService.class);        
         startService(i);
+        
+        registerForContextMenu(list);
 
         loadContents(currentStrim, currentContentType, 1, true);
         
@@ -547,6 +557,39 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
+        }
+    }
+    
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, 
+       ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        Entry entry = entries.get(info.position);
+        
+        menu.add(Menu.NONE, 1, Menu.NONE, "Odpowiedz");
+        
+        // Find URLs in text
+        Pattern p = Patterns.WEB_URL;
+        Matcher m = p.matcher(entry.getMessage());
+        while(m.find()) {
+            menu.add(100, Menu.NONE, Menu.NONE, m.group());
+        }
+    }
+    
+    @Override
+    public boolean onContextItemSelected(android.view.MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+        switch (item.getItemId()) {
+            case 1:
+                return true;
+            default:
+                if(item.getGroupId() == 100) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) item.getTitle()));
+                    startActivity(browserIntent);
+                }
+                return true;
         }
     }
 
