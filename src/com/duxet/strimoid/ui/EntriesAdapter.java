@@ -118,8 +118,7 @@ public class EntriesAdapter extends BaseAdapter {
         up.setTag(position);
         down.setTag(position);
         
-        UIHelper.updateVoteButton(up, entry);
-        UIHelper.updateVoteButton(down, entry);
+        UIHelper.updateVoteButtons(up, down, entry);
         
         vi.setTag(position);
         

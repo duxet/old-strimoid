@@ -205,9 +205,13 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     }
 
     public void vote(final View v) {
-        final int firstPos = list.getFirstVisiblePosition() - list.getHeaderViewsCount();
-        final int pos = list.getPositionForView(v);
-        final Button button = (Button) v;
+        int firstPos = list.getFirstVisiblePosition() - list.getHeaderViewsCount();
+        int pos = list.getPositionForView(v);
+        View row = list.getChildAt(pos - firstPos);
+        
+        final Button downBtn = (Button) row.findViewById(R.id.downvote);
+        final Button upBtn = (Button) row.findViewById(R.id.upvote);
+        
         final String action;
         String url ;
 
@@ -227,11 +231,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                     public void onSuccess(JSONObject response) {
                         try {
                             if (response.getString("status").equals("OK")) {
-                                View row = list.getChildAt(pos - firstPos);
-                                Button downBtn = (Button) row.findViewById(R.id.downvote);
                                 vote.setDownvoted(false);
                                 vote.setDownvotes(response.getJSONObject("content").getInt("dislikes"));
-                                UIHelper.updateVoteButton(downBtn, vote);
+                                UIHelper.updateVoteButtons(upBtn, downBtn, vote);
                                 vote(v);
                             }
                         } catch (JSONException e) { return; }
@@ -252,11 +254,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                     public void onSuccess(JSONObject response) {
                         try {
                             if (response.getString("status").equals("OK")) {
-                                View row = list.getChildAt(pos - firstPos);
-                                Button upBtn = (Button) row.findViewById(R.id.upvote);
                                 vote.setUpvoted(false);
                                 vote.setUpvotes(response.getJSONObject("content").getInt("likes"));
-                                UIHelper.updateVoteButton(upBtn, vote);
+                                UIHelper.updateVoteButtons(upBtn, downBtn, vote);
                                 vote(v);
                             }
                         } catch (JSONException e) { return; }
@@ -290,7 +290,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                                 vote.setDownvoted(false);
                         }
                         
-                        UIHelper.updateVoteButton(button, vote);
+                        UIHelper.updateVoteButtons(upBtn, downBtn, vote);
                     }
                 } catch (JSONException e) { return; }
             }

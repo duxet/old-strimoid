@@ -39,7 +39,7 @@ import android.widget.Toast;
 public class ContentActivity extends SherlockActivity {
     
     WebView webView;
-    ListView listView;
+    ListView list;
     ProgressBar progressBar;
 
     ArrayList<Comment> comments = new ArrayList<Comment>();
@@ -52,7 +52,7 @@ public class ContentActivity extends SherlockActivity {
         setContentView(R.layout.activity_content);
         
         webView = (WebView) findViewById(R.id.webView);
-        listView = (ListView) findViewById(R.id.comments);
+        list = (ListView) findViewById(R.id.comments);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         
         Intent intent = getIntent();
@@ -64,7 +64,7 @@ public class ContentActivity extends SherlockActivity {
         getSupportActionBar().setTitle(title);
         
         commentsAdapter = new CommentsAdapter(this, comments);
-        listView.setAdapter(commentsAdapter);
+        list.setAdapter(commentsAdapter);
 
         showPage();
     }
@@ -72,7 +72,7 @@ public class ContentActivity extends SherlockActivity {
     private void showPage() {
         webView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
-        listView.setVisibility(View.GONE);
+        list.setVisibility(View.GONE);
         
         if (url.startsWith("/"))
             url = "http://strims.pl" + url;
@@ -87,7 +87,7 @@ public class ContentActivity extends SherlockActivity {
     private void showComments() {
         webView.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.VISIBLE);
+        list.setVisibility(View.VISIBLE);
 
         HTTPClient.get(commentsUrl, null, new AsyncHttpResponseHandler() {
             @Override
@@ -103,17 +103,22 @@ public class ContentActivity extends SherlockActivity {
     }
     
     public void vote(final View v) {
-        final Voting vote;
-        final Button button = (Button) v;
-        final String action;
-        String url;
+        int firstPos = list.getFirstVisiblePosition() - list.getHeaderViewsCount();
+        int pos = list.getPositionForView(v);
+        View row = list.getChildAt(pos - firstPos);
         
+        final Button downBtn = (Button) row.findViewById(R.id.downvote);
+        final Button upBtn = (Button) row.findViewById(R.id.upvote);
+        
+        final String action;
+        String url ;
+
         if (!Session.getUser().isLogged()) {
             Toast.makeText(this, "Zaloguj się aby móc głosować.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        vote = comments.get((Integer) v.getTag());
+        final Voting vote = comments.get(pos);
 
         if (v.getId() == R.id.upvote) {
             url = vote.getLikeUrl();
@@ -124,11 +129,9 @@ public class ContentActivity extends SherlockActivity {
                     public void onSuccess(JSONObject response) {
                         try {
                             if (response.getString("status").equals("OK")) {
-                                View row = listView.getChildAt((Integer) v.getTag());
-                                Button downBtn = (Button) row.findViewById(R.id.downvote);
                                 vote.setDownvoted(false);
                                 vote.setDownvotes(response.getJSONObject("content").getInt("dislikes"));
-                                UIHelper.updateVoteButton(downBtn, vote);
+                                UIHelper.updateVoteButtons(upBtn, downBtn, vote);
                                 vote(v);
                             }
                         } catch (JSONException e) { return; }
@@ -149,12 +152,9 @@ public class ContentActivity extends SherlockActivity {
                     public void onSuccess(JSONObject response) {
                         try {
                             if (response.getString("status").equals("OK")) {
-                                View row = listView.getChildAt((Integer) v.getTag());
-                                Button upBtn = (Button) row.findViewById(R.id.upvote);
                                 vote.setUpvoted(false);
                                 vote.setUpvotes(response.getJSONObject("content").getInt("likes"));
-                                UIHelper.updateVoteButton(upBtn, vote);
-                                
+                                UIHelper.updateVoteButtons(upBtn, downBtn, vote);
                                 vote(v);
                             }
                         } catch (JSONException e) { return; }
@@ -188,7 +188,7 @@ public class ContentActivity extends SherlockActivity {
                                 vote.setDownvoted(false);
                         }
                         
-                        UIHelper.updateVoteButton(button, vote);
+                        UIHelper.updateVoteButtons(upBtn, downBtn, vote);
                     }
                 } catch (JSONException e) { return; }
             }

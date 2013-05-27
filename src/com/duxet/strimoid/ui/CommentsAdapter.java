@@ -82,8 +82,7 @@ public class CommentsAdapter extends BaseAdapter implements OnClickListener {
         up.setTag(position);
         down.setTag(position);
 
-        UIHelper.updateVoteButton(up, comment);
-        UIHelper.updateVoteButton(down, comment);
+        UIHelper.updateVoteButtons(up, down, comment);
         
         vi.setOnClickListener(this);
         vi.setTag(position);

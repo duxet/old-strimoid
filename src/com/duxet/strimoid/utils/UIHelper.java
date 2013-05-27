@@ -3,26 +3,25 @@ package com.duxet.strimoid.utils;
 import android.graphics.PorterDuff;
 import android.widget.Button;
 
-import com.duxet.strimoid.R;
 import com.duxet.strimoid.models.Voting;
 
 public class UIHelper {
     private static int COLOR_GREEN = 0xFF00FF00;
     private static int COLOR_RED = 0xFFFF0000;
     
-    public static void updateVoteButton(Button button, Voting vote) {
+    public static void updateVoteButtons(Button up, Button down, Voting vote) {
         // Update color
-        if (button.getId() == R.id.upvote && vote.isUpvoted())
-            button.getBackground().setColorFilter(COLOR_GREEN, PorterDuff.Mode.MULTIPLY);
-        else if(button.getId() == R.id.downvote && vote.isDownvoted())
-            button.getBackground().setColorFilter(COLOR_RED, PorterDuff.Mode.MULTIPLY);
-        else
-            button.getBackground().setColorFilter(null);
-        
+        if (vote.isUpvoted()) {
+            up.getBackground().setColorFilter(COLOR_GREEN, PorterDuff.Mode.MULTIPLY);
+        } else if(vote.isDownvoted()) {
+            down.getBackground().setColorFilter(COLOR_RED, PorterDuff.Mode.MULTIPLY);
+        } else {
+            up.getBackground().setColorFilter(null);
+            down.getBackground().setColorFilter(null);
+        }
+
         // Update vote count
-        if (button.getId() == R.id.upvote)
-            button.setText("▲ " + Integer.toString(vote.getUpvotes()));
-        else
-            button.setText("▼ " + Integer.toString(vote.getDownvotes()));
+        up.setText("▲ " + Integer.toString(vote.getUpvotes()));
+        down.setText("▼ " + Integer.toString(vote.getDownvotes()));
     }
 }

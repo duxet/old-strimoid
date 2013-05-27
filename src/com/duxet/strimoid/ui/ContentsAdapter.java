@@ -91,8 +91,7 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         up.setTag(position);
         down.setTag(position);
         
-        UIHelper.updateVoteButton(up, content);
-        UIHelper.updateVoteButton(down, content);
+        UIHelper.updateVoteButtons(up, down, content);
         
         vi.setOnClickListener(this);
         vi.setTag(position);
