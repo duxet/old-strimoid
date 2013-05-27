@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTransaction;
-import android.text.Editable;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,6 +24,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -387,9 +387,11 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         }
         
         LayoutInflater inflater = this.getLayoutInflater();
-        View layout = inflater.inflate(R.layout.dialog_add_entry,null);
+        final View layout = inflater.inflate(R.layout.dialog_add_entry,null);
         final Spinner spinner = (Spinner) layout.findViewById(R.id.strim);
         final EditText text = (EditText) layout.findViewById(R.id.text);
+        final EditText strimName = (EditText) layout.findViewById(R.id.strimName);
+        final ImageButton button = (ImageButton) layout.findViewById(R.id.edit);
 
         ArrayList<String> spinnerOptions = new ArrayList<String>();
         for (Strim strim : this.strims) {
@@ -400,14 +402,27 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                 android.R.layout.simple_spinner_item, spinnerOptions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+        
+        button.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                spinner.setVisibility(View.GONE);
+                button.setVisibility(View.GONE);
+                strimName.setVisibility(View.VISIBLE);
+            }
+        });
 
         new AlertDialog.Builder(this)
             .setTitle("Dodaj wpis")
             .setView(layout)
             .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    progressBar.setVisibility(View.VISIBLE);
                     String strim = strims.get(spinner.getSelectedItemPosition()).getName().replace("/s/", "");
+                    progressBar.setVisibility(View.VISIBLE);
+                    
+                    if (!strimName.getText().toString().isEmpty())
+                        strim = strimName.getText().toString();
+                    
                     addNewEntry(text.getText().toString(), strim);
                 }
             }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -439,8 +454,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
             }
         });
     }
-
-
 
     private class drawContents extends AsyncTask<String, Void, Void>{
         ArrayList<Content> newContents;
@@ -507,7 +520,6 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     }
 
     private class EndlessScrollListener implements OnScrollListener {
-
         private int visibleThreshold = 5;
         private int currentPage = 1;
         private int previousTotal = 0;
