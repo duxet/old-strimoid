@@ -452,6 +452,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         final EditText input = new EditText(this);
         input.setHint("Treść odpowiedzi");
         input.setText("@" + entries.get(pos).getAuthor() + ": ");
+        input.setSelection(input.getText().length());
         
         // Find entry parent
         Entry currentEntry = entries.get(pos);
