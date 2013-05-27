@@ -414,6 +414,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
         new AlertDialog.Builder(this)
             .setTitle("Dodaj wpis")
+            .setIcon(R.drawable.ic_dialog_comment)
             .setView(layout)
             .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
