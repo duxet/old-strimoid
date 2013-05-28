@@ -55,7 +55,7 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         View vi = convertView;
         AQuery aq = new AQuery(vi);
 
-        if(convertView==null)
+        if (convertView == null)
             vi = inflater.inflate(R.layout.activity_main_content, null);
 
         Content content = data.get(position);
@@ -88,7 +88,7 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         	   sb.setSpan(bss, 13, (13+content.getAuthor().length()), Spannable.SPAN_INCLUSIVE_INCLUSIVE); 
         	   
         	   ImageSpan is = new ImageSpan(activity, R.drawable.ic_text_comments);
-        	   sb.append("   " + Integer.toString(content.getComments()) + "  ");
+        	   sb.append("   " + Integer.toString(content.getComments()) + "\u00A0 ");
                sb.setSpan(is, sb.length()-1, sb.length(), 0);
                
         	   desc.setText(sb);

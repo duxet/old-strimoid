@@ -66,8 +66,9 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     StrimsAdapter strimsAdapter;
 
     ProgressBar progressBar, progressBarBottom;
-    Menu menu;
-    
+    SlidingMenu menu;
+    Menu optionsMenu;
+
     String currentContentType = "";
     String currentStrim = "";
     
@@ -95,7 +96,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
 
         progressBarBottom = (ProgressBar) findViewById(R.id.progressBarBottom);
         
-        SlidingMenu menu = new SlidingMenu(this);
+        menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
         
 		menu.setShadowWidthRes(R.dimen.shadow_width);
@@ -188,13 +189,12 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
                     new drawContents().execute(response);
                 
                 Parser parser = new Parser(response);
-                
-                //if (!Session.getUser().isLogged() && parser.checkIsLogged()){
-                if (parser.checkIsLogged()){
-                    menu.clear();
-                    onCreateOptionsMenu(menu);
+
+                if (!Session.getUser().isLogged() && parser.checkIsLogged()){
                     Session.setToken(parser.getToken());
-                	Session.getUser().setUser(parser.getUsername(), "");
+                    Session.getUser().setUser(parser.getUsername(), "");
+                    optionsMenu.clear();
+                    onCreateOptionsMenu(optionsMenu);
                 }
                 
                 if(strims.isEmpty())
@@ -327,6 +327,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         @Override
         public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
             loadContents(strims.get(pos).getName(), currentContentType, 1, true);
+            menu.toggle();
         }
     };
 
@@ -337,7 +338,7 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
     	 * potrzebne na potrzeby logowania
     	 */
         
-        this.menu = menu;
+        optionsMenu = menu;
     	
         if (!Session.getUser().isLogged()) {
             menu.add(1, 1, 0, "Zaloguj się")
