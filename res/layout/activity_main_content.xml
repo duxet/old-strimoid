@@ -48,10 +48,11 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/thumbnail"
         android:layout_toRightOf="@+id/thumbnail"
+        android:text="Title"
         android:textColor="#040404"
-        android:typeface="sans"
         android:textSize="15sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:typeface="sans" />
  
     <TextView
         android:id="@+id/desc"
@@ -60,8 +61,26 @@
         android:layout_below="@id/title"
         android:layout_marginTop="1dip"
         android:layout_toRightOf="@+id/thumbnail"
+        android:text="Desc"
         android:textColor="#343434"
         android:textSize="11sp" />
 
+    <TextView
+        android:id="@+id/comments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/thumbnail"
+        android:layout_alignTop="@+id/imageView1"
+        android:paddingLeft="8dp"
+        android:text="111"
+        android:textSize="11sp" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_below="@+id/thumbnail"
+        android:layout_toRightOf="@+id/comments"
+        android:src="@drawable/ic_dialog_comment" />
 
 </RelativeLayout>

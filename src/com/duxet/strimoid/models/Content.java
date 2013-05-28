@@ -2,32 +2,32 @@ package com.duxet.strimoid.models;
 
 public class Content implements Voting {
 
-    String id, title, author, desc, url, imageUrl, commentsUrl, time, strim;
+    String id, title, author, url, imageUrl, commentsUrl, time, strim;
     String likeUrl, dislikeUrl;
-    int upvotes, downvotes, color;
+    int upvotes, downvotes, comments, color;
     boolean isUpvoted, isDownvoted;
-    
-    public Content(String id, String title, String author, String desc, String time, String strim, 
-            String url, String imageUrl, String commentsUrl, String likeUrl,
-            String dislikeUrl, int upvotes, int downvotes, boolean isUpvoted,
-            boolean isDownvoted, int color) {
+
+    public Content(String id, String title, String author, String url,
+            String imageUrl, String commentsUrl, String time, String strim,
+            String likeUrl, String dislikeUrl, int upvotes, int downvotes,
+            int comments, int color, boolean isUpvoted, boolean isDownvoted) {
         super();
         this.id = id;
         this.title = title;
         this.author = author;
-        this.desc = desc;
         this.url = url;
         this.imageUrl = imageUrl;
         this.commentsUrl = commentsUrl;
+        this.time = time;
+        this.strim = strim;
         this.likeUrl = likeUrl;
         this.dislikeUrl = dislikeUrl;
         this.upvotes = upvotes;
         this.downvotes = downvotes;
+        this.comments = comments;
+        this.color = color;
         this.isUpvoted = isUpvoted;
         this.isDownvoted = isDownvoted;
-        this.color = color;
-        this.time = time;
-        this.strim = strim;
     }
 
     public String getId() {
@@ -44,10 +44,6 @@ public class Content implements Voting {
     
     public int getAuthorColor() {
         return color;
-    }
-
-    public String getDesc() {
-        return desc;
     }
     
     public String getStrim() {
@@ -84,6 +80,10 @@ public class Content implements Voting {
 
     public int getDownvotes() {
         return downvotes;
+    }
+    
+    public int getComments() {
+        return comments;
     }
 
     public boolean isUpvoted() {

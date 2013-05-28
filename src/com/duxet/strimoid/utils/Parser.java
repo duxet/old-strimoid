@@ -87,7 +87,6 @@ public class Parser {
             String id = el.getElementsByTag("a").first().attr("id").trim();
             String title = el.getElementsByClass("content_title").first().text().trim();
             String author = el.getElementsByClass("user_name").first().getElementsByTag("span").first().text().trim();
-            String desc = el.getElementsByClass("content_info").text().trim();
             
             String time = el.getElementsByClass("content_info_basic").first().getElementsContainingOwnText("temu").first().text();
             String strim = el.getElementsByClass("content_info_basic").first().getElementsByTag("a").last().text();
@@ -108,10 +107,16 @@ public class Parser {
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_vote_count").text());
             
+            // Get number of comments
+            String tmp = el.getElementsByClass("content_info_actions").first().getElementsContainingOwnText("komentarz").first().text();
+            Matcher m = Pattern.compile("([0-9]+) komentarz").matcher(tmp);
+            m.find();
+            int comments = Integer.parseInt(m.group(1));
+            
             int color = getColorUserByString(el.getElementsByClass("user_name").first().attr("class"));
             
-            Content content = new Content(id, title, author, desc, time, strim, url, imageUrl, commentsUrl,
-                    likeUrl, dislikeUrl, up, down, isUpvoted, isDownvoted, color);
+            Content content = new Content(id, title, author, url, imageUrl, commentsUrl, time, strim,
+                    likeUrl, dislikeUrl, up, down, comments, color, isUpvoted, isDownvoted);
             contents.add(content);
         }
 

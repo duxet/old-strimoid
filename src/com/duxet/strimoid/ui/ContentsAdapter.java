@@ -60,6 +60,7 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
 
         TextView title = (TextView) vi.findViewById(R.id.title);
         TextView desc = (TextView) vi.findViewById(R.id.desc);
+        TextView comments = (TextView) vi.findViewById(R.id.comments);
         Button up = (Button) vi.findViewById(R.id.upvote);
         Button down = (Button) vi.findViewById(R.id.downvote);
         ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
@@ -75,6 +76,7 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         }
 
         title.setText(content.getTitle());
+        comments.setText(Integer.toString(content.getComments()));
 
         {
         	   final SpannableStringBuilder sb = new SpannableStringBuilder("Dodane przez "+content.getAuthor()+" "+content.getTime()+" do "+content.getStrim());
