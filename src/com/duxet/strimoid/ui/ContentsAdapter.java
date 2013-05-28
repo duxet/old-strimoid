@@ -11,10 +11,12 @@ import com.duxet.strimoid.utils.UIHelper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,7 +62,6 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
 
         TextView title = (TextView) vi.findViewById(R.id.title);
         TextView desc = (TextView) vi.findViewById(R.id.desc);
-        TextView comments = (TextView) vi.findViewById(R.id.comments);
         Button up = (Button) vi.findViewById(R.id.upvote);
         Button down = (Button) vi.findViewById(R.id.downvote);
         ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
@@ -76,7 +77,6 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         }
 
         title.setText(content.getTitle());
-        comments.setText(Integer.toString(content.getComments()));
 
         {
         	   final SpannableStringBuilder sb = new SpannableStringBuilder("Dodane przez "+content.getAuthor()+" "+content.getTime()+" do "+content.getStrim());
@@ -86,7 +86,11 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
 
         	   sb.setSpan(fcs, 13, (13+content.getAuthor().length()), Spannable.SPAN_INCLUSIVE_INCLUSIVE); 
         	   sb.setSpan(bss, 13, (13+content.getAuthor().length()), Spannable.SPAN_INCLUSIVE_INCLUSIVE); 
-
+        	   
+        	   ImageSpan is = new ImageSpan(activity, R.drawable.ic_text_comments);
+        	   sb.append("   " + Integer.toString(content.getComments()) + "  ");
+               sb.setSpan(is, sb.length()-1, sb.length(), 0);
+               
         	   desc.setText(sb);
         }
         
