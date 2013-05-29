@@ -48,7 +48,7 @@ public class ContentActivity extends SherlockActivity {
     ProgressBar progressBar;
 
     ArrayList<Comment> comments = new ArrayList<Comment>();
-    String url, commentsUrl, title, externalContent;
+    String id, url, commentsUrl, title;
     CommentsAdapter commentsAdapter;
     
     @Override
@@ -61,6 +61,7 @@ public class ContentActivity extends SherlockActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         
         Intent intent = getIntent();
+        id = intent.getStringExtra("id");
         url = intent.getStringExtra("url");
         commentsUrl = intent.getStringExtra("commentsUrl");
         title = intent.getStringExtra("title");
@@ -104,7 +105,8 @@ public class ContentActivity extends SherlockActivity {
                 /* Getting commentsAddNew token */
                 Parser parser = new Parser(response);
                 Session.setToken(parser.getToken());
-                externalContent = parser.getFirstValue("_external[content]");
+                
+                
             }
         });
     }
@@ -247,7 +249,7 @@ public class ContentActivity extends SherlockActivity {
     public void addNewComment(String comment, String parent){
     	RequestParams params = new RequestParams();
 		params.put("token", Session.getToken());
-		params.put("_external[content]", externalContent);
+		params.put("_external[content]", id);
 		params.put("_external[parent]", parent);
 		params.put("text", comment);
 

@@ -11,7 +11,6 @@ import com.duxet.strimoid.utils.UIHelper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -110,6 +109,7 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         int position = (Integer) view.getTag();
 
         Intent myIntent = new Intent(activity, ContentActivity.class);
+        myIntent.putExtra("id", data.get(position).getId());
         myIntent.putExtra("url", data.get(position).getUrl());
         myIntent.putExtra("commentsUrl", data.get(position).getCommentsUrl());
         myIntent.putExtra("title", data.get(position).getTitle());
