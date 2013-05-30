@@ -2,11 +2,11 @@ package com.duxet.strimoid.ui;
 
 import java.util.ArrayList;
 
-import com.androidquery.AQuery;
 import com.duxet.strimoid.R;
 import com.duxet.strimoid.ContentActivity;
 import com.duxet.strimoid.models.Content;
 import com.duxet.strimoid.utils.UIHelper;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.app.Activity;
 import android.content.Context;
@@ -30,7 +30,14 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
     private Activity activity;
     private ArrayList<Content> data;
     private static LayoutInflater inflater = null;
+    private ImageLoader imageLoader = ImageLoader.getInstance();
 
+    static class ViewHolder {
+        TextView title, desc;
+        Button up, down;
+        ImageView image;
+    }
+    
     public ContentsAdapter(Activity a, ArrayList<Content> d) {
         activity = a;
         data = d;
@@ -52,30 +59,36 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         View vi = convertView;
-        AQuery aq = new AQuery(vi);
 
-        if (convertView == null)
+        if (vi == null) {
             vi = inflater.inflate(R.layout.activity_main_content, null);
+            ViewHolder holder = new ViewHolder();
+            
+            holder.title = (TextView) vi.findViewById(R.id.title);
+            holder.desc = (TextView) vi.findViewById(R.id.desc);
+            holder.up = (Button) vi.findViewById(R.id.upvote);
+            holder.down = (Button) vi.findViewById(R.id.downvote);
+            holder.image = (ImageView) vi.findViewById(R.id.list_image);
+            
+            vi.setTag(holder);
+        }
 
         Content content = data.get(position);
+        ViewHolder holder = (ViewHolder) vi.getTag();
 
-        TextView title = (TextView) vi.findViewById(R.id.title);
-        TextView desc = (TextView) vi.findViewById(R.id.desc);
-        Button up = (Button) vi.findViewById(R.id.upvote);
-        Button down = (Button) vi.findViewById(R.id.downvote);
-        ImageView thumb_image = (ImageView) vi.findViewById(R.id.list_image);
-        
         boolean thumbnailsEnabled = PreferenceManager.
                 getDefaultSharedPreferences(activity).getBoolean("show_thumbnails", true);
         
+        holder.image.setImageResource(android.R.color.transparent);
+        
         if (!content.getImageUrl().equals("") && thumbnailsEnabled) {
-            thumb_image.setVisibility(View.VISIBLE);
-            aq.id(R.id.list_image).image(content.getImageUrl(), false, true);
+            holder.image.setVisibility(View.VISIBLE);
+            imageLoader.displayImage(content.getImageUrl(), holder.image);
         } else {
-            thumb_image.setVisibility(View.GONE);
+            holder.image.setVisibility(View.GONE);
         }
 
-        title.setText(content.getTitle());
+        holder.title.setText(content.getTitle());
 
         {
         	   final SpannableStringBuilder sb = new SpannableStringBuilder("Dodane przez "+content.getAuthor()+" "+content.getTime()+" do "+content.getStrim());
@@ -90,23 +103,23 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         	   sb.append("   " + Integer.toString(content.getComments()) + "\u00A0 ");
                sb.setSpan(is, sb.length()-1, sb.length(), 0);
                
-        	   desc.setText(sb);
+        	   holder.desc.setText(sb);
         }
         
-        up.setTag(position);
-        down.setTag(position);
+        holder.up.setTag(position);
+        holder.down.setTag(position);
         
-        UIHelper.updateVoteButtons(up, down, content);
+        UIHelper.updateVoteButtons(holder.up, holder.down, content);
         
         vi.setOnClickListener(this);
-        vi.setTag(position);
+        vi.setTag(R.id.TAG_POSITION, position);
         
         return vi;
     }
 
     @Override
     public void onClick(View view) {
-        int position = (Integer) view.getTag();
+        int position = (Integer) view.getTag(R.id.TAG_POSITION);
 
         Intent myIntent = new Intent(activity, ContentActivity.class);
         myIntent.putExtra("id", data.get(position).getId());

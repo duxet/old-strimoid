@@ -662,39 +662,66 @@ public class MainActivity extends SherlockActivity implements SearchView.OnQuery
         super.onCreateContextMenu(menu, v, menuInfo);
         
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        Entry entry = entries.get(info.position);
         
-        menu.add(Menu.NONE, 1, Menu.NONE, "Odpowiedz");
-        
-        if (entry.getAuthor().equals(Session.getUser().getUsername()))
-            menu.add(Menu.NONE, 2, Menu.NONE, "Usuń");
-        
-        // Find URLs in text
-        Pattern p = Patterns.WEB_URL;
-        Matcher m = p.matcher(entry.getMessage());
-        while(m.find()) {
-            menu.add(100, Menu.NONE, Menu.NONE, m.group());
+        if (currentContentType.equals("wpisy")) {
+            Entry entry = entries.get(info.position);
+            
+            menu.add(Menu.NONE, 1, Menu.NONE, "Odpowiedz");
+            
+            if (entry.getAuthor().equals(Session.getUser().getUsername()))
+                menu.add(Menu.NONE, 2, Menu.NONE, "Usuń");
+            
+            // Find URLs in text
+            Pattern p = Patterns.WEB_URL;
+            Matcher m = p.matcher(entry.getMessage());
+            while(m.find()) {
+                menu.add(100, Menu.NONE, Menu.NONE, m.group());
+            }
+        } else {
+            menu.add(Menu.NONE, 1, Menu.NONE, "Otwórz w przeglądarce");
         }
     }
     
     @Override
     public boolean onContextItemSelected(android.view.MenuItem item) {
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-        Entry entry = entries.get(info.position);
+        
+        if (currentContentType.equals("wpisy"))
+            onEntrySelected(item, info.position);
+        else
+            onContentSelected(item, info.position);
+        
+        return true;
+    }
+    
+    private void onContentSelected(android.view.MenuItem item, int position) {
+        Content content = contents.get(position);
         
         switch (item.getItemId()) {
             case 1:
-                showAddReplyDialog(info.position);
-                return true;
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getUrl()));
+                startActivity(browserIntent);
+        }
+    }
+
+    private void onEntrySelected(android.view.MenuItem item, int position) {
+        Entry entry = entries.get(position);
+        
+        switch (item.getItemId()) {
+            case 1:
+                showAddReplyDialog(position);
             case 2:
                 showRemoveEntryDialog(entry);
-                return true;
             default:
                 if(item.getGroupId() == 100) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) item.getTitle()));
+                    String url = (String) item.getTitle();
+                    
+                    if (!url.startsWith("http://") || !url.startsWith("https://"))
+                        url = "http://" + url;
+                    
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(browserIntent);
                 }
-                return true;
         }
     }
 
