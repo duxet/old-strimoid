@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="LoginFormContainer">
         <item name="android:layout_width">match_parent</item>
@@ -12,13 +12,13 @@
     	
     	<!--  action bar & tab -->
     	<item name="actionBarStyle">@style/Widget.AppTheme.ActionBar</item>
-    	<item name="android:actionBarStyle">@style/Widget.AppTheme.ActionBar</item>
+    	<item name="android:actionBarStyle" tools:ignore="NewApi">@style/Widget.AppTheme.ActionBar</item>
     	
     	<item name="actionBarTabStyle">@style/Widget.AppTheme.TabView</item>
-    	<item name="android:actionBarTabStyle">@style/Widget.AppTheme.TabView</item>
+    	<item name="android:actionBarTabStyle" tools:ignore="NewApi">@style/Widget.AppTheme.TabView</item>
     	
     	<item name="actionBarTabBarStyle">@style/Widget.AppTheme.TabBar</item>
-    	<item name="android:actionBarTabBarStyle">@style/Widget.AppTheme.TabBar</item>
+    	<item name="android:actionBarTabBarStyle" tools:ignore="NewApi">@style/Widget.AppTheme.TabBar</item>
 	</style>
 	
 	<style name="MyActionButtonStyle" parent="Widget.Sherlock.ActionButton">
@@ -29,7 +29,7 @@
 	<style name="Widget.AppTheme.ActionBar" parent="Widget.Sherlock.ActionBar">
 	    <item name="android:background">@drawable/action_bar_background</item>
 	    <item name="background">@drawable/action_bar_background</item>
-	    <item name="android:height">42dip</item>
+	    <item name="android:height">46dip</item>
 	</style>
 	
 	<style name="Widget.AppTheme.TabBar" parent="Widget.Sherlock.Light.ActionBar.TabBar">
@@ -38,12 +38,13 @@
   
 	<style name="Widget.AppTheme.TabView" parent="Widget.Sherlock.ActionBar.TabView">
 	    <!-- Tab text -->
-	    <item name="android:height">26dip</item>
+	    <item name="android:height">25dip</item>
 	    <item name="android:textSize">15sp</item>
 	         
-	    <!--  Lines under tabs -->
+	    <!--  Lines under tabs
 	    <item name="background">#ffffff</item>
    		<item name="android:background">#ffffff</item>
+   		 -->
 	</style>
 
 </resources>

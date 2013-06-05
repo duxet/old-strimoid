@@ -23,8 +23,7 @@ import com.loopj.android.http.RequestParams;
 
 public class LoginActivity extends SherlockActivity {
 	Button sign_in;
-	LinearLayout login_status;
-	ScrollView login_form;
+	LinearLayout login_status, login_form;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,7 @@ public class LoginActivity extends SherlockActivity {
 
         setContentView(R.layout.activity_login);
         login_status = (LinearLayout) findViewById(R.id.login_status);
-        login_form =  (ScrollView) findViewById(R.id.login_form);
+        login_form =  (LinearLayout) findViewById(R.id.login_form);
         sign_in = (Button) findViewById(R.id.sign_in_button);
         
         sign_in.setOnClickListener(new OnClickListener() {
@@ -49,7 +48,7 @@ public class LoginActivity extends SherlockActivity {
 				imm.hideSoftInputFromWindow(login_status.getWindowToken(), 0);
 				
 				login_status.setVisibility(LinearLayout.VISIBLE);
-				login_form.setVisibility(ScrollView.GONE);
+				login_form.setVisibility(LinearLayout.GONE);
 				
 				EditText username = (EditText) findViewById(R.id.email);
 				EditText password = (EditText )findViewById(R.id.password);

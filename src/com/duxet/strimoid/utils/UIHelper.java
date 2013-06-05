@@ -1,8 +1,11 @@
 package com.duxet.strimoid.utils;
 
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.widget.Button;
 
+import com.actionbarsherlock.view.MenuItem;
+import com.duxet.strimoid.R;
 import com.duxet.strimoid.models.Voting;
 
 public class UIHelper {
@@ -23,5 +26,19 @@ public class UIHelper {
         // Update vote count
         up.setText("▲ " + Integer.toString(vote.getUpvotes()));
         down.setText("▼ " + Integer.toString(vote.getDownvotes()));
+    }
+    
+    public static void updateVoteActionBarButtons(MenuItem up, MenuItem down, Voting vote) {
+        // Update color
+        int blue = Color.parseColor("#3272aa");
+
+        if (vote.isUpvoted()) {
+            up.getIcon().setColorFilter(blue, PorterDuff.Mode.SRC_ATOP);
+        } else if (vote.isDownvoted()) {
+            down.getIcon().setColorFilter(blue, PorterDuff.Mode.SRC_ATOP);
+        } else {
+            up.setIcon(R.drawable.action_good);
+            down.setIcon(R.drawable.action_bad);
+        } 
     }
 }

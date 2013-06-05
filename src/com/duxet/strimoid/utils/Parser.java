@@ -16,6 +16,7 @@ import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.models.Comment;
 
 public class Parser {
+    
     private String html;
     private Document doc;
 
@@ -63,16 +64,13 @@ public class Parser {
             boolean isReply = el.hasClass("reply");
             boolean isUpvoted = el.getElementsByClass("like").first().hasClass("selected");
             boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
-            
-            String likeUrl = el.getElementsByClass("like").first().attr("href");
-            String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
-            
+
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_comment_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_comment_vote_count").text());
 
             int color = getColorUserByString(el.getElementsByClass("user_name").first().attr("class"));
             
-            Comment comment = new Comment(id, author, avatar, text, time, likeUrl, dislikeUrl,
+            Comment comment = new Comment(id, author, avatar, text, time,
                     up, down, isUpvoted, isDownvoted, isReply, color);
             comments.add(comment);
         }
@@ -91,7 +89,6 @@ public class Parser {
             String time = el.getElementsByClass("content_info_basic").first().getElementsContainingOwnText("temu").first().text();
             String strim = el.getElementsByClass("content_info_basic").first().getElementsByTag("a").last().text();
             String url = el.getElementsByClass("content_title").first().attr("href").trim();
-            String commentsUrl = el.getElementsByClass("content_info_actions").first().getElementsByTag("a").first().attr("href").trim();
 
             String imageUrl = "";
 
@@ -100,9 +97,6 @@ public class Parser {
             
             boolean isUpvoted = el.getElementsByClass("like").first().hasClass("selected");
             boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
-            
-            String likeUrl = el.getElementsByClass("like").first().attr("href");
-            String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
 
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("content_vote_count").text());
             int down = Integer.parseInt(el.getElementsByClass("dislike").first().getElementsByClass("content_vote_count").text());
@@ -115,8 +109,8 @@ public class Parser {
             
             int color = getColorUserByString(el.getElementsByClass("user_name").first().attr("class"));
             
-            Content content = new Content(id, title, author, url, imageUrl, commentsUrl, time, strim,
-                    likeUrl, dislikeUrl, up, down, comments, color, isUpvoted, isDownvoted);
+            Content content = new Content(id, title, author, url, imageUrl, time, strim,
+                    up, down, comments, color, isUpvoted, isDownvoted);
             contents.add(content);
         }
 
@@ -150,8 +144,6 @@ public class Parser {
                 boolean isUpvoted = el.getElementsByClass("like").first().hasClass("selected");
                 boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
                 
-                String likeUrl = el.getElementsByClass("like").first().attr("href");
-                String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
                 String moreUrl = "";
                 
                 int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
@@ -162,14 +154,14 @@ public class Parser {
                 if (!isReply)
                     firstId = id;
                 
-                Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl, moreUrl,
+                Entry entry = new Entry(id, author, avatar, message, time, strim, moreUrl,
                         up, down, color, isUpvoted, isDownvoted, isReply);
                 entries.add(entry);
             }
             
             if (li.getElementsByClass("entries_more").first() != null) {
                 String moreUrl = "ajax/w/" + firstId + "/odpowiedzi";
-                Entry entry = new Entry("", "", "", "", "", "", "", "", moreUrl, 0, 0, 0, false, false, false);
+                Entry entry = new Entry("", "", "", "", "", "", moreUrl, 0, 0, 0, false, false, false);
                 entries.add(entry);
             }
         }
@@ -195,8 +187,6 @@ public class Parser {
             boolean isUpvoted = el.getElementsByClass("like").first().hasClass("selected");
             boolean isDownvoted = el.getElementsByClass("dislike").first().hasClass("selected");
             
-            String likeUrl = el.getElementsByClass("like").first().attr("href");
-            String dislikeUrl = el.getElementsByClass("dislike").first().attr("href");
             String moreUrl = "";
             
             int up = Integer.parseInt(el.getElementsByClass("like").first().getElementsByClass("entry_vote_count").text());
@@ -204,7 +194,7 @@ public class Parser {
             
             int color = getColorUserByString(el.getElementsByClass("entry_user").first().getElementsByTag("a").first().attr("class"));
 
-            Entry entry = new Entry(id, author, avatar, message, time, strim, likeUrl, dislikeUrl, moreUrl,
+            Entry entry = new Entry(id, author, avatar, message, time, strim, moreUrl,
                     up, down, color, isUpvoted, isDownvoted, isReply);
             entries.add(entry);
         }    

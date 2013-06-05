@@ -1,14 +1,15 @@
 package com.duxet.strimoid.models;
 
+import com.duxet.strimoid.utils.Session;
+
 public class Comment implements Voting {
     
     String id, author, avatar, text, time;
-    String likeUrl, dislikeUrl;
     int upvotes, downvotes, color;
     boolean isUpvoted, isDownvoted, isReply;
 
     public Comment(String id, String author, String avatar, String text,
-            String time, String likeUrl, String dislikeUrl, int upvotes,
+            String time, int upvotes,
             int downvotes, boolean isUpvoted, boolean isDownvoted,
             boolean isReply, int color) {
         super();
@@ -17,8 +18,6 @@ public class Comment implements Voting {
         this.avatar = avatar;
         this.text = text;
         this.time = time;
-        this.likeUrl = likeUrl;
-        this.dislikeUrl = dislikeUrl;
         this.upvotes = upvotes;
         this.downvotes = downvotes;
         this.isUpvoted = isUpvoted;
@@ -49,14 +48,6 @@ public class Comment implements Voting {
     
     public String getTime() {
         return time;
-    }
-    
-    public String getLikeUrl() {
-        return likeUrl;
-    }
-    
-    public String getDislikeUrl() {
-        return dislikeUrl;
     }
     
     public int getUpvotes() {
@@ -95,4 +86,12 @@ public class Comment implements Voting {
         this.downvotes = downvotes;
     }
 
+    public String getLikeUrl() {
+        return "ajax/k/" + this.id + "/lubie?token=" + Session.getToken();
+    }
+
+    public String getDislikeUrl() {
+        return "ajax/k/" + this.id + "/nielubie?token=" + Session.getToken();
+    }
+    
 }

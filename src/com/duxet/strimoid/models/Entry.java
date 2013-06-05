@@ -1,15 +1,16 @@
 package com.duxet.strimoid.models;
 
+import com.duxet.strimoid.utils.Session;
+
 public class Entry implements Voting {
 
-    String id, author, avatar, message, time, strim;
-    String likeUrl, dislikeUrl, moreUrl;
+    String id, author, avatar, message, time, strim, moreUrl;
     int upvotes, downvotes, color;
     boolean isUpvoted, isDownvoted, isReply;
 
     public Entry(String id, String author, String avatar,
-            String message, String time, String strim, String likeUrl,
-            String dislikeUrl, String moreUrl, int upvotes, int downvotes,
+            String message, String time, String strim, String moreUrl,
+            int upvotes, int downvotes,
             int color, boolean isUpvoted, boolean isDownvoted, boolean isReply) {
         super();
         this.id = id;
@@ -18,8 +19,6 @@ public class Entry implements Voting {
         this.message = message;
         this.time = time;
         this.strim = strim;
-        this.likeUrl = likeUrl;
-        this.dislikeUrl = dislikeUrl;
         this.moreUrl = moreUrl;
         this.upvotes = upvotes;
         this.downvotes = downvotes;
@@ -55,14 +54,6 @@ public class Entry implements Voting {
 
     public String getStrim() {
         return strim;
-    }
-
-    public String getLikeUrl() {
-        return likeUrl;
-    }
-
-    public String getDislikeUrl() {
-        return dislikeUrl;
     }
 
     public int getUpvotes() {
@@ -107,6 +98,14 @@ public class Entry implements Voting {
 
     public String getMoreUrl() {
         return moreUrl;
+    }
+    
+    public String getLikeUrl() {
+        return "ajax/w/" + this.id + "/lubie?token=" + Session.getToken();
+    }
+
+    public String getDislikeUrl() {
+        return "ajax/w/" + this.id + "/nielubie?token=" + Session.getToken();
     }
 
 }

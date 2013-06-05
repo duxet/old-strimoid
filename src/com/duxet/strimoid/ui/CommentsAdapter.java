@@ -9,6 +9,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,10 +83,13 @@ public class CommentsAdapter extends BaseAdapter {
             holder.image.setVisibility(View.GONE);
         }
 
-        if (!comment.isReply())
+        if (!comment.isReply()) {
+            vi.setBackgroundColor(Color.parseColor("#f5f5f5"));
             holder.reply.setVisibility(View.GONE);
-        else
+        } else {
+            vi.setBackgroundColor(Color.parseColor("#e9e9e9"));
             holder.reply.setVisibility(View.VISIBLE);
+        }
 
         holder.author.setText(comment.getAuthor());
         holder.author.setTextColor(comment.getAuthorColor());

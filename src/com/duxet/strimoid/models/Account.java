@@ -10,7 +10,7 @@ public class Account {
     private String username, password;
     
     public Account(){
-    	setUser("","");
+    	setUser("", "");
     }
 
     public Account(String username, String password) {
@@ -31,7 +31,7 @@ public class Account {
     }
     
     public boolean isLogged(){
-		return (this.username!="")?true:false;
+		return !this.username.equals("") ? true : false;
     }
     
 }

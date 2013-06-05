@@ -10,7 +10,10 @@ import org.json.JSONObject;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
+import com.duxet.strimoid.R.id;
 import com.duxet.strimoid.models.Comment;
+import com.duxet.strimoid.models.Content;
 import com.duxet.strimoid.models.Voting;
 import com.duxet.strimoid.ui.CommentsAdapter;
 import com.duxet.strimoid.utils.*;
@@ -25,6 +28,9 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.util.Patterns;
 import android.view.ContextMenu;
@@ -43,12 +49,15 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 @SuppressLint("SetJavaScriptEnabled")
 public class ContentActivity extends SherlockActivity {
     
+    // UI elements
+    Menu optionsMenu;
     WebView webView;
     ListView list;
     ProgressBar progressBar;
 
+    // Data
+    Content content;
     ArrayList<Comment> comments = new ArrayList<Comment>();
-    String id, url, commentsUrl, title;
     CommentsAdapter commentsAdapter;
     
     @Override
@@ -61,14 +70,11 @@ public class ContentActivity extends SherlockActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         
         Intent intent = getIntent();
-        id = intent.getStringExtra("id");
-        url = intent.getStringExtra("url");
-        commentsUrl = intent.getStringExtra("commentsUrl");
-        title = intent.getStringExtra("title");
+        content = intent.getParcelableExtra("content");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(title);
-        
+        getSupportActionBar().setTitle(content.getTitle());
+
         commentsAdapter = new CommentsAdapter(this, comments);
         list.setAdapter(commentsAdapter);
         
@@ -76,11 +82,13 @@ public class ContentActivity extends SherlockActivity {
 
         showPage();
     }
-    
+
     private void showPage() {
         webView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         list.setVisibility(View.GONE);
+        
+        String url = content.getUrl();
         
         if (url.startsWith("/"))
             url = "http://strims.pl" + url;
@@ -97,7 +105,7 @@ public class ContentActivity extends SherlockActivity {
         progressBar.setVisibility(View.VISIBLE);
         list.setVisibility(View.VISIBLE);
 
-        HTTPClient.get(commentsUrl, null, new AsyncHttpResponseHandler() {
+        HTTPClient.get(content.getCommentsUrl(), null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
                 new drawComments().execute(response);
@@ -105,8 +113,6 @@ public class ContentActivity extends SherlockActivity {
                 /* Getting commentsAddNew token */
                 Parser parser = new Parser(response);
                 Session.setToken(parser.getToken());
-                
-                
             }
         });
     }
@@ -147,14 +153,7 @@ public class ContentActivity extends SherlockActivity {
             }).show();
     }
     
-    public void vote(final View v) {
-        int firstPos = list.getFirstVisiblePosition() - list.getHeaderViewsCount();
-        int pos = list.getPositionForView(v);
-        View row = list.getChildAt(pos - firstPos);
-        
-        final Button downBtn = (Button) row.findViewById(R.id.downvote);
-        final Button upBtn = (Button) row.findViewById(R.id.upvote);
-        
+    public void vote(final MenuItem m) {
         final String action;
         String url ;
 
@@ -163,9 +162,11 @@ public class ContentActivity extends SherlockActivity {
             return;
         }
 
-        final Voting vote = comments.get(pos);
+        final Voting vote = content;
+        final MenuItem up = optionsMenu.findItem(R.id.action_good);
+        final MenuItem down = optionsMenu.findItem(R.id.action_bad);
 
-        if (v.getId() == R.id.upvote) {
+        if (m.getItemId() == R.id.action_good) {
             url = vote.getLikeUrl();
             
             if (vote.isDownvoted()) {
@@ -176,8 +177,8 @@ public class ContentActivity extends SherlockActivity {
                             if (response.getString("status").equals("OK")) {
                                 vote.setDownvoted(false);
                                 vote.setDownvotes(response.getJSONObject("content").getInt("dislikes"));
-                                UIHelper.updateVoteButtons(upBtn, downBtn, vote);
-                                vote(v);
+                                UIHelper.updateVoteActionBarButtons(up, down, vote);
+                                vote(m);
                             }
                         } catch (JSONException e) { return; }
                     }
@@ -199,8 +200,8 @@ public class ContentActivity extends SherlockActivity {
                             if (response.getString("status").equals("OK")) {
                                 vote.setUpvoted(false);
                                 vote.setUpvotes(response.getJSONObject("content").getInt("likes"));
-                                UIHelper.updateVoteButtons(upBtn, downBtn, vote);
-                                vote(v);
+                                UIHelper.updateVoteActionBarButtons(up, down, vote);
+                                vote(m);
                             }
                         } catch (JSONException e) { return; }
                     }
@@ -222,18 +223,18 @@ public class ContentActivity extends SherlockActivity {
                         vote.setDownvotes(response.getJSONObject("content").getInt("dislikes"));
                         
                         if (action.equals("dodaj")) {
-                            if (v.getId() == R.id.upvote) 
+                            if (m.getItemId() == R.id.action_good) 
                                 vote.setUpvoted(true);
                             else
                                 vote.setDownvoted(true);
                         } else {
-                            if (v.getId() == R.id.upvote) 
+                            if (m.getItemId() == R.id.action_bad) 
                                 vote.setUpvoted(false);
                             else
                                 vote.setDownvoted(false);
                         }
                         
-                        UIHelper.updateVoteButtons(upBtn, downBtn, vote);
+                        UIHelper.updateVoteActionBarButtons(up, down, vote);
                     }
                 } catch (JSONException e) { return; }
             }
@@ -243,13 +244,18 @@ public class ContentActivity extends SherlockActivity {
     @Override
     public boolean onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu) {
         getSupportMenuInflater().inflate(R.menu.view_content, menu);
+        optionsMenu = menu;
+        
+        UIHelper.updateVoteActionBarButtons(optionsMenu.findItem(R.id.action_good),
+                optionsMenu.findItem(R.id.action_bad), content);
+        
         return true;
     }
     
     public void addNewComment(String comment, String parent){
     	RequestParams params = new RequestParams();
 		params.put("token", Session.getToken());
-		params.put("_external[content]", id);
+		params.put("_external[content]", content.getId());
 		params.put("_external[parent]", parent);
 		params.put("text", comment);
 
@@ -365,6 +371,10 @@ public class ContentActivity extends SherlockActivity {
         case android.R.id.home:
             finish();
             break;
+        case R.id.action_good:
+        case R.id.action_bad:
+            vote(item);
+            break;
         case R.id.action_comments:
             showComments();
             break;
@@ -387,6 +397,10 @@ public class ContentActivity extends SherlockActivity {
 	                }
 	            }).show();
 	    	break;
+	    case R.id.action_open_in_browser:
+	        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(content.getUrl()));
+            startActivity(browserIntent);
+            break;
         }
 
         return true;

@@ -121,11 +121,8 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
     public void onClick(View view) {
         int position = (Integer) view.getTag(R.id.TAG_POSITION);
 
-        Intent myIntent = new Intent(activity, ContentActivity.class);
-        myIntent.putExtra("id", data.get(position).getId());
-        myIntent.putExtra("url", data.get(position).getUrl());
-        myIntent.putExtra("commentsUrl", data.get(position).getCommentsUrl());
-        myIntent.putExtra("title", data.get(position).getTitle());
-        activity.startActivity(myIntent);
+        Intent intent = new Intent(activity, ContentActivity.class);
+        intent.putExtra("content", data.get(position));
+        activity.startActivity(intent);
     }
 }
