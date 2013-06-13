@@ -7,6 +7,7 @@ import com.duxet.strimoid.models.Strim;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -56,7 +57,9 @@ public class StrimsAdapter extends BaseExpandableListAdapter implements OnClickL
         
         TextView title = (TextView) vi.findViewById(R.id.title);
         title.setText(strim.getTitle());
-
+        
+        vi.setBackgroundColor(Color.parseColor("#356691"));
+        
         return vi;
     }
 

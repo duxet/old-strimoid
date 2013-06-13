@@ -219,6 +219,11 @@ public class Parser {
             name = name.replaceFirst("/", "");
             
             String title = link.text().trim();
+            
+            // There may be two names - full and shortened, we want the first one
+            if (!link.children().isEmpty())
+                title = link.child(0).text().trim();
+            
             String desc = "";
             
             Boolean isGroup = false;
