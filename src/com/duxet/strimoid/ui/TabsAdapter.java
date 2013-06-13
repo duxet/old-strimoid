@@ -12,8 +12,6 @@ import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.ActionBar.TabListener;
-import com.duxet.strimoid.MainActivity;
-
 
 public class TabsAdapter extends FragmentPagerAdapter implements TabListener, ViewPager.OnPageChangeListener {
     
@@ -33,16 +31,16 @@ public class TabsAdapter extends FragmentPagerAdapter implements TabListener, Vi
     }
 
     private static class TabInfo {
-        public final Class fragmentClass;
+        public final Class<?> fragmentClass;
         public final Bundle args;
-        public TabInfo(Class fragmentClass,
+        public TabInfo(Class<?> fragmentClass,
                 Bundle args) {
             this.fragmentClass = fragmentClass;
             this.args = args;
         }
     }
 
-    public void addTab( CharSequence title, Class fragmentClass, Bundle args ) {
+    public void addTab( CharSequence title, Class<?> fragmentClass, Bundle args ) {
         final TabInfo tabInfo = new TabInfo( fragmentClass, args );
 
         Tab tab = mActionBar.newTab();
@@ -58,8 +56,11 @@ public class TabsAdapter extends FragmentPagerAdapter implements TabListener, Vi
 
     @Override
     public Fragment getItem(int position) {
-        final TabInfo tabInfo = (TabInfo) mTabs.get( position );
-        mFragments.set(position, Fragment.instantiate( mActivity, tabInfo.fragmentClass.getName(), tabInfo.args ));
+        if (mFragments.get(position) == null) {
+            final TabInfo tabInfo = (TabInfo) mTabs.get( position );
+            mFragments.set(position, Fragment.instantiate( mActivity, tabInfo.fragmentClass.getName(), tabInfo.args ));
+        }
+        
         return mFragments.get(position);
     }
 
@@ -73,7 +74,7 @@ public class TabsAdapter extends FragmentPagerAdapter implements TabListener, Vi
     }
 
     public Fragment getCurrentFragment() {
-        return mFragments.get(mActionBar.getSelectedNavigationIndex());
+        return this.getItem(mActionBar.getSelectedNavigationIndex());
     }
     
     public void onPageScrollStateChanged(int arg0) {

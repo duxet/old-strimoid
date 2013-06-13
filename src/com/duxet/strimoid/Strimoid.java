@@ -5,7 +5,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.app.Application;
-import android.util.Log;
 
 public class Strimoid extends Application {
     public void onCreate() {
@@ -20,7 +19,5 @@ public class Strimoid extends Application {
             .defaultDisplayImageOptions(defaultOptions)
             .build();
         ImageLoader.getInstance().init(config);
-        
-        Log.i("dupa", "sdsafdasdgfsdgfkjsdekfkfdkfsdkafsdksk");
     }
 }

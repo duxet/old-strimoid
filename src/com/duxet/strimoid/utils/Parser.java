@@ -204,6 +204,37 @@ public class Parser {
     
     public ArrayList<Strim> getStrims() {
         ArrayList<Strim> strims = new ArrayList<Strim>();
+
+        Document doc = Jsoup.parse(html);
+        
+        Element topBar = doc.getElementById("top_bar_wrapper");
+
+        for (Element el : topBar.getElementsByTag("li")) {
+            if(el.hasClass("separator"))
+                continue;
+            
+            Element link = el.getElementsByTag("a").first();
+            
+            String name = link.attr("href").trim();
+            name = name.replaceFirst("/", "");
+            
+            String title = link.text().trim();
+            String desc = "";
+            
+            Boolean isGroup = false;
+            
+            if(el.hasClass("group"))
+                isGroup = true;
+
+            Strim strim = new Strim(name, title, desc, isGroup);
+            strims.add(strim);
+        }
+
+        return strims;
+    }
+    
+    public ArrayList<Strim> getSubstrims() {
+        ArrayList<Strim> strims = new ArrayList<Strim>();
         
         String content = "";
         
@@ -218,10 +249,12 @@ public class Parser {
 
         for (Element el : doc.getElementsByTag("li")) {
             String name = el.getElementsByTag("a").first().attr("href").trim();
+            name = name.replaceFirst("/", "");
+
             String title = el.getElementsByClass("name").first().text().trim();
             String desc = "";
             
-            Strim strim = new Strim(name, title, desc);
+            Strim strim = new Strim(name, title, desc, false);
             strims.add(strim);
         }
 
@@ -231,27 +264,27 @@ public class Parser {
     public static int getColorUserByString(String userStatus){
         int color;
        
-        if (userStatus.contains("new")){
-         color = Color.parseColor("#2e9b2d");
-        }else if(userStatus.contains("admin")){
-         color = Color.parseColor("#c4181b");
-        }else if(userStatus.contains("advanced")){
-         color = Color.parseColor("#0075dc");
-        }else{
-         color = Color.parseColor("#3272aa");
+        if (userStatus.contains("new")) {
+            color = Color.parseColor("#2e9b2d");
+        } else if(userStatus.contains("admin")) {
+            color = Color.parseColor("#c4181b");
+        } else if(userStatus.contains("advanced")) {
+            color = Color.parseColor("#0075dc");
+        } else {
+            color = Color.parseColor("#3272aa");
         }
         
         return color;
     }
     
-    public static NotificationStatus getNotifications(String response) {
+    public NotificationStatus getNotifications() {
 
 		try {
-	        JSONObject mainObject = new JSONObject(response);
+	        JSONObject mainObject = new JSONObject(html);
 	        JSONObject uniObject = mainObject.getJSONObject("content");
 	        String m_c = uniObject.getJSONObject("messages_count").toString();
 	        String n_c = uniObject.getJSONObject("notifications_count").toString();
-			return new NotificationStatus(Integer.parseInt(m_c),Integer.parseInt(n_c));
+			return new NotificationStatus(Integer.parseInt(m_c), Integer.parseInt(n_c));
 		} catch (JSONException e) {
 			return null;
 		}

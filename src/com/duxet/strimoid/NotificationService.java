@@ -35,7 +35,8 @@ public class NotificationService extends Service {
                 checkNotifications();
             }
         }, 01, 1000*60*5);
-        return(START_NOT_STICKY);
+        
+        return(START_STICKY);
     }
 
     @Override
@@ -55,17 +56,13 @@ public class NotificationService extends Service {
         HTTPClient.get("ajax/u/" + Session.getUser().getUsername() + "/powiadomienia", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-              NotificationStatus n = Parser.getNotifications(response);
-              if (n.getMessages() != 0) {
+              NotificationStatus n = new Parser(response).getNotifications();
+              
+              if (n.getMessages() != 0)
                   Notification(10001, "Nowe wiadomości", "Na Twoim koncie pojawiły się nowe wiadomości.");
-              }
-              if (n.getNotifications() != 0) {
+              
+              if (n.getNotifications() != 0)
                   Notification(10002, "Nowe powiadomienia", "Na Twoim koncie pojawiły się nowe powiadomienia.");
-              }
-            }
-
-            @Override
-            public void onFailure(Throwable arg0) {
             }
         });
     }
@@ -74,14 +71,13 @@ public class NotificationService extends Service {
         Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.logo_small);
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-        .setLargeIcon(largeIcon)
-        .setSmallIcon(R.drawable.strims_logo)
-        .setContentTitle(notificationTitle)
-        .setContentText(notificationMessage)
-        .setSound(soundUri)
-        .setVibrate(new long[]{100, 200, 100, 500});
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+            .setLargeIcon(largeIcon)
+            .setSmallIcon(R.drawable.strims_logo)
+            .setContentTitle(notificationTitle)
+            .setContentText(notificationMessage)
+            .setSound(soundUri)
+            .setVibrate(new long[]{100, 200, 100, 500});
 
         Intent resultIntent = new Intent(this, MainActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -91,11 +87,10 @@ public class NotificationService extends Service {
                 stackBuilder.getPendingIntent(
                         0,
                         PendingIntent.FLAG_UPDATE_CURRENT
-                        );
+                );
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(nID, mBuilder.build());
-
     }
 }

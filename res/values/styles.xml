@@ -8,7 +8,8 @@
     </style>
 
     <style name="AppTheme" parent="Theme.Sherlock.Light">
-    	<item name="actionButtonStyle">@style/MyActionButtonStyle</item>
+    	<item name="actionButtonStyle">@style/Widget.AppTheme.ActionButton</item>
+    	<item name="android:actionButtonStyle" tools:ignore="NewApi">@style/Widget.AppTheme.ActionButton</item>
     	
     	<!--  action bar & tab -->
     	<item name="actionBarStyle">@style/Widget.AppTheme.ActionBar</item>
@@ -21,8 +22,8 @@
     	<item name="android:actionBarTabBarStyle" tools:ignore="NewApi">@style/Widget.AppTheme.TabBar</item>
 	</style>
 	
-	<style name="MyActionButtonStyle" parent="Widget.Sherlock.ActionButton">
-    	<item name="android:minWidth">28dp</item>
+	<style name="Widget.AppTheme.ActionButton" parent="Widget.Sherlock.ActionButton">
+    	<item name="android:minWidth">46dp</item>
     	<item name="android:padding">0dp</item>
 	</style>
 	
@@ -38,6 +39,7 @@
   
 	<style name="Widget.AppTheme.TabView" parent="Widget.Sherlock.ActionBar.TabView">
 	    <!-- Tab text -->
+	    <item name="android:minWidth">80dp</item>
 	    <item name="android:height">25dip</item>
 	    <item name="android:textSize">15sp</item>
 	         

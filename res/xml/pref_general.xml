@@ -11,15 +11,21 @@
         android:key="show_avatars"
         android:summary="Wyświetla avatary przy nazwie użytkownika"
         android:title="Pokazuj avatary" />
+    
+    <PreferenceCategory android:title="Powiadomienia" >
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="enable_notifications"
+            android:summary="Sprawdza w tle czy pojawiły się nowe powiadomienia"
+            android:title="Włącz powiadomienia" />
 
-    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
-
-    <!--
-         NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it.
-    -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
-    <CheckBoxPreference android:key="enable_notifications" android:title="Włącz powiadomienia" android:summary="Sprawdza w tle czy pojawiły się nowe powiadomienia" android:defaultValue="true"/>
+        <ListPreference
+            android:dependency="enable_notifications"
+            android:entries="@array/pref_notification_intervals"
+            android:entryValues="@array/pref_notification_intervals_values"
+            android:key="notifications_interval"
+            android:summary="Określa czas pomiędzy jakim będą sprawdzane powiadomienia"
+            android:title="Interwał" android:defaultValue="5"/>
+    </PreferenceCategory>
 
 </PreferenceScreen>

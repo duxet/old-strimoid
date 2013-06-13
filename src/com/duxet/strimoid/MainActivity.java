@@ -6,33 +6,33 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ImageButton;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
-import com.duxet.strimoid.fragments.ContentsFragment;
-import com.duxet.strimoid.fragments.EntriesFragment;
+import com.duxet.strimoid.fragments.ContentFragment;
+import com.duxet.strimoid.fragments.ContentsListFragment;
+import com.duxet.strimoid.fragments.EntriesListFragment;
 import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.ui.StrimsAdapter;
 import com.duxet.strimoid.ui.TabsAdapter;
@@ -44,19 +44,17 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
 	SearchView.OnSuggestionListener {
     
     // UI elements
+    ContentFragment contentFragment;
     ViewPager viewPager;
     TabsAdapter adapter;
     
     SlidingMenu menu;
     Menu optionsMenu;
     
-    ListView listStrims;
+    ExpandableListView listStrims;
     StrimsAdapter strimsAdapter;
-    
-    ProgressBar progressBar;
 
     // Data
-    ArrayList<Strim> strims = new ArrayList<Strim>();
     String currentStrim = "";
     
     public static final List<String> TABS = Arrays.asList(
@@ -66,38 +64,49 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle("");
         
         // Load preferences and cookies
         PreferenceManager.setDefaultValues(getApplicationContext(), R.xml.pref_general, false);
         HTTPClient.setupCookieStore(getApplicationContext());
 
-        // progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        
         // Setup swipable tabs
-        viewPager = new ViewPager(this);
+        viewPager = (ViewPager) findViewById(R.id.pager);
         adapter = new TabsAdapter(this, viewPager);
-        viewPager.setAdapter( adapter );
-        viewPager.setOnPageChangeListener( adapter );
-        viewPager.setId( 0x7F04FFF0 );
-        setContentView(viewPager);
+        viewPager.setAdapter(adapter);
+        viewPager.setOnPageChangeListener(adapter);
+        viewPager.setId(0x7F04FFF0);
         
+        RelativeLayout fragmentLayout = (RelativeLayout) findViewById(R.id.fragment_layout);
+        
+        if (fragmentLayout != null &&
+                getSupportFragmentManager().findFragmentByTag("content") == null) {
+            contentFragment = new ContentFragment();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();  
+            ft.add(R.id.fragment_layout, contentFragment, "content");
+            ft.commit();
+        }
+
         // Setup sliding menu
         menu = new SlidingMenu(this);
         menu.setMode(SlidingMenu.LEFT);
         menu.setShadowWidthRes(R.dimen.shadow_width);
         menu.setShadowDrawable(R.drawable.shadow);
-        menu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        menu.setBehindWidthRes(R.dimen.slidingmenu_width);
         menu.setFadeDegree(0.35f);
         menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
         menu.attachToActivity(this, SlidingMenu.SLIDING_CONTENT);
         menu.setMenu(R.layout.menu_strimslist);
         
         // Setup strims list view
-        listStrims = (ListView) findViewById(R.id.strimsList);
-        strimsAdapter = new StrimsAdapter(this, strims);
+        listStrims = (ExpandableListView) findViewById(R.id.strimsList);
+        strimsAdapter = new StrimsAdapter(this, Data.getStrims());
         listStrims.setAdapter(strimsAdapter);
-        listStrims.setOnItemClickListener(onStrimChoosed);
+        listStrims.setOnGroupClickListener(onStrimChoosed);
+        listStrims.setOnChildClickListener(onChildStrimChoosed);
+        listStrims.setGroupIndicator(null);
         
         // Add tabs
         for (String tab : TABS) {
@@ -111,7 +120,10 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             args.putString("contentType", contentType);
             
             // Load proper class
-            Class fragmentClass = tab.equals("Wpisy") ? EntriesFragment.class : ContentsFragment.class;
+            Class<?> fragmentClass = tab.equals("Wpisy")
+                    ? EntriesListFragment.class : ContentsListFragment.class;
+            
+            
 
             adapter.addTab(tab, fragmentClass, args);
         }
@@ -123,114 +135,134 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             Intent i = new Intent(this, NotificationService.class);        
             startService(i);
         }
-        
-        // Load list of strims
-        loadStrimsList();
+    }
+    
+    public void updateContentFragment(Content content) {
+        contentFragment.changeContent(content);
     }
 
-    protected void loadStrimsList() {
-        String url;
-        
-        if (Session.getUser().isLogged()) {
-        	url = "ajax/utility/submenu?section_type=s&section_name=Subskrybowane";
-        } else {
-        	url = "ajax/utility/submenu?section_type=s&section_name=Glowny";
-        }
-        
-        HTTPClient.get(url, null, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(String response) {
-            	new drawStrims().execute(response);
-            }
-        });
-
-        // Add static strims
-        strims.add(new Strim("s/Glowny", "Główny", ""));
-        strims.add(new Strim("", "Subskrybowane", ""));
-        strims.add(new Strim("s/Moderowane", "Moderowane", ""));
-    }
-
-    OnItemClickListener onStrimChoosed = new OnItemClickListener() {
+    OnGroupClickListener onStrimChoosed = new OnGroupClickListener() {
         @Override
-        public void onItemClick(AdapterView<?> parent, View v, int pos, long id) {
-            currentStrim = strims.get(pos).getName();
+        public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+            final Strim strim = Data.getStrims().get(groupPosition);
+            changeStrim(strim.getName());
             
-            for (Fragment fragment : adapter.getFragments()) {
-                if (fragment.getClass() == EntriesFragment.class)
-                    ((EntriesFragment) fragment).loadContents(currentStrim, 1, true);
-                else
-                    ((ContentsFragment) fragment).loadContents(currentStrim, 1, true);
+            if (strim.isGroup()) {
+                if (!strim.getChildrens().isEmpty())
+                    return false;
+
+                String[] name = strim.getName().split("/");
+                
+                // Fix for subscribbed strims
+                if (name[1].equals(""))
+                    name[1] = "Subskrybowane";
+                
+                Strim loading = new Strim("", "Ładowanie...", "", false);
+                strim.addChildren(loading);
+                
+                HTTPClient.get("ajax/utility/submenu?section_type=" + name[0] + "&section_name=" + name[1],
+                        null, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(String response) {
+                        strim.getChildrens().clear();
+                        strim.addChildrens(new Parser(response).getSubstrims());
+                        strimsAdapter.notifyDataSetChanged();
+                    }
+                });
+                
+                return false;
             }
-            
+
             menu.toggle();
+
+            return true;
         }
     };
+    
+    OnChildClickListener onChildStrimChoosed = new OnChildClickListener() {
+        @Override
+        public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+            Strim strim = Data.getStrims().get(groupPosition);
+            changeStrim(strim.getName());
+            menu.toggle();
+            
+            return true;
+        }
+    };
+    
+    public void changeStrim(String newStrimName) {
+        if(newStrimName.equals(currentStrim))
+            return;
+        
+        currentStrim = newStrimName;
+        
+        for (Fragment fragment : adapter.getFragments()) {
+            if (fragment == null)
+                continue;
+            
+            if (fragment.getClass() == EntriesListFragment.class)
+                ((EntriesListFragment) fragment).loadContents(currentStrim, 1, true);
+            else
+                ((ContentsListFragment) fragment).loadContents(currentStrim, 1, true);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-    	/*
-    	 * Dynamiczne menu
-    	 * potrzebne na potrzeby logowania
-    	 */
-        
         optionsMenu = menu;
-    	
-        if (!Session.getUser().isLogged()) {
-            menu.add(1, 1, 0, "Zaloguj się")
-                .setIcon(R.drawable.action_accounts)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        } else {
-            menu.add(Menu.NONE, 3, 0, "Dodaj wpis")
-                .setIcon(R.drawable.action_add)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        }
+        getSupportMenuInflater().inflate(R.menu.main, menu);
+
+        updateOptionsMenu();
 
         SearchView searchView = new SearchView(getSupportActionBar().getThemedContext());
         searchView.setQueryHint("Szukaj…");
         searchView.setOnQueryTextListener(this);
         searchView.setOnSuggestionListener(this);
     	
-        menu.add("Szukaj")
-        	.setIcon(R.drawable.search_inverse)
-        	.setActionView(searchView)
-        	.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-
-	    menu.add(3, 2, 0, "Odśwież")
-	    	.setIcon(R.drawable.action_refresh)
-	        .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-	    
-	    menu.add(2, 4, 10, "Ustawienia")
-        .setIcon(R.drawable.action_settings)
-        .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        menu.findItem(R.id.action_search).setActionView(searchView);
 
         return true;
     }
     
+    public void updateStrimsList() {
+        strimsAdapter.notifyDataSetChanged();
+    }
+    
     public void updateOptionsMenu() {
         if (optionsMenu != null) {
-            optionsMenu.clear();
-            onCreateOptionsMenu(optionsMenu);
+            if (!Session.getUser().isLogged()) {
+                optionsMenu.setGroupVisible(R.id.logged_in, false);
+                optionsMenu.setGroupVisible(R.id.not_logged_in, true);
+            } else {
+                optionsMenu.setGroupVisible(R.id.logged_in, true);
+                optionsMenu.setGroupVisible(R.id.not_logged_in, false);
+            }
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
-        case 1:
+        case R.id.action_login:
             Intent loginIntent = new Intent(this, LoginActivity.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(loginIntent);
             break;
-        case 2:
-            if (adapter.getCurrentFragment().getClass() == EntriesFragment.class)
-                ((EntriesFragment) adapter.getCurrentFragment()).loadContents(currentStrim, 1, true);
+        case R.id.action_refresh:
+            if (isEntriesTabSelected())
+                ((EntriesListFragment) adapter.getCurrentFragment()).loadContents(currentStrim, 1, true);
             else
-                ((ContentsFragment) adapter.getCurrentFragment()).loadContents(currentStrim, 1, true);
+                ((ContentsListFragment) adapter.getCurrentFragment()).loadContents(currentStrim, 1, true);
         	break;
-        case 3:
-            showAddEntryDialog();
+        case R.id.action_add:
+            if (isEntriesTabSelected()) {
+                showAddEntryDialog();
+            } else {
+                Intent addContentIntent = new Intent(this, AddContentActivity.class);
+                startActivity(addContentIntent);
+            }
             break;
-        case 4:
+        case R.id.action_settings:
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
             settingsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(settingsIntent);
@@ -256,7 +288,7 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
         final ImageButton button = (ImageButton) layout.findViewById(R.id.edit);
 
         ArrayList<String> spinnerOptions = new ArrayList<String>();
-        for (Strim strim : strims.subList(3, strims.size())) {
+        for (Strim strim : Data.getStrims().subList(3, Data.getStrims().size())) {
             spinnerOptions.add(strim.getTitle());
         }
         
@@ -280,8 +312,8 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             .setView(layout)
             .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    String strim = strims.get(spinner.getSelectedItemPosition() + 3).getName().replace("/s/", "");
-                    progressBar.setVisibility(View.VISIBLE);
+                    String strim = Data.getStrims().get(spinner.getSelectedItemPosition() + 3).getName().replace("/s/", "");
+                    setSupportProgressBarIndeterminateVisibility(true);
                     
                     if (!strimName.getText().toString().equals(""))
                         strim = strimName.getText().toString();
@@ -313,11 +345,8 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
                     else
                         Toast.makeText(getApplicationContext(), "Nie udało się dodać wpisu", Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) { }
-                
-                /*if(!strim.equals(""))
-                    loadContents("s/" + strim, "wpisy", 1, true);
-                else
-                    loadContents(currentStrim, "wpisy", 1, true);*/
+
+                ((EntriesListFragment) adapter.getCurrentFragment()).loadContents(currentStrim, 1, true);
             }
             
             @Override
@@ -327,32 +356,20 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             
             @Override
             public void onFinish() {
-                progressBar.setVisibility(View.GONE);
+                setSupportProgressBarIndeterminateVisibility(false);
             }
         });
     }
     
     public void vote(View v) {
-        Fragment fragment = adapter.getCurrentFragment();
-        
-        if (fragment.getClass() == EntriesFragment.class)
-            ((EntriesFragment) fragment).vote(v);
+        if (isEntriesTabSelected())
+            ((EntriesListFragment) adapter.getCurrentFragment()).vote(v);
         else
-            ((ContentsFragment) fragment).vote(v);
+            ((ContentsListFragment) adapter.getCurrentFragment()).vote(v);
     }
-
-    private class drawStrims extends AsyncTask<String, Void, Void>{
-        ArrayList<Strim> newStrims;
-
-        protected Void doInBackground(String... params) {
-        	newStrims = new Parser(params[0]).getStrims();
-            return null;
-        }
-
-        protected void onPostExecute(Void arg) {
-            strims.addAll(newStrims);
-            strimsAdapter.notifyDataSetChanged();
-        }
+    
+    private Boolean isEntriesTabSelected() {
+        return (adapter.getCurrentFragment().getClass() == EntriesListFragment.class);
     }
 
 	@Override

@@ -7,11 +7,9 @@ import java.util.regex.Pattern;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
 import com.duxet.strimoid.R;
-import com.duxet.strimoid.R.drawable;
-import com.duxet.strimoid.R.id;
-import com.duxet.strimoid.R.layout;
 import com.duxet.strimoid.models.Entry;
 import com.duxet.strimoid.models.Voting;
 import com.duxet.strimoid.ui.EntriesAdapter;
@@ -29,7 +27,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Patterns;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -48,10 +45,9 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class EntriesFragment extends Fragment {
+public class EntriesListFragment extends SherlockListFragment {
 
     // UI elements
-    ListView list;
     ProgressBar progressBar, progressBarBottom;
     EntriesAdapter entriesAdapter;
     
@@ -59,7 +55,7 @@ public class EntriesFragment extends Fragment {
     
     String strim;
 
-    public EntriesFragment() {
+    public EntriesListFragment() {
     }
 
     @Override
@@ -67,9 +63,10 @@ public class EntriesFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         
         entriesAdapter = new EntriesAdapter(getActivity(), entries);
-        list.setAdapter(entriesAdapter);
-        list.setOnItemClickListener(onItemClicked);
-        registerForContextMenu(list);
+        setListAdapter(entriesAdapter);
+
+        //getListView().setOnItemClickListener(onItemClicked);
+        registerForContextMenu(getListView());
         
         if (entries.isEmpty())
             loadContents(strim, 1, true);
@@ -87,9 +84,8 @@ public class EntriesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.activity_main, container, false);
+        View layout = inflater.inflate(R.layout.fragment_main, container, false);
 
-        list = (ListView) layout.findViewById(R.id.contentsList);
         progressBar = (ProgressBar) layout.findViewById(R.id.progressBar);
         progressBarBottom = (ProgressBar) layout.findViewById(R.id.progressBarBottom);
 
@@ -149,6 +145,9 @@ public class EntriesFragment extends Fragment {
     public void loadContents(String newStrim, int page, boolean clear) {
         strim = newStrim;
         
+        if (isDetached())
+            return;
+        
         progressBar.setVisibility(View.VISIBLE);
         progressBar.bringToFront();
 
@@ -167,7 +166,7 @@ public class EntriesFragment extends Fragment {
 
         if (clear) {
             EndlessScrollListener scrollListener = new EndlessScrollListener();
-            list.setOnScrollListener(scrollListener);
+            getListView().setOnScrollListener(scrollListener);
         }
     }
     
@@ -180,6 +179,15 @@ public class EntriesFragment extends Fragment {
                 } catch (JSONException e) { }
             }
         });
+    }
+    
+    @Override
+    public void onListItemClick(ListView l, View v, int pos, long id) {
+        if (entries.get(pos).isLoadMore()) {
+            TextView text = (TextView) v;
+            text.setText("Ładowanie...");
+            loadMoreEntries(entries.get(pos).getMoreUrl(), pos);
+        }
     }
     
     OnItemClickListener onItemClicked = new OnItemClickListener() {
@@ -219,7 +227,7 @@ public class EntriesFragment extends Fragment {
             .setView(input)
             .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    progressBar.setVisibility(View.VISIBLE);
+                    getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
                     addNewEntry(input.getText().toString(), parentId, "");
                 }
             }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -235,7 +243,7 @@ public class EntriesFragment extends Fragment {
         .setMessage("Czy na pewno chcesz usunąć odpowiedź?")
         .setPositiveButton("Usuń", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                progressBar.setVisibility(View.VISIBLE);
+                getSherlockActivity().setSupportProgressBarIndeterminateVisibility(true);
                 removeEntry(entry.getId());
             }
         }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -274,7 +282,7 @@ public class EntriesFragment extends Fragment {
             
             @Override
             public void onFinish() {
-                progressBar.setVisibility(View.GONE);
+                getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
             }
         });
     }
@@ -298,12 +306,13 @@ public class EntriesFragment extends Fragment {
             
             @Override
             public void onFinish() {
-                progressBar.setVisibility(View.GONE);
+                getSherlockActivity().setSupportProgressBarIndeterminateVisibility(false);
             }
         });
     }
     
     public void vote(final View v) {
+        ListView list = getListView();
         int firstPos = list.getFirstVisiblePosition() - list.getHeaderViewsCount();
         int pos = list.getPositionForView(v);
         View row = list.getChildAt(pos - firstPos);

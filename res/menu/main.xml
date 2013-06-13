@@ -1,12 +1,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-<item
-        android:id="@+id/action_refresh"
-        android:orderInCategory="100"
-        android:showAsAction="never"/>
-<item
-        android:id="@+id/action_login"
-        android:orderInCategory="100"
-        android:showAsAction="never"/>
+    
+    
+
+    <group android:id="@+id/not_logged_in" >
+        <item
+            android:id="@+id/action_login"
+            android:orderInCategory="100"
+            android:showAsAction="always" android:title="Zaloguj" android:icon="@drawable/action_accounts"/>
+    </group>
+    
+    <group
+        android:id="@+id/logged_in"
+        android:visible="false" >
+        <item
+            android:id="@+id/action_add"
+            android:showAsAction="always" android:title="Dodaj" android:orderInCategory="100" android:icon="@drawable/action_add">
+        </item>
+    </group><item android:id="@+id/action_search" android:title="Szukaj" android:orderInCategory="200" android:icon="@drawable/search_inverse" android:showAsAction="always|collapseActionView"></item><item android:id="@+id/action_refresh" android:orderInCategory="300" android:showAsAction="ifRoom" android:title="Odśwież" android:icon="@drawable/action_refresh"/><item android:id="@+id/action_settings" android:orderInCategory="400" android:showAsAction="never" android:title="Ustawienia" android:icon="@drawable/action_settings">
+    </item>
+    
 
 </menu>

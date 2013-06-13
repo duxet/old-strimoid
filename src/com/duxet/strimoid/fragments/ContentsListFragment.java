@@ -5,15 +5,17 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.actionbarsherlock.view.Menu;
+import com.duxet.strimoid.ContentActivity;
 import com.duxet.strimoid.MainActivity;
 import com.duxet.strimoid.R;
-import com.duxet.strimoid.R.id;
-import com.duxet.strimoid.R.layout;
 import com.duxet.strimoid.models.Content;
+import com.duxet.strimoid.models.Data;
 import com.duxet.strimoid.models.Voting;
 import com.duxet.strimoid.ui.ContentsAdapter;
 import com.duxet.strimoid.utils.HTTPClient;
+import com.duxet.strimoid.utils.OnCustomClickListener;
 import com.duxet.strimoid.utils.Parser;
 import com.duxet.strimoid.utils.Session;
 import com.duxet.strimoid.utils.UIHelper;
@@ -24,7 +26,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,28 +39,28 @@ import android.widget.Toast;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class ContentsFragment extends Fragment {
+public class ContentsListFragment extends SherlockListFragment implements OnCustomClickListener {
     
     // UI elements
-    ListView list;
     ProgressBar progressBar, progressBarBottom;
     ContentsAdapter contentsAdapter;
-    
+
     // Data
     String strim, contentType;
     ArrayList<Content> contents = new ArrayList<Content>();
 
-    public ContentsFragment() {
+    public ContentsListFragment() {
     }
     
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
-        contentsAdapter = new ContentsAdapter(getActivity(), contents);
-        list.setAdapter(contentsAdapter);
-        registerForContextMenu(list);
-        
+        contentsAdapter = new ContentsAdapter(getActivity(), contents, this);
+
+        setListAdapter(contentsAdapter);
+        registerForContextMenu(getListView());
+
         if (contents.isEmpty())
             loadContents(strim, 1, true);
     }
@@ -77,10 +78,8 @@ public class ContentsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
+        View layout = inflater.inflate(R.layout.fragment_main, container, false);
 
-        View layout = inflater.inflate(R.layout.activity_main, container, false);
-
-        list = (ListView) layout.findViewById(R.id.contentsList);
         progressBar = (ProgressBar) layout.findViewById(R.id.progressBar);
         progressBarBottom = (ProgressBar) layout.findViewById(R.id.progressBarBottom);
 
@@ -92,7 +91,20 @@ public class ContentsFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    
+    @Override
+    public void onCustomClick(View view, int position) {
+        ContentFragment fragment = (ContentFragment) getActivity()
+                .getSupportFragmentManager().findFragmentByTag("content");
+        
+        if (fragment == null) {
+            Intent intent = new Intent(getActivity(), ContentActivity.class);
+            intent.putExtra("content", contents.get(position));
+            startActivity(intent); 
+        } else {
+            fragment.changeContent(contents.get(position));
+        }
+    }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, 
        ContextMenuInfo menuInfo) {
@@ -120,6 +132,9 @@ public class ContentsFragment extends Fragment {
     public void loadContents(String newStrim, int page, boolean clear) {
         strim = newStrim;
         
+        if (isDetached())
+            return;
+        
         progressBar.setVisibility(View.VISIBLE);
         progressBar.bringToFront();
 
@@ -133,26 +148,17 @@ public class ContentsFragment extends Fragment {
             @Override
             public void onSuccess(String response) {
                 new drawContents().execute(response);
-
-                if (!Session.getUser().isLogged()){
-                    Parser parser = new Parser(response);
-                    
-                    if (parser.checkIsLogged()) {
-                        Session.setToken(parser.getToken());
-                        Session.getUser().setUser(parser.getUsername(), "");
-                        ((MainActivity) getActivity()).updateOptionsMenu();
-                    }
-                }
             }
         });
 
         if (clear) {
             EndlessScrollListener scrollListener = new EndlessScrollListener();
-            list.setOnScrollListener(scrollListener);
+            getListView().setOnScrollListener(scrollListener);
         }
     }
 
     public void vote(final View v) {
+        ListView list = getListView();
         int firstPos = list.getFirstVisiblePosition() - list.getHeaderViewsCount();
         int pos = list.getPositionForView(v);
         View row = list.getChildAt(pos - firstPos);
@@ -247,9 +253,27 @@ public class ContentsFragment extends Fragment {
     
     private class drawContents extends AsyncTask<String, Void, Void>{
         ArrayList<Content> newContents;
+        boolean updateMenu = false;
+        boolean updateStrimsList = false;
 
         protected Void doInBackground(String... params) {
-            newContents = new Parser(params[0]).getContents();
+            Parser parser = new Parser(params[0]);
+            
+            newContents = parser.getContents();
+            
+            // Update login state
+            if (!Session.getUser().isLogged() && parser.checkIsLogged()){
+                Session.setToken(parser.getToken());
+                Session.getUser().setUser(parser.getUsername(), "");
+                updateMenu = true;
+            }
+            
+            // Load strims list if empty
+            if (Data.getStrims().isEmpty()) {
+                Data.getStrims().addAll(parser.getStrims());
+                updateStrimsList = true;
+            }
+            
             return null;
         }
 
@@ -257,6 +281,12 @@ public class ContentsFragment extends Fragment {
             contents.addAll(newContents);
             progressBar.setVisibility(View.GONE);
             contentsAdapter.notifyDataSetChanged();
+            
+            if (updateMenu)
+                ((MainActivity) getActivity()).updateOptionsMenu();
+            
+            if (updateStrimsList)
+                ((MainActivity) getActivity()).updateStrimsList();
         }
     }
     
@@ -289,5 +319,4 @@ public class ContentsFragment extends Fragment {
         public void onScrollStateChanged(AbsListView view, int scrollState) {
         }
     }
-
 }

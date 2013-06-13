@@ -3,14 +3,14 @@ package com.duxet.strimoid.ui;
 import java.util.ArrayList;
 
 import com.duxet.strimoid.R;
-import com.duxet.strimoid.ContentActivity;
 import com.duxet.strimoid.models.Content;
+import com.duxet.strimoid.utils.CustomOnClickListener;
+import com.duxet.strimoid.utils.OnCustomClickListener;
 import com.duxet.strimoid.utils.UIHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -19,18 +19,18 @@ import android.text.style.ImageSpan;
 import android.text.style.StyleSpan;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ContentsAdapter extends BaseAdapter implements OnClickListener {
+public class ContentsAdapter extends BaseAdapter {
     private Activity activity;
     private ArrayList<Content> data;
     private static LayoutInflater inflater = null;
     private ImageLoader imageLoader = ImageLoader.getInstance();
+    private OnCustomClickListener callback;
 
     static class ViewHolder {
         TextView title, desc;
@@ -38,9 +38,10 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         ImageView image;
     }
     
-    public ContentsAdapter(Activity a, ArrayList<Content> d) {
+    public ContentsAdapter(Activity a, ArrayList<Content> d, OnCustomClickListener c) {
         activity = a;
         data = d;
+        callback = c;
         inflater = (LayoutInflater) activity
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -110,19 +111,13 @@ public class ContentsAdapter extends BaseAdapter implements OnClickListener {
         holder.down.setTag(position);
         
         UIHelper.updateVoteButtons(holder.up, holder.down, content);
-        
-        vi.setOnClickListener(this);
+  
         vi.setTag(R.id.TAG_POSITION, position);
         
+        vi.setOnClickListener(new CustomOnClickListener(callback, position));
+        
         return vi;
-    }
-
-    @Override
-    public void onClick(View view) {
-        int position = (Integer) view.getTag(R.id.TAG_POSITION);
-
-        Intent intent = new Intent(activity, ContentActivity.class);
-        intent.putExtra("content", data.get(position));
-        activity.startActivity(intent);
-    }
+    }   
+    
+   
 }

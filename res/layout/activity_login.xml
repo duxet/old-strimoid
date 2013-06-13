@@ -13,6 +13,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
+            android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone" >
 
@@ -20,12 +21,14 @@
                 style="?android:attr/progressBarStyleLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginBottom="8dp" />
 
             <TextView
                 android:id="@+id/login_status_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginBottom="16dp"
                 android:fontFamily="sans-serif-light"
                 android:text="Logowanie..."
@@ -88,7 +91,7 @@
                 android:id="@+id/sign_in_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#D2F48D"
+                android:background="#86C4EB"
                 android:paddingLeft="32dp"
                 android:paddingRight="32dp"
                 android:text="Zaloguj"
