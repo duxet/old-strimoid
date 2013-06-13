@@ -145,7 +145,7 @@ public class EntriesListFragment extends SherlockListFragment {
     public void loadContents(String newStrim, int page, boolean clear) {
         strim = newStrim;
         
-        if (isDetached())
+        if (!isAdded())
             return;
         
         progressBar.setVisibility(View.VISIBLE);

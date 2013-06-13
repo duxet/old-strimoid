@@ -132,7 +132,7 @@ public class ContentsListFragment extends SherlockListFragment implements OnCust
     public void loadContents(String newStrim, int page, boolean clear) {
         strim = newStrim;
         
-        if (isDetached())
+        if (!isAdded())
             return;
         
         progressBar.setVisibility(View.VISIBLE);
@@ -266,6 +266,10 @@ public class ContentsListFragment extends SherlockListFragment implements OnCust
                 Session.setToken(parser.getToken());
                 Session.getUser().setUser(parser.getUsername(), "");
                 updateMenu = true;
+                
+                // Update strims menu
+                Data.getStrims().addAll(parser.getStrims());
+                updateStrimsList = true;
             }
             
             // Load strims list if empty

@@ -57,8 +57,6 @@ public class LoginActivity extends SherlockActivity {
 				signIn(username.getText().toString(), password.getText().toString(), remember.isChecked());
 			}
         });
-        
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
     
     public boolean signIn(final String username, final String password, final boolean remember){
