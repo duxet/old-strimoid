@@ -122,8 +122,6 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             // Load proper class
             Class<?> fragmentClass = tab.equals("Wpisy")
                     ? EntriesListFragment.class : ContentsListFragment.class;
-            
-            
 
             adapter.addTab(tab, fragmentClass, args);
         }
@@ -365,10 +363,19 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
     }
     
     public void vote(View v) {
-        if (isEntriesTabSelected())
-            ((EntriesListFragment) adapter.getCurrentFragment()).vote(v);
-        else
+        switch (((View)v.getParent()).getId()) {
+        case R.id.content:
             ((ContentsListFragment) adapter.getCurrentFragment()).vote(v);
+            break;
+        case R.id.entry:
+            ((EntriesListFragment) adapter.getCurrentFragment()).vote(v);
+            break;
+        case R.id.comment:
+            contentFragment.vote(v);
+            break;
+        default:
+            break;
+        }   
     }
     
     private Boolean isEntriesTabSelected() {

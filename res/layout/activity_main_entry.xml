@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/entry"
     android:layout_width="fill_parent"
@@ -19,11 +18,6 @@
             android:layout_height="match_parent"
             android:paddingRight="5dp"
             android:src="#3272aa" />
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" >
-        </RelativeLayout>
 
         <ImageView
             android:id="@+id/list_image"
