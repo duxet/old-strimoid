@@ -154,9 +154,12 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
                 String[] name = strim.getName().split("/");
                 
                 // Fix for subscribbed strims
-                if (name[1].equals(""))
+                if (name == null || name.length < 2) {
+                    name = new String[2];
+                    name[0] = "s";
                     name[1] = "Subskrybowane";
-                
+                }
+
                 Strim loading = new Strim("", "Ładowanie...", "", false);
                 strim.addChildren(loading);
                 
