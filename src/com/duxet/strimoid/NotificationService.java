@@ -68,13 +68,23 @@ public class NotificationService extends Service {
                 NotificationStatus n = new Parser(response).getNotifications();
 
                 if (n.getMessages() != 0 && n.getMessages() > lastMessagesCount) {
-                    Notification(10001, "Nowe wiadomości", "Na Twoim koncie pojawiły się nowe wiadomości.");
+                    if (n.getMessages() == 1)
+                        Notification(10001, "Nowa wiadomość", "Na Twoim koncie pojawiła się nowa wiadomość.");
+                    else
+                        Notification(10001, "Nowa wiadomość",
+                                "Na Twoim koncie pojawiły się " + n.getMessages() + " nowe wiadomości.");
+                    
                     lastMessagesCount = n.getMessages();
                 }
                     
 
                 if (n.getNotifications() != 0 && n.getNotifications() > lastNotificationsCount) {
-                    Notification(10002, "Nowe powiadomienia", "Na Twoim koncie pojawiły się nowe powiadomienia.");
+                    if (n.getNotifications() == 1)
+                        Notification(10002, "Nowe powiadomienie", "Na Twoim koncie pojawiło się nowe powiadomienie.");
+                    else
+                        Notification(10002, "Nowe powiadomienia",
+                                "Na Twoim koncie pojawiły się " + n.getNotifications() + " nowe powiadomienia.");
+                        
                     lastNotificationsCount = n.getNotifications();
                 }  
             }
