@@ -19,22 +19,31 @@ import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
 public class NotificationService extends Service {  
     Timer timer;
+    int lastMessagesCount, lastNotificationsCount;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         timer = new Timer();
-        /* Co 5 minut */
+        
+        lastMessagesCount = 0;
+        lastNotificationsCount = 0;
+        
+        int interval = Integer.parseInt(PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext())
+                .getString("notification_interval", "5"));
+        
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 checkNotifications();
             }
-        }, 01, 1000*60*5);
+        }, 01, 1000 * 60 * interval);
         
         return(START_STICKY);
     }
@@ -56,13 +65,18 @@ public class NotificationService extends Service {
         HTTPClient.get("ajax/u/" + Session.getUser().getUsername() + "/powiadomienia", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-              NotificationStatus n = new Parser(response).getNotifications();
-              
-              if (n.getMessages() != 0)
-                  Notification(10001, "Nowe wiadomości", "Na Twoim koncie pojawiły się nowe wiadomości.");
-              
-              if (n.getNotifications() != 0)
-                  Notification(10002, "Nowe powiadomienia", "Na Twoim koncie pojawiły się nowe powiadomienia.");
+                NotificationStatus n = new Parser(response).getNotifications();
+
+                if (n.getMessages() != 0 && n.getMessages() > lastMessagesCount) {
+                    Notification(10001, "Nowe wiadomości", "Na Twoim koncie pojawiły się nowe wiadomości.");
+                    lastMessagesCount = n.getMessages();
+                }
+                    
+
+                if (n.getNotifications() != 0 && n.getNotifications() > lastNotificationsCount) {
+                    Notification(10002, "Nowe powiadomienia", "Na Twoim koncie pojawiły się nowe powiadomienia.");
+                    lastNotificationsCount = n.getNotifications();
+                }  
             }
         });
     }
@@ -73,7 +87,7 @@ public class NotificationService extends Service {
         Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.logo_small);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
             .setLargeIcon(largeIcon)
-            .setSmallIcon(R.drawable.strims_logo)
+            .setSmallIcon(R.drawable.ic_stat_notification)
             .setContentTitle(notificationTitle)
             .setContentText(notificationMessage)
             .setSound(soundUri)

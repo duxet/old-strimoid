@@ -283,16 +283,14 @@ public class Parser {
     }
     
     public NotificationStatus getNotifications() {
-
 		try {
 	        JSONObject mainObject = new JSONObject(html);
 	        JSONObject uniObject = mainObject.getJSONObject("content");
-	        String m_c = uniObject.getJSONObject("messages_count").toString();
-	        String n_c = uniObject.getJSONObject("notifications_count").toString();
+	        String m_c = uniObject.getString("messages_count");
+	        String n_c = uniObject.getString("notifications_count");
 			return new NotificationStatus(Integer.parseInt(m_c), Integer.parseInt(n_c));
 		} catch (JSONException e) {
 			return null;
 		}
-        
     }
 }

@@ -22,3 +22,4 @@ local.properties
 # Project properties (target sdk, referenced libraries - we have them in separate paths, etc)
 project.properties
 
+.settings/org.eclipse.jdt.ui.prefs

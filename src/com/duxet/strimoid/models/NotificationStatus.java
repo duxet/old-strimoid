@@ -9,17 +9,17 @@ public class NotificationStatus {
 
     private int messages_count, notifications_count;
     
-    public NotificationStatus(){
+    public NotificationStatus() {
     	messages_count = 0;
     	notifications_count = 0;
     }
     
-    public NotificationStatus(int m, int n){
+    public NotificationStatus(int m, int n) {
     	messages_count = m;
     	notifications_count = n;
     }
     
-    public void setMessages(int i){
+    public void setMessages(int i) {
         messages_count = i;
     }
 

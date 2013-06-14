@@ -2,8 +2,6 @@ package com.duxet.strimoid;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.duxet.strimoid.fragments.ContentFragment;
-import com.duxet.strimoid.fragments.ContentsListFragment;
-import com.duxet.strimoid.fragments.EntriesListFragment;
 import com.duxet.strimoid.models.Content;
 
 import android.content.Intent;
