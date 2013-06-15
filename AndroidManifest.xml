@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.duxet.strimoid"
-    android:versionCode="1"
-    android:versionName="0.4" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.duxet.strimoid"
+    android:versionCode="2"
+    android:versionName="0.4" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -43,16 +44,27 @@
         <activity
             android:name="com.duxet.strimoid.LoginActivity"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" android:theme="@style/Theme.Sherlock.NoActionBar">
+            android:theme="@style/Theme.Sherlock.NoActionBar"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
             android:name="com.duxet.strimoid.AddContentActivity"
             android:label="@string/title_activity_add_content" >
-            <intent-filter android:label="Strimoid">
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/plain"/>
+            <intent-filter android:label="Strimoid" >
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.duxet.strimoid.UserProfileActivity"
+            android:label="@string/title_activity_user_profile" >
+        </activity>
+        <activity
+            android:name="com.duxet.strimoid.NotificationsActivity"
+            android:label="@string/title_activity_notifications" >
         </activity>
     </application>
 

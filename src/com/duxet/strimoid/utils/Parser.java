@@ -34,6 +34,10 @@ public class Parser {
 	    return doc.getElementById("top_user_menu").getElementsByClass("user_name").first().text().trim();
 	}
 	
+	public String getUserAvatar() {
+	    return doc.getElementById("top_user_submenu_wrapper").getElementsByTag("img").first().attr("src");
+	}
+	
     public String getToken(){
         /*Document doc = Jsoup.parse(response);
         return doc.getElementsByAttributeValue("name", "token").first().attr("value").toString();*/
@@ -169,6 +173,26 @@ public class Parser {
         return entries;
     }
     
+    public ArrayList<Message> getMessages() {
+        ArrayList<Message> messages = new ArrayList<Message>();
+        
+        Element page = doc.getElementById("user_messages_page");
+        
+        for (Element el : page.getElementsByTag("tr")) {
+            String user = el.getElementsByTag("a").first().text().trim();
+            String userAvatar = el.getElementsByTag("img").first().attr("src");
+            String entry = el.getElementsByTag("a").get(1).text().trim();
+            String entryId = el.getElementsByTag("a").get(1).attr("href");
+            String time = el.getElementsByAttribute("title").text().trim();
+            boolean isUnread = el.hasClass("yellow");
+            
+            Message message = new Message(user, userAvatar, entry, entryId, time, isUnread);
+            messages.add(message);
+        }
+        
+        return messages;
+    }
+    
     public ArrayList<Entry> getMoreEntries() {
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
@@ -200,6 +224,24 @@ public class Parser {
         }    
 
         return entries;
+    }
+    
+    public ArrayList<Notification> getNotifications() {
+        ArrayList<Notification> notifications = new ArrayList<Notification>();
+        
+        Element page = doc.getElementById("user_notifications_page");
+        
+        for (Element el : page.getElementsByTag("tr")) {
+            String type = el.getElementsByClass("type").first().text().trim();
+            String text = el.getElementsByClass("action").first().text().trim();
+            String time = el.getElementsByAttribute("title").text().trim();
+            boolean isUnread = el.hasClass("yellow");
+            
+            Notification notification = new Notification(type, text, time, isUnread);
+            notifications.add(notification);
+        }
+        
+        return notifications;
     }
     
     public ArrayList<Strim> getStrims() {
@@ -282,7 +324,7 @@ public class Parser {
         return color;
     }
     
-    public NotificationStatus getNotifications() {
+    public NotificationStatus getNotificationStatus() {
 		try {
 	        JSONObject mainObject = new JSONObject(html);
 	        JSONObject uniObject = mainObject.getJSONObject("content");

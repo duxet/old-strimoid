@@ -7,9 +7,9 @@ package com.duxet.strimoid.models;
 
 public class Account {
 
-    private String username, password;
+    private String username, password, avatar;
     
-    public Account(){
+    public Account() {
     	setUser("", "");
     }
 
@@ -17,9 +17,17 @@ public class Account {
         setUser(username, password);
     }
     
-    public void setUser(String username, String password){
+    public void setUser(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+    
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+    
+    public String getAvatar() {
+        return avatar;
     }
 
     public String getUsername() {

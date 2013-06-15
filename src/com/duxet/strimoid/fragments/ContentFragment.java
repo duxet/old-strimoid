@@ -513,16 +513,15 @@ public class ContentFragment extends SherlockFragment {
     }
 
     private class drawComments extends AsyncTask<String, Void, Void>{
-        ArrayList<Comment> newComments;
-
         protected Void doInBackground(String... params) {
-            newComments = new Parser(params[0]).getComments();
+            comments.clear();
+            comments.addAll(new Parser(params[0]).getComments());
             
             return null;
         }
 
-        protected void onPostExecute(Void arg) {
-            comments.addAll(newComments);
+        protected void onPostExecute(Void arg) 
+        {
             progressBar.setVisibility(View.GONE);
             commentsAdapter.notifyDataSetChanged();
         }

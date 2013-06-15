@@ -1,24 +1,55 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    
-    
-
     <group android:id="@+id/not_logged_in" >
         <item
             android:id="@+id/action_login"
+            android:icon="@drawable/action_accounts"
             android:orderInCategory="100"
-            android:showAsAction="always" android:title="Zaloguj" android:icon="@drawable/action_accounts"/>
+            android:showAsAction="always"
+            android:title="Zaloguj"/>
     </group>
-    
     <group
         android:id="@+id/logged_in"
         android:visible="false" >
         <item
-            android:id="@+id/action_add"
-            android:showAsAction="always" android:title="Dodaj" android:orderInCategory="100" android:icon="@drawable/action_add">
+            android:id="@+id/item_user"
+            android:icon="@drawable/action_accounts"
+            android:orderInCategory="10"
+            android:showAsAction="always"
+            android:title="Użytkownik">
+            <menu>
+                <item
+                    android:id="@+id/action_notifications"
+                    android:orderInCategory="10"
+                    android:title="Powiadomienia"/>
+            </menu>
         </item>
-    </group><item android:id="@+id/action_search" android:title="Szukaj" android:orderInCategory="200" android:icon="@drawable/search_inverse" android:showAsAction="always|collapseActionView"></item><item android:id="@+id/action_refresh" android:orderInCategory="300" android:showAsAction="ifRoom" android:title="Odśwież" android:icon="@drawable/action_refresh"/><item android:id="@+id/action_settings" android:orderInCategory="400" android:showAsAction="never" android:title="Ustawienia" android:icon="@drawable/action_settings">
-    </item>
-    
+        <item
+            android:id="@+id/action_add"
+            android:icon="@drawable/action_add"
+            android:orderInCategory="100"
+            android:showAsAction="always"
+            android:title="Dodaj">
+        </item>
+    </group>
 
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/search_inverse"
+        android:orderInCategory="200"
+        android:showAsAction="always|collapseActionView"
+        android:title="Szukaj">
+    </item>
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="@drawable/action_refresh"
+        android:orderInCategory="300"
+        android:showAsAction="never"
+        android:title="Odśwież"/>
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/action_settings"
+        android:orderInCategory="400"
+        android:showAsAction="never"
+        android:title="Ustawienia">
+    </item>
 </menu>

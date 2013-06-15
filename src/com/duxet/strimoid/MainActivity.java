@@ -14,6 +14,8 @@ import android.support.v4.view.ViewPager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -29,6 +31,7 @@ import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.duxet.strimoid.fragments.ContentFragment;
 import com.duxet.strimoid.fragments.ContentsListFragment;
@@ -39,10 +42,12 @@ import com.duxet.strimoid.ui.TabsAdapter;
 import com.duxet.strimoid.utils.*;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.loopj.android.http.*;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.SimpleImageLoadingListener;
 
 public class MainActivity extends SherlockFragmentActivity implements SearchView.OnQueryTextListener,
 	SearchView.OnSuggestionListener {
-    
+
     // UI elements
     ContentFragment contentFragment;
     ViewPager viewPager;
@@ -56,7 +61,7 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
 
     // Data
     String currentStrim = "";
-    
+
     public static final List<String> TABS = Arrays.asList(
     		new String[] { "Ważne", "Najnowsze", "Wschodzące", "Najlepsze", "Wpisy" }
     );
@@ -231,12 +236,24 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
     
     public void updateOptionsMenu() {
         if (optionsMenu != null) {
-            if (!Session.getUser().isLogged()) {
-                optionsMenu.setGroupVisible(R.id.logged_in, false);
-                optionsMenu.setGroupVisible(R.id.not_logged_in, true);
-            } else {
+            if (Session.getUser().isLogged()) {
                 optionsMenu.setGroupVisible(R.id.logged_in, true);
                 optionsMenu.setGroupVisible(R.id.not_logged_in, false);
+                
+                final MenuItem user = optionsMenu.findItem(R.id.item_user);
+                
+                // Load avatar as icon of user dropdown menu
+                ImageLoader.getInstance().loadImage(Session.getUser().getAvatar(),
+                        new SimpleImageLoadingListener() {
+                    @Override
+                    public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                        user.setIcon(new BitmapDrawable(getResources(), loadedImage));
+                    }
+                });
+                
+            } else {
+                optionsMenu.setGroupVisible(R.id.logged_in, false);
+                optionsMenu.setGroupVisible(R.id.not_logged_in, true);
             }
         }
     }
@@ -244,6 +261,18 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
     @Override
     public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
+        case R.id.action_add:
+            if (isEntriesTabSelected()) {
+                showAddEntryDialog();
+            } else {
+                Intent addContentIntent = new Intent(this, AddContentActivity.class);
+                startActivity(addContentIntent);
+            }
+            break;
+        case R.id.action_notifications:
+            Intent intent = new Intent(this, NotificationsActivity.class);
+            startActivity(intent);
+            break;
         case R.id.action_login:
             Intent loginIntent = new Intent(this, LoginActivity.class);
             loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -255,14 +284,6 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             else
                 ((ContentsListFragment) adapter.getCurrentFragment()).loadContents(currentStrim, 1, true);
         	break;
-        case R.id.action_add:
-            if (isEntriesTabSelected()) {
-                showAddEntryDialog();
-            } else {
-                Intent addContentIntent = new Intent(this, AddContentActivity.class);
-                startActivity(addContentIntent);
-            }
-            break;
         case R.id.action_settings:
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
             settingsIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -120,6 +121,8 @@ public class EntriesListFragment extends SherlockListFragment {
         
         Entry entry = entries.get(info.position);
 
+        Log.i("itemid", Integer.toString(item.getItemId()));
+        
         switch (item.getItemId()) {
         case 1:
             showAddReplyDialog(info.position);
@@ -406,15 +409,12 @@ public class EntriesListFragment extends SherlockListFragment {
     }
     
     private class drawEntries extends AsyncTask<String, Void, Void>{
-        ArrayList<Entry> newEntries;
-
         protected Void doInBackground(String... params) {
-            newEntries = new Parser(params[0]).getEntries();
+            entries.addAll(new Parser(params[0]).getEntries());
             return null;
         }
 
         protected void onPostExecute(Void arg) {
-            entries.addAll(newEntries);
             progressBar.setVisibility(View.GONE);
             entriesAdapter.notifyDataSetChanged();
         }
@@ -427,15 +427,16 @@ public class EntriesListFragment extends SherlockListFragment {
         protected Void doInBackground(String... params) {
             newEntries = new Parser(params[0]).getMoreEntries();
             position = Integer.parseInt(params[1]);
-            return null;
-        }
-
-        protected void onPostExecute(Void arg) {  
+            
             ArrayList<Entry> oldEntries = new ArrayList<Entry>(entries);
             entries.clear();
             entries.addAll(oldEntries.subList(0, position));
             entries.addAll(newEntries);
             entries.addAll(oldEntries.subList(position + 1, oldEntries.size()));
+            return null;
+        }
+
+        protected void onPostExecute(Void arg) {  
             entriesAdapter.notifyDataSetChanged();
         }
     }

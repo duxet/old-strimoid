@@ -65,7 +65,7 @@ public class NotificationService extends Service {
         HTTPClient.get("ajax/u/" + Session.getUser().getUsername() + "/powiadomienia", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-                NotificationStatus n = new Parser(response).getNotifications();
+                NotificationStatus n = new Parser(response).getNotificationStatus();
 
                 if (n.getMessages() != 0 && n.getMessages() > lastMessagesCount) {
                     if (n.getMessages() == 1)
@@ -101,9 +101,10 @@ public class NotificationService extends Service {
             .setContentTitle(notificationTitle)
             .setContentText(notificationMessage)
             .setSound(soundUri)
-            .setVibrate(new long[]{100, 200, 100, 500});
+            .setVibrate(new long[]{100, 200, 100, 500})
+            .setAutoCancel(true);
 
-        Intent resultIntent = new Intent(this, MainActivity.class);
+        Intent resultIntent = new Intent(this, NotificationsActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(MainActivity.class);
         stackBuilder.addNextIntent(resultIntent);

@@ -2,10 +2,11 @@
 <resources>
 
     <string name="app_name">Strimoid</string>
-    <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_view_content">ViewContent</string>
-
+    <string name="title_activity_view_content">Treść</string>
+    <string name="title_activity_add_content">Dodawanie treści</string>
+    <string name="title_activity_user_profile">Profil użytkownika</string>
+    <string name="title_activity_notifications">Powiadomienia</string>
+    
     <string-array name="ic_modes">
         <item>Ważne</item>
         <item>Najnowsze</item>
@@ -13,11 +14,5 @@
         <item>Najlepsze</item>
         <item>Wpisy</item>
     </string-array>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_add_content">Dodawanie treści</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
 
 </resources>

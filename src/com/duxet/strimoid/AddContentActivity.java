@@ -2,6 +2,7 @@ package com.duxet.strimoid;
 
 import java.util.ArrayList;
 
+import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.duxet.strimoid.models.Strim;
@@ -14,7 +15,6 @@ import com.loopj.android.http.RequestParams;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -177,7 +177,7 @@ public class AddContentActivity extends SherlockFragmentActivity {
         }
     }
 
-    public static class AddLinkFragment extends Fragment {
+    public static class AddLinkFragment extends SherlockFragment {
 
         public AddLinkFragment() {
         }
@@ -231,7 +231,7 @@ public class AddContentActivity extends SherlockFragmentActivity {
         
     }
     
-    public static class AddTextFragment extends Fragment {
+    public static class AddTextFragment extends SherlockFragment {
         
         public AddTextFragment() {
         }

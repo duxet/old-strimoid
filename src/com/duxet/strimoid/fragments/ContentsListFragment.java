@@ -57,7 +57,7 @@ public class ContentsListFragment extends SherlockListFragment implements OnCust
         super.onActivityCreated(savedInstanceState);
         
         contentsAdapter = new ContentsAdapter(getActivity(), contents, this);
-
+        
         setListAdapter(contentsAdapter);
         registerForContextMenu(getListView());
 
@@ -252,19 +252,23 @@ public class ContentsListFragment extends SherlockListFragment implements OnCust
     }
     
     private class drawContents extends AsyncTask<String, Void, Void>{
-        ArrayList<Content> newContents;
         boolean updateMenu = false;
         boolean updateStrimsList = false;
 
         protected Void doInBackground(String... params) {
             Parser parser = new Parser(params[0]);
-            
-            newContents = parser.getContents();
+
+            contents.addAll(parser.getContents());
             
             // Update login state
             if (!Session.getUser().isLogged() && parser.checkIsLogged()){
+                // Update token
                 Session.setToken(parser.getToken());
+
+                // Get username and avatar URL
                 Session.getUser().setUser(parser.getUsername(), "");
+                Session.getUser().setAvatar(parser.getUserAvatar());
+                
                 updateMenu = true;
                 
                 // Update strims menu
@@ -282,7 +286,6 @@ public class ContentsListFragment extends SherlockListFragment implements OnCust
         }
 
         protected void onPostExecute(Void arg) {
-            contents.addAll(newContents);
             progressBar.setVisibility(View.GONE);
             contentsAdapter.notifyDataSetChanged();
             
