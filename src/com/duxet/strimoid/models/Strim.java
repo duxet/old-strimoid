@@ -5,14 +5,17 @@ import java.util.ArrayList;
 public class Strim {
     
     String name, title, desc;
+    int newContents;
     Boolean isGroup;
     ArrayList<Strim> childrens;
 
-    public Strim(String name, String title, String desc, Boolean isGroup) {
+    public Strim(String name, String title, String desc,
+            int newContents, Boolean isGroup) {
         super();
         this.name = name;
         this.title = title;
         this.desc = desc;
+        this.newContents = newContents;
         this.isGroup = isGroup;
         this.childrens = new ArrayList<Strim>();
     }
@@ -27,6 +30,10 @@ public class Strim {
 
     public String getDesc() {
         return desc;
+    }
+
+    public int getNewContents() {
+        return newContents;
     }
 
     public Boolean isGroup() {

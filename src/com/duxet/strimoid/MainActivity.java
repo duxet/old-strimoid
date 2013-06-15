@@ -163,7 +163,7 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
                     name[1] = "Subskrybowane";
                 }
 
-                Strim loading = new Strim("", "Ładowanie...", "", false);
+                Strim loading = new Strim("", "Ładowanie...", "", 0, false);
                 strim.addChildren(loading);
                 
                 HTTPClient.get("ajax/utility/submenu?section_type=" + name[0] + "&section_name=" + name[1],

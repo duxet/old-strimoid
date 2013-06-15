@@ -58,6 +58,15 @@ public class StrimsAdapter extends BaseExpandableListAdapter implements OnClickL
         TextView title = (TextView) vi.findViewById(R.id.title);
         title.setText(strim.getTitle());
         
+        TextView count = (TextView) vi.findViewById(R.id.count);
+        
+        if (strim.getNewContents() > 0) {
+            count.setVisibility(View.VISIBLE);
+            count.setText(Integer.toString(strim.getNewContents()));
+        } else {
+            count.setVisibility(View.GONE);
+        }
+
         vi.setBackgroundColor(Color.parseColor("#356691"));
         
         return vi;

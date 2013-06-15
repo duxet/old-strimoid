@@ -257,15 +257,18 @@ public class Parser {
             
             Element link = el.getElementsByTag("a").first();
             
+            // Get name of strim (format: s/name)
             String name = link.attr("href").trim();
             name = name.replaceFirst("/", "");
             
+            // Visible title
             String title = link.text().trim();
             
             // There may be two names - full and shortened, we want the first one
             if (!link.children().isEmpty())
                 title = link.child(0).text().trim();
             
+            // TODO: Description of strim (from sidebar)
             String desc = "";
             
             Boolean isGroup = false;
@@ -273,7 +276,7 @@ public class Parser {
             if(el.hasClass("group"))
                 isGroup = true;
 
-            Strim strim = new Strim(name, title, desc, isGroup);
+            Strim strim = new Strim(name, title, desc, 0, isGroup);
             strims.add(strim);
         }
 
@@ -301,7 +304,12 @@ public class Parser {
             String title = el.getElementsByClass("name").first().text().trim();
             String desc = "";
             
-            Strim strim = new Strim(name, title, desc, false);
+            int newContents = 0;
+
+            if (el.getElementsByClass("count").first() != null)
+                newContents = Integer.parseInt(el.getElementsByClass("count").first().text());
+            
+            Strim strim = new Strim(name, title, desc, newContents, false);
             strims.add(strim);
         }
 
