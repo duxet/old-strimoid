@@ -147,7 +147,7 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
         @Override
         public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
             final Strim strim = Data.getStrims().get(groupPosition);
-            changeStrim(strim.getName());
+            changeStrim(strim);
             
             if (strim.isGroup()) {
                 if (!strim.getChildrens().isEmpty())
@@ -188,22 +188,22 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
         @Override
         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
             Strim strim = Data.getStrims().get(groupPosition).getChildrens().get(childPosition);
-            changeStrim(strim.getName());
+            changeStrim(strim);
             menu.toggle();
             
             return true;
         }
     };
     
-    public void changeStrim(String newStrimName) {
-        if(newStrimName.equals(currentStrim))
+    public void changeStrim(Strim newStrim) {
+        if(newStrim.getName().equals(currentStrim))
             return;
         
-        currentStrim = newStrimName;
+        currentStrim = newStrim.getName();
         
         // update title in action bar
         getSupportActionBar().setDisplayUseLogoEnabled(false);
-        getSupportActionBar().setTitle(currentStrim);
+        getSupportActionBar().setTitle(newStrim.getTitle());
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         
         for (Fragment fragment : adapter.getFragments()) {
