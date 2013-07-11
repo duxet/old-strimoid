@@ -42,6 +42,7 @@ public class AddContentActivity extends SherlockFragmentActivity {
     // Data
     ArrayList<String> strimsList;
     ArrayAdapter<String> spinnerAdapter;
+    static String defaultStrim = "";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +62,14 @@ public class AddContentActivity extends SherlockFragmentActivity {
         // Add tabs
         Bundle args = new Bundle();
         
+        // Set default strim name if provided
+        if (intent.getStringExtra("strim") != null)
+            defaultStrim = intent.getStringExtra("strim");
+        
+        // Pass URL to tab fragments
         if (intent.getStringExtra(Intent.EXTRA_TEXT) != null)
             args.putString("text", intent.getStringExtra(Intent.EXTRA_TEXT));
-        
+ 
         tabsAdapter.addTab("Link", AddLinkFragment.class, args);
         tabsAdapter.addTab("Treść własna", AddTextFragment.class, args);
         
@@ -188,6 +194,8 @@ public class AddContentActivity extends SherlockFragmentActivity {
             final ImageButton editButton = (ImageButton) rootView.findViewById(R.id.edit);
             final Button addButton = (Button) rootView.findViewById(R.id.add);
             
+            strimName.setText(defaultStrim);
+            
             editButton.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -241,6 +249,8 @@ public class AddContentActivity extends SherlockFragmentActivity {
             final ImageButton editButton = (ImageButton) rootView.findViewById(R.id.edit);
             final Button addButton = (Button) rootView.findViewById(R.id.add);
 
+            strimName.setText(defaultStrim);
+            
             editButton.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View v) {

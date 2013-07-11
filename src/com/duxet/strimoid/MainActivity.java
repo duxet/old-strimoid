@@ -269,8 +269,9 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             if (isEntriesTabSelected()) {
                 showAddEntryDialog();
             } else {
-                Intent addContentIntent = new Intent(this, AddContentActivity.class);
-                startActivity(addContentIntent);
+                Intent intent = new Intent(this, AddContentActivity.class);
+                intent.putExtra("strim", currentStrim.replace("s/", ""));
+                startActivity(intent);
             }
             break;
         case R.id.action_notifications:
@@ -311,7 +312,9 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
         final EditText text = (EditText) layout.findViewById(R.id.text);
         final EditText strimName = (EditText) layout.findViewById(R.id.strim_name);
         final ImageButton button = (ImageButton) layout.findViewById(R.id.edit);
-
+        
+        strimName.setText(currentStrim.replace("s/", ""));
+        
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
