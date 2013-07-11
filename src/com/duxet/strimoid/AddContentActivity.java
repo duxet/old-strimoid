@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
+import com.duxet.strimoid.fragments.StrimChooserFragment;
+import com.duxet.strimoid.models.Data;
 import com.duxet.strimoid.models.Strim;
 import com.duxet.strimoid.ui.TabsAdapter;
 import com.duxet.strimoid.utils.HTTPClient;
@@ -15,6 +17,8 @@ import com.loopj.android.http.RequestParams;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +29,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,12 +71,10 @@ public class AddContentActivity extends SherlockFragmentActivity {
         if(intent.getStringExtra(Intent.EXTRA_TEXT) != null 
                 && !intent.getStringExtra(Intent.EXTRA_TEXT).startsWith("http"))
             viewPager.setCurrentItem(1);
-        
-        strimsList = new ArrayList<String>();
-        spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, strimsList);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        
-        loadStrimsList();
+
+        // Load strims list if empty
+        if (Data.getStrims().isEmpty())
+            loadStrimsList();
         
         // User may need to log in or we may need token
         if (Session.getToken().equals("") || !Session.getUser().isLogged())
@@ -100,24 +101,12 @@ public class AddContentActivity extends SherlockFragmentActivity {
     }
     
     private void loadStrimsList() {
-        HTTPClient.get("ajax/utility/submenu?section_type=s&section_name=Subskrybowane", null, new AsyncHttpResponseHandler() {
+        HTTPClient.get("", null, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(String response) {
-                for (Strim strim : new Parser(response).getSubstrims()) {
-                    strimsList.add(strim.getTitle());
-                }
-                
-                spinnerAdapter.notifyDataSetChanged();
+                Data.getStrims().addAll(new Parser(response).getStrims());
             }
         });
-    }
-    
-    public ArrayAdapter<String> getSpinnerAdapter() {
-        return spinnerAdapter;
-    }
-    
-    public ArrayList<String> getStrimsList() {
-        return strimsList;
     }
     
     public void addNewContent(String title, String kind, String value, String strim,
@@ -177,7 +166,8 @@ public class AddContentActivity extends SherlockFragmentActivity {
         }
     }
 
-    public static class AddLinkFragment extends SherlockFragment {
+    public static class AddLinkFragment extends SherlockFragment
+            implements StrimChooserFragment.onStrimSelectedListener {
 
         public AddLinkFragment() {
         }
@@ -190,35 +180,27 @@ public class AddContentActivity extends SherlockFragmentActivity {
             if (getArguments().getString("text") != null)
                 ((TextView) rootView.findViewById(R.id.url)).setText(getArguments().getString("text"));
             
-            final ArrayAdapter<String> spinnerAdapter = ((AddContentActivity) getActivity()).getSpinnerAdapter();
             final EditText strimName = (EditText) rootView.findViewById(R.id.strim_name);
             final EditText title = (EditText) rootView.findViewById(R.id.title);
             final EditText url = (EditText) rootView.findViewById(R.id.url);
             final CheckBox mature = (CheckBox) rootView.findViewById(R.id.mature);
             final CheckBox foreign = (CheckBox) rootView.findViewById(R.id.foreign);
             final CheckBox thumbnail = (CheckBox) rootView.findViewById(R.id.thumbnail);
-            final Spinner spinner = (Spinner) rootView.findViewById(R.id.strim);
             final ImageButton editButton = (ImageButton) rootView.findViewById(R.id.edit);
             final Button addButton = (Button) rootView.findViewById(R.id.add);
-            spinner.setAdapter(spinnerAdapter);
-
+            
             editButton.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    spinner.setVisibility(View.GONE);
-                    editButton.setVisibility(View.GONE);
-                    strimName.setVisibility(View.VISIBLE);
+                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                    DialogFragment newFragment =  new StrimChooserFragment();
+                    newFragment.show(ft, "dialog");
                 }
             });
 
             addButton.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
-                    String strim = "";
-                    
-                    if (!strimName.getText().toString().equals(""))
-                        strim = strimName.getText().toString();
-                    else
-                        strim = spinnerAdapter.getItem(spinner.getSelectedItemPosition());
+                    String strim = strimName.getText().toString();
                     
                     ((AddContentActivity) getActivity()).addNewContent(title.getText().toString(), "link",
                             url.getText().toString(), strim, mature.isChecked(), foreign.isChecked(),
@@ -228,10 +210,17 @@ public class AddContentActivity extends SherlockFragmentActivity {
             
             return rootView;
         }
-        
+
+        @Override
+        public void onStrimSelected(Strim strim) {
+            EditText strimName = (EditText) getView().findViewById(R.id.strim_name);
+            strimName.setText(strim.getName());
+        }
+   
     }
     
-    public static class AddTextFragment extends SherlockFragment {
+    public static class AddTextFragment extends SherlockFragment
+            implements StrimChooserFragment.onStrimSelectedListener {
         
         public AddTextFragment() {
         }
@@ -243,8 +232,7 @@ public class AddContentActivity extends SherlockFragmentActivity {
             
             if (getArguments().getString("text") != null)
                 ((TextView) rootView.findViewById(R.id.text)).setText(getArguments().getString("text"));
-            
-            final ArrayAdapter<String> spinnerAdapter = ((AddContentActivity) getActivity()).getSpinnerAdapter();
+
             final EditText strimName = (EditText) rootView.findViewById(R.id.strim_name);
             final EditText title = (EditText) rootView.findViewById(R.id.title);
             final EditText text = (EditText) rootView.findViewById(R.id.text);
@@ -253,27 +241,20 @@ public class AddContentActivity extends SherlockFragmentActivity {
             final CheckBox thumbnail = (CheckBox) rootView.findViewById(R.id.thumbnail);
             final ImageButton editButton = (ImageButton) rootView.findViewById(R.id.edit);
             final Button addButton = (Button) rootView.findViewById(R.id.add);
-            final Spinner spinner = (Spinner) rootView.findViewById(R.id.strim);
-            spinner.setAdapter(spinnerAdapter);
 
             editButton.setOnClickListener(new Button.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    spinner.setVisibility(View.GONE);
-                    editButton.setVisibility(View.GONE);
-                    strimName.setVisibility(View.VISIBLE);
+                    FragmentTransaction ft = getChildFragmentManager().beginTransaction();
+                    DialogFragment newFragment =  new StrimChooserFragment();
+                    newFragment.show(ft, "dialog");
                 }
             });
 
             addButton.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
-                    String strim;
+                    String strim = strimName.getText().toString();
                     
-                    if (!strimName.getText().toString().equals(""))
-                        strim = strimName.getText().toString();
-                    else
-                        strim = spinnerAdapter.getItem(spinner.getSelectedItemPosition());
-
                     ((AddContentActivity) getActivity()).addNewContent(title.getText().toString(), "text",
                             text.getText().toString(), strim, mature.isChecked(), foreign.isChecked(),
                             thumbnail.isChecked());
@@ -281,6 +262,12 @@ public class AddContentActivity extends SherlockFragmentActivity {
             });
             
             return rootView;
+        }
+        
+        @Override
+        public void onStrimSelected(Strim strim) {
+            EditText strimName = (EditText) getView().findViewById(R.id.strim_name);
+            strimName.setText(strim.getName());
         }
         
     }

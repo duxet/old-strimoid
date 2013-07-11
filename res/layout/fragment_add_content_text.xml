@@ -83,14 +83,6 @@
         android:layout_alignLeft="@+id/text"
         android:layout_below="@+id/text" >
 
-        <Spinner
-            android:id="@+id/strim"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/edit"
-            android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/edit" />
-
         <ImageButton
             android:id="@+id/edit"
             android:layout_width="wrap_content"
@@ -103,11 +95,10 @@
             android:id="@+id/strim_name"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/edit"
             android:ems="10"
-            android:hint="Nazwa strimu"
-            android:visibility="gone" />
+            android:hint="Nazwa strimu" />
 
     </RelativeLayout>
 

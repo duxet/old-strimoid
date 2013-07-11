@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import com.duxet.strimoid.R;
 import com.duxet.strimoid.models.Strim;
 
-import android.app.Activity;
-import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,15 +15,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class StrimsAdapter extends BaseExpandableListAdapter implements OnClickListener {
-    private Activity activity;
     private ArrayList<Strim> data;
     private static LayoutInflater inflater = null;
 
-    public StrimsAdapter(Activity a, ArrayList<Strim> d) {
-        activity = a;
-        data = d;
-        inflater = (LayoutInflater) activity
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public StrimsAdapter(LayoutInflater i, ArrayList<Strim> d) {
+        inflater = i;
+        data = d; 
     }
 
     @Override
@@ -131,6 +126,6 @@ public class StrimsAdapter extends BaseExpandableListAdapter implements OnClickL
 
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
+        return true;
     }
 }
