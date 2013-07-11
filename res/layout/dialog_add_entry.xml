@@ -20,19 +20,12 @@
         android:layout_height="wrap_content" >
 
         <EditText
-            android:id="@+id/strimName"
+            android:id="@+id/strim_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Nazwa strimu"
-            android:visibility="gone" />
-
-        <Spinner
-            android:id="@+id/strim"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:hint="Nazwa strimu" />
 
         <ImageButton
             android:id="@+id/edit"

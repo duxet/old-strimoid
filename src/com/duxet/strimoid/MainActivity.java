@@ -1,6 +1,5 @@
 package com.duxet.strimoid;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.json.JSONException;
@@ -18,7 +17,6 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -26,7 +24,6 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupClickListener;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -36,6 +33,8 @@ import com.actionbarsherlock.widget.SearchView;
 import com.duxet.strimoid.fragments.ContentFragment;
 import com.duxet.strimoid.fragments.ContentsListFragment;
 import com.duxet.strimoid.fragments.EntriesListFragment;
+import com.duxet.strimoid.fragments.StrimChooserFragment;
+import com.duxet.strimoid.fragments.StrimChooserFragment.onStrimSelectedListener;
 import com.duxet.strimoid.models.*;
 import com.duxet.strimoid.ui.StrimsAdapter;
 import com.duxet.strimoid.ui.TabsAdapter;
@@ -107,7 +106,7 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
         
         // Setup strims list view
         listStrims = (ExpandableListView) findViewById(R.id.strimsList);
-        strimsAdapter = new StrimsAdapter(this, Data.getStrims());
+        strimsAdapter = new StrimsAdapter(getLayoutInflater(), Data.getStrims());
         listStrims.setAdapter(strimsAdapter);
         listStrims.setOnGroupClickListener(onStrimChoosed);
         listStrims.setOnChildClickListener(onChildStrimChoosed);
@@ -188,7 +187,7 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
     OnChildClickListener onChildStrimChoosed = new OnChildClickListener() {
         @Override
         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-            Strim strim = Data.getStrims().get(groupPosition);
+            Strim strim = Data.getStrims().get(groupPosition).getChildrens().get(childPosition);
             changeStrim(strim.getName());
             menu.toggle();
             
@@ -201,6 +200,11 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             return;
         
         currentStrim = newStrimName;
+        
+        // update title in action bar
+        getSupportActionBar().setDisplayUseLogoEnabled(false);
+        getSupportActionBar().setTitle(currentStrim);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
         
         for (Fragment fragment : adapter.getFragments()) {
             if (fragment == null)
@@ -303,28 +307,23 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
         }
         
         LayoutInflater inflater = getLayoutInflater();
-        final View layout = inflater.inflate(R.layout.dialog_add_entry,null);
-        final Spinner spinner = (Spinner) layout.findViewById(R.id.strim);
+        final View layout = inflater.inflate(R.layout.dialog_add_entry, null);
         final EditText text = (EditText) layout.findViewById(R.id.text);
-        final EditText strimName = (EditText) layout.findViewById(R.id.strimName);
+        final EditText strimName = (EditText) layout.findViewById(R.id.strim_name);
         final ImageButton button = (ImageButton) layout.findViewById(R.id.edit);
 
-        ArrayList<String> spinnerOptions = new ArrayList<String>();
-        for (Strim strim : Data.getStrims().subList(3, Data.getStrims().size())) {
-            spinnerOptions.add(strim.getTitle());
-        }
-        
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item, spinnerOptions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        
         button.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                spinner.setVisibility(View.GONE);
-                button.setVisibility(View.GONE);
-                strimName.setVisibility(View.VISIBLE);
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                StrimChooserFragment fragment = new StrimChooserFragment();
+                fragment.setListener(new onStrimSelectedListener() {
+                    @Override
+                    public void onStrimSelected(Strim strim) {
+                        strimName.setText(strim.getName().replace("s/", ""));
+                    }
+                });
+                fragment.show(ft, "dialog");
             }
         });
 
@@ -334,12 +333,7 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
             .setView(layout)
             .setPositiveButton("Dodaj", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    String strim = Data.getStrims().get(spinner.getSelectedItemPosition() + 3).getName().replace("/s/", "");
-                    setSupportProgressBarIndeterminateVisibility(true);
-                    
-                    if (!strimName.getText().toString().equals(""))
-                        strim = strimName.getText().toString();
-                    
+                    String strim = strimName.getText().toString();
                     addNewEntry(text.getText().toString(), "", strim);
                 }
             }).setNegativeButton("Anuluj", new DialogInterface.OnClickListener() {
@@ -348,7 +342,7 @@ public class MainActivity extends SherlockFragmentActivity implements SearchView
                 }
             }).show();
     }
-    
+
     protected void addNewEntry(String text, String parent, final String strim) {
         RequestParams params = new RequestParams();
         params.put("token", Session.getToken());

@@ -6,6 +6,7 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.duxet.strimoid.fragments.StrimChooserFragment;
+import com.duxet.strimoid.fragments.StrimChooserFragment.onStrimSelectedListener;
 import com.duxet.strimoid.models.Data;
 import com.duxet.strimoid.models.Strim;
 import com.duxet.strimoid.ui.TabsAdapter;
@@ -17,7 +18,6 @@ import com.loopj.android.http.RequestParams;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -166,8 +166,7 @@ public class AddContentActivity extends SherlockFragmentActivity {
         }
     }
 
-    public static class AddLinkFragment extends SherlockFragment
-            implements StrimChooserFragment.onStrimSelectedListener {
+    public static class AddLinkFragment extends SherlockFragment {
 
         public AddLinkFragment() {
         }
@@ -193,8 +192,15 @@ public class AddContentActivity extends SherlockFragmentActivity {
                 @Override
                 public void onClick(View v) {
                     FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                    DialogFragment newFragment =  new StrimChooserFragment();
-                    newFragment.show(ft, "dialog");
+                    StrimChooserFragment fragment = new StrimChooserFragment();
+                    fragment.setListener(new onStrimSelectedListener() {
+                        @Override
+                        public void onStrimSelected(Strim strim) {
+                            EditText strimName = (EditText) getView().findViewById(R.id.strim_name);
+                            strimName.setText(strim.getName().replace("s/", ""));
+                        }
+                    });
+                    fragment.show(ft, "dialog");
                 }
             });
 
@@ -211,16 +217,9 @@ public class AddContentActivity extends SherlockFragmentActivity {
             return rootView;
         }
 
-        @Override
-        public void onStrimSelected(Strim strim) {
-            EditText strimName = (EditText) getView().findViewById(R.id.strim_name);
-            strimName.setText(strim.getName());
-        }
-   
     }
     
-    public static class AddTextFragment extends SherlockFragment
-            implements StrimChooserFragment.onStrimSelectedListener {
+    public static class AddTextFragment extends SherlockFragment {
         
         public AddTextFragment() {
         }
@@ -246,8 +245,15 @@ public class AddContentActivity extends SherlockFragmentActivity {
                 @Override
                 public void onClick(View v) {
                     FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-                    DialogFragment newFragment =  new StrimChooserFragment();
-                    newFragment.show(ft, "dialog");
+                    StrimChooserFragment fragment = new StrimChooserFragment();
+                    fragment.setListener(new onStrimSelectedListener() {
+                        @Override
+                        public void onStrimSelected(Strim strim) {
+                            EditText strimName = (EditText) getView().findViewById(R.id.strim_name);
+                            strimName.setText(strim.getName().replace("s/", ""));
+                        }
+                    });
+                    fragment.show(ft, "dialog");
                 }
             });
 
@@ -263,13 +269,7 @@ public class AddContentActivity extends SherlockFragmentActivity {
             
             return rootView;
         }
-        
-        @Override
-        public void onStrimSelected(Strim strim) {
-            EditText strimName = (EditText) getView().findViewById(R.id.strim_name);
-            strimName.setText(strim.getName());
-        }
-        
+
     }
 
 }

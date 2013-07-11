@@ -21,6 +21,7 @@ import android.widget.ExpandableListView.OnGroupClickListener;
 public class StrimChooserFragment extends SherlockDialogFragment {
 
     StrimsAdapter strimsAdapter;
+    onStrimSelectedListener listener;
     
     public StrimChooserFragment() {
     }
@@ -85,9 +86,7 @@ public class StrimChooserFragment extends SherlockDialogFragment {
                 return false;
             }
             
-            ((onStrimSelectedListener) getParentFragment()).onStrimSelected(strim);
-            dismiss();
-
+            returnSelectedStrim(strim);
             return true;
         }
     };
@@ -96,11 +95,19 @@ public class StrimChooserFragment extends SherlockDialogFragment {
         @Override
         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
             Strim strim = Data.getStrims().get(groupPosition).getChildrens().get(childPosition);
-            ((onStrimSelectedListener) getParentFragment()).onStrimSelected(strim);
-            dismiss();
+            returnSelectedStrim(strim);
             return true;
         }
     };
+    
+    public void setListener(onStrimSelectedListener listener) {
+        this.listener = listener;
+    }
+    
+    public void returnSelectedStrim(Strim strim) {
+        listener.onStrimSelected(strim);
+        dismiss();
+    }
     
     public interface onStrimSelectedListener {
         public void onStrimSelected(Strim strim);
